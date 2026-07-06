@@ -80,7 +80,8 @@ def main():
         dist_step = float(np.max(np.abs(Es[big] - step_func)))
         # фит формы на самом длинном прогоне
         counts_big, _ = sweep(cell_for(kappa, big), COARSE)
-        p_hat, sgn, _ = analysis.fit_chord_signed(counts_big, COARSE)
+        p_hat, _ = analysis.fit_chord_p(analysis.singlet_counts(counts_big), COARSE)
+        sgn = -1 if analysis.E_from_counts(counts_big)[0] > 0 else 1
         h = analysis.harmonics(COARSE, Es[big])
         A(f"\n- дрейф E между {STEP_LIST[0]} и {big} шагами: **{drift:.4f}** "
           f"(доля |ΔE|/шаг>1e-6: {fracs[STEP_LIST[0]]:.3f} → {fracs[big]:.3f}).")

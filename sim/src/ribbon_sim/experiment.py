@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 
 import jax
+import jax.numpy as jnp
 import numpy as np
 import yaml
 
@@ -75,10 +76,11 @@ def build_cells(cfg, mode="full"):
             k_e = float(kappa) * (N - 1) * k_c
             cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c),
                           "kappa": float(kappa), "label": f"κ={kappa:g}"})
-    elif "decay_grid" in cfg:  # R2
+    elif "decay_grid" in cfg:  # R2 / R5b
         k_e = float(phys["k_e"])
+        kappa = float(phys.get("kappa", k_e / ((N - 1) * k_c)))
         for d in cfg["decay_grid"]:
-            cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c),
+            cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c), "kappa": kappa,
                           "decay": float(d), "decay_val": float(d),
                           "label": f"decay={d:g}"})
     else:  # R0-стиль: одна ячейка
@@ -161,23 +163,34 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
     |ΔE| между блоками < max(sigma_mult·σ_MC, e_floor) или не достигнут ceiling.
     Плюс диагностика кинков (плотность и разбивка по ветвям).
     """
-    from .dynamics import kink_count
+    from .dynamics import holonomy, kink_count
 
     block = int(block_cfg["block_steps"])
     ceiling = int(block_cfg["ceiling"])
     smult = float(block_cfg.get("sigma_mult", 2.0))
     e_floor = float(block_cfg.get("e_floor", 0.01))
+    cold_T = float(block_cfg.get("cold_T", 1e-4))  # проверять сходимость только при T<cold_T
+    T0, decay = cell["T0"], cell["decay"]
     N, B = cell["N"], cell["B"]
     seeds = [int(seed_override)] if seed_override is not None else cell["seeds"]
 
     relaxer = build_relaxer({**cell, "steps": block})
     runner = relaxer["run"]
 
-    counts = np.zeros((len(seeds), len(thetas), 4), dtype=np.int64)
-    kink_sum_by_branch = np.zeros((len(seeds), len(thetas), 4), dtype=np.float64)
-    kink_density = np.zeros((len(seeds), len(thetas)), dtype=np.float64)
-    steps_per = np.zeros((len(seeds), len(thetas)), dtype=np.int64)
-    conv_flag = np.zeros((len(seeds), len(thetas)), dtype=bool)
+    def npbc(s, t):  # branch counts на numpy-подмножествах [pp,pm,mp,mm]
+        return np.array([np.sum((s > 0) & (t > 0)), np.sum((s > 0) & (t < 0)),
+                         np.sum((s < 0) & (t > 0)), np.sum((s < 0) & (t < 0))])
+
+    nS, nT = len(seeds), len(thetas)
+    counts = np.zeros((nS, nT, 4), dtype=np.int64)
+    counts_M2 = np.zeros((nS, nT, 4), dtype=np.int64)          # t̃ = h·sign(n_B·b)
+    counts_hplus = np.zeros((nS, nT, 4), dtype=np.int64)       # ветви при h=+1
+    counts_hminus = np.zeros((nS, nT, 4), dtype=np.int64)      # ветви при h=−1
+    n_hminus = np.zeros((nS, nT), dtype=np.int64)
+    kink_sum_by_branch = np.zeros((nS, nT, 4), dtype=np.float64)
+    kink_density = np.zeros((nS, nT), dtype=np.float64)
+    steps_per = np.zeros((nS, nT), dtype=np.int64)
+    conv_flag = np.zeros((nS, nT), dtype=bool)
 
     t0 = time.time()
     for si, seed in enumerate(seeds):
@@ -190,8 +203,13 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
             e_prev, total, converged = None, 0, False
             while total < ceiling:
                 k_noise, sub = jax.random.split(k_noise)
-                q, _ = runner(sub, q, a, b)
+                q, _ = runner(sub, q, a, b, jnp.int32(total))  # step0=total для отжига
                 total += block
+                # проверять сходимость только когда холодно (T<cold_T)
+                T_now = T0 * decay ** total
+                if T0 > 0 and T_now >= cold_T:
+                    e_prev = None
+                    continue
                 s, t = classify(q, a, b)
                 e = float(np.mean(np.asarray(s) * np.asarray(t)))
                 sigma = np.sqrt(max(1.0 - e * e, 0.0) / B)
@@ -199,14 +217,16 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
                     converged = True
                     break
                 e_prev = e
-            # финальные счётчики и кинки
-            s, t = classify(q, a, b)
-            cnt = np.asarray(branch_counts(s, t))
+            # финальные наблюдаемые
+            s = np.asarray(classify(q, a, b)[0]); t = np.asarray(classify(q, a, b)[1])
+            h = np.asarray(holonomy(q))
             kc = np.asarray(kink_count(q))
-            bidx = np.asarray(np.where(np.asarray(s) > 0,
-                              np.where(np.asarray(t) > 0, 0, 1),
-                              np.where(np.asarray(t) > 0, 2, 3)))
-            counts[si, ti] = cnt
+            counts[si, ti] = npbc(s, t)
+            counts_M2[si, ti] = npbc(s, h * t)               # M2: голономно-одетая t̃
+            counts_hplus[si, ti] = npbc(s[h > 0], t[h > 0])
+            counts_hminus[si, ti] = npbc(s[h < 0], t[h < 0])
+            n_hminus[si, ti] = int(np.sum(h < 0))
+            bidx = np.where(s > 0, np.where(t > 0, 0, 1), np.where(t > 0, 2, 3))
             for k in range(4):
                 kink_sum_by_branch[si, ti, k] = kc[bidx == k].sum()
             kink_density[si, ti] = kc.mean() / (N - 1)
@@ -216,6 +236,10 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
     return {
         "cell": cell,
         "counts": counts,
+        "counts_M2": counts_M2,
+        "counts_hplus": counts_hplus,
+        "counts_hminus": counts_hminus,
+        "n_hminus": n_hminus,
         "kink_sum_by_branch": kink_sum_by_branch,
         "kink_density": kink_density,
         "steps_per": steps_per,
@@ -272,20 +296,24 @@ def _gpu_mem_mb():
 def _analyse_cell(res, thetas):
     counts = res["counts"]
     counts_sum = counts.sum(0)
-    E = analysis.E_from_counts(counts_sum)
+    E = analysis.E_from_counts(counts_sum)             # физический наблюдаемый (ферро)
     ctrl = analysis.check_controls(counts_sum, thetas)
     repro = analysis.reproducibility(counts[0], counts[1]) if counts.shape[0] >= 2 else None
-    cmp = analysis.compare_models(counts_sum, thetas)
-    boot = analysis.bootstrap_p(counts_sum, thetas, n_boot=1000, seed=0)
+    # фиты семейств SPEC — в синглетной конвенции (глобальный флип t̃=−t)
+    cs = analysis.singlet_counts(counts_sum)
+    cmp = analysis.compare_models(cs, thetas)
+    boot = analysis.bootstrap_p(cs, thetas, n_boot=1000, seed=0)
     harm = analysis.harmonics(thetas, E)
 
     aics = {"пила": cmp["aic_saw"], "хорда-p": cmp["aic_chord_p"],
             "хорда-p=2": cmp["aic_chord_p2"]}
     best = min(aics, key=aics.get)
     amp = float(np.max(np.abs(E)))
+    i0 = int(np.argmin(np.abs(thetas)))
+    ferro = bool(E[i0] > 0)  # знак корреляции при θ→0: ферро E(0)>0
     return {"E": E, "ctrl": ctrl, "repro": repro, "cmp": cmp, "boot": boot,
             "harm": harm, "aics": aics, "best": best, "amp": amp,
-            "counts_sum": counts_sum}
+            "ferro": ferro, "E0": float(E[i0]), "counts_sum": counts_sum}
 
 
 def _slug(label):
@@ -316,8 +344,11 @@ def write_report(exp, outdir):
     # Сводный график всех ячеек.
     _plot_all_cells(exp, analyses, outdir / f"E_all_{exp['mode']}.png")
 
+    is_r5b = "decay_grid" in cfg and "block_convergence" in cfg["dynamics"]
     if "elastic_grid" in cfg:
         md = _render_r5(exp, analyses, deg)
+    elif is_r5b:
+        md = _render_r5b(exp, analyses, deg, outdir)
     else:
         md = _render(exp, analyses, deg, outdir)
     (outdir / "report.md").write_text(md, encoding="utf-8")
@@ -397,7 +428,7 @@ def _render(exp, analyses, deg, outdir):
         else:
             key = f"{cell['kappa']:g}"
         conv = "✅" if res["converged"] else f"⚠️×{res['doublings']}"
-        sgn = "ферро (+)" if an["cmp"]["corr_sign"] < 0 else "антиферро (−)"
+        sgn = "ферро (+)" if an["ferro"] else "антиферро (−)"
         A(f"| {key} | {cell['k_e']:.2f} | {res['steps_used']} | {an['amp']:.3f} | {sgn} "
           f"| {an['best']} (Δ{d_aic:.0f}) | {an['cmp']['p_hat']:.3f} "
           f"[{lo:.3f}, {hi:.3f}] | {an['harm']['A1']:+.3f} | {an['harm']['A3']:+.3f} | {conv} |")
@@ -437,7 +468,7 @@ def _render_cell(A, res, an, deg, mode):
       f"({'сошлось' if res['converged'] else 'НЕ сошлось'}).\n")
 
     cmp = an["cmp"]
-    sgn = "ферро E(0)=+1" if cmp["corr_sign"] < 0 else "антиферро E(0)=−1"
+    sgn = "ферро E(0)=+1" if an["ferro"] else "антиферро E(0)=−1"
     A(f"**Знак корреляции:** {sgn}. "
       f"**Фиты в этом знаке (AIC, меньше — лучше):** пила={cmp['aic_saw']:.0f}, "
       f"хорда-p={cmp['aic_chord_p']:.0f} (p̂={cmp['p_hat']:.3f}), "
@@ -473,12 +504,12 @@ def _render_verdict(A, exp, analyses, is_r2):
           "не меняется» — сопоставить амплитуды и лучшие модели с R1 (см. сводку).")
     else:
         for res, an in zip(exp["cells"], analyses):
-            sgn = "ферро" if an["cmp"]["corr_sign"] < 0 else "антиферро"
+            sgn = "ферро" if an["ferro"] else "антиферро"
             p2_flag = "← p̂≈2 (!)" if abs(an["cmp"]["p_hat"] - 2.0) < 0.15 else ""
             A(f"- **{res['cell']['label']}**: амплитуда {an['amp']:.3f}, {sgn}, лучшая модель "
               f"{an['best']}, p̂={an['cmp']['p_hat']:.3f} {p2_flag}")
         anyp2 = any(abs(an["cmp"]["p_hat"] - 2.0) < 0.15 for an in analyses)
-        anyferro = any(an["cmp"]["corr_sign"] < 0 for an in analyses)
+        anyferro = any(an["ferro"] for an in analyses)
         if anyferro:
             A("\n> ⚠️ Знак корреляции ФЕРРО (E(0)=+1): изотропная упругая лента "
               "ВЫРАВНИВАЕТ концы, а не антивыравнивает (в отличие от синглета E=−cosθ). "
@@ -552,7 +583,7 @@ def _render_r5(exp, analyses, deg):
         cell = res["cell"]
         h = an["harm"]
         a3a1 = h["A3"] / h["A1"] if abs(h["A1"]) > 1e-6 else float("nan")
-        sgn = "ферро" if an["cmp"]["corr_sign"] < 0 else "антиферро"
+        sgn = "ферро" if an["ferro"] else "антиферро"
         A(f"| {cell['label']} | {cell['kappa']:g} | {an['amp']:.3f} | {an['E'][i0]:+.3f} "
           f"| {sgn} | {h['A1']:+.3f} | {h['A3']:+.3f} | {a3a1:+.3f} "
           f"| {kk['density_mean']:.3f} | {res['frac_converged']*100:.0f} | {res['max_steps']} |")
@@ -584,7 +615,7 @@ def _render_r5(exp, analyses, deg):
 
     # --- вердикт по пунктам пре-регистрации ---
     A("## Вердикт по пре-регистрации\n")
-    all_ferro = all(an["cmp"]["corr_sign"] < 0 for an in analyses)
+    all_ferro = all(an["ferro"] for an in analyses)
     A(f"**(a) знак ферро** (n(−q)=n(q), зажимы знако-слепы): "
       f"{'✅ подтверждено' if all_ferro else '❌ где-то антиферро'} "
       f"(все ячейки {'ферро' if all_ferro else 'разное'}).")
@@ -617,4 +648,119 @@ def _render_r5(exp, analyses, deg):
         A(f"  - {res['cell']['label']}: A3/A1 = {a3a1:+.3f} (A1={h['A1']:+.3f}, A3={h['A3']:+.3f})")
     A("\n> Интерпретация — с архитектором (CLAUDE.md). Сходимость: блочный критерий "
       "по наблюдаемой; ячейки, не достигшие 100%, ограничены потолком ceiling.")
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+#  Отчёт R5b (термический спинор + голономия + M2)
+# --------------------------------------------------------------------------- #
+def _E_safe(counts_2d):
+    """E(θ) с nan там, где ветвей нет (для условных по h подмножеств)."""
+    counts_2d = np.asarray(counts_2d, dtype=np.float64)
+    n = counts_2d.sum(-1)
+    E = (counts_2d * analysis.ST_SIGN).sum(-1) / np.where(n > 0, n, np.nan)
+    return E
+
+
+def _render_r5b(exp, analyses, deg, outdir):
+    import matplotlib.pyplot as plt
+
+    cfg = exp["cfg"]
+    cells = exp["cells"]
+    thetas = exp["thetas"]
+    i0 = int(np.argmin(np.abs(deg)))
+    L = []; A = L.append
+    A(f"# {exp['name']} — отчёт ({exp['mode']}): термический спинор + голономия\n")
+    A(f"**Описание:** {cfg.get('description', '')}\n")
+    A(f"**Пре-регистрация:** {cfg.get('prediction', '')}\n")
+    A("**M2** — отдельный пре-регистрированный ВАРИАНТ МОДЕЛИ: голономно-одетая "
+      "наблюдаемая t̃ = h·sign(n_B·b). Меняет ОПРЕДЕЛЕНИЕ наблюдаемой — сравнивать с M1 "
+      "бок о бок, не смешивать.\n")
+
+    c0 = cells[0]["cell"]
+    total = sum(r["elapsed_s"] for r in cells)
+    mem = _gpu_mem_mb()
+    A("## Конфигурация\n```")
+    A(f"spinor  κ={c0.get('kappa','?')}  N={c0['N']}  k_e={c0['k_e']:.1f}  B={c0['B']}  "
+      f"seeds={c0['seeds']}  T0={c0['T0']}  lr={c0['lr']:.2e}")
+    A(f"блочная сходимость после T<{cfg['dynamics']['block_convergence'].get('cold_T',1e-4)}, "
+      f"ceiling={cfg['dynamics']['block_convergence']['ceiling']}")
+    A("```")
+    A(f"\nВремя: **{total:.1f} с** на {jax.devices()[0].device_kind}."
+      + (f" Пик GPU-памяти ≈ {mem:.0f} МБ." if mem else "") + "\n")
+    A(f"![E(θ) M1 по ячейкам](E_all_{exp['mode']}.png)\n")
+
+    # --- сводка по скоростям отжига ---
+    A("## Сводка: отжиг → кинки, голономия, наблюдаемые M1/M2\n")
+    A("| decay | T_fin | плотн. кинков | ⟨P(h=−1)⟩ | E_M1(0) | E_M2(0) | max_θ\\|E(h+)−E(h−)\\| | сошлось% |")
+    A("|---|---|---|---|---|---|---|---|")
+    stats = []
+    for res, an in zip(cells, analyses):
+        cell = res["cell"]
+        B, ns = cell["B"], len(res["seeds"])
+        ntot = B * ns
+        E_m1 = an["E"]
+        E_m2 = analysis.E_from_counts(res["counts_M2"].sum(0))
+        p_hm = res["n_hminus"].sum(0) / ntot
+        E_hp = _E_safe(res["counts_hplus"].sum(0))
+        E_hm = _E_safe(res["counts_hminus"].sum(0))
+        cond_gap = np.nanmax(np.abs(E_hp - E_hm)) if np.isfinite(E_hp - E_hm).any() else float("nan")
+        kdens = float(res["kink_density"].mean())
+        T_fin = cell["T0"] * cell["decay"] ** res["max_steps"]
+        stats.append({"E_m1": E_m1, "E_m2": E_m2, "p_hm": p_hm, "E_hp": E_hp,
+                      "E_hm": E_hm, "kdens": kdens, "cond_gap": cond_gap})
+        A(f"| {cell['decay_val']:g} | {T_fin:.1e} | {kdens:.4f} | {p_hm.mean():.4f} "
+          f"| {E_m1[i0]:+.3f} | {E_m2[i0]:+.3f} | {cond_gap:.3f} | {res['frac_converged']*100:.0f} |")
+    A("")
+
+    # --- графики M1 vs M2 и P(h=−1) ---
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+    for res, st in zip(cells, stats):
+        lab = f"decay={res['cell']['decay_val']:g}"
+        ax1.plot(deg, st["E_m1"], "o-", ms=3, label=f"M1 {lab}")
+        ax1.plot(deg, st["E_m2"], "s--", ms=3, label=f"M2 {lab}")
+        ax2.plot(deg, st["p_hm"], "o-", ms=3, label=lab)
+    ax1.axhline(0, color="gray", lw=0.5); ax1.set_xlabel("θ°"); ax1.set_ylabel("E")
+    ax1.set_title("M1 (осевая) vs M2 (голономно-одетая)"); ax1.legend(fontsize=7); ax1.grid(alpha=0.2)
+    ax2.set_xlabel("θ°"); ax2.set_ylabel("P(h=−1)"); ax2.set_title("Популяция h=−1")
+    ax2.legend(fontsize=7); ax2.grid(alpha=0.2)
+    fig.tight_layout(); fig.savefig(outdir / f"r5b_M1M2_h_{exp['mode']}.png", dpi=120); plt.close(fig)
+    A(f"![M1/M2 и P(h=−1)](r5b_M1M2_h_{exp['mode']}.png)\n")
+
+    # --- контроли ---
+    A("## Контроли §4.2\n")
+    A("| decay | маргиналы | ±-симм | воспроизв. |")
+    A("|---|---|---|---|")
+    for res, an in zip(cells, analyses):
+        ctrl, repro = an["ctrl"], an["repro"]
+        rr = (f"{'✅' if repro['passes'] else '❌'}") if repro else "—"
+        A(f"| {res['cell']['decay_val']:g} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
+          f"| {'✅' if ctrl['all_sym_ok'] else '❌'} | {rr} |")
+    A("")
+
+    # --- вердикт по пре-регистрации ---
+    A("## Вердикт по пре-регистрации\n")
+    decays = [c["cell"]["decay_val"] for c in cells]
+    kdns_s = ", ".join(f"{s['kdens']:.4f}" for s in stats)
+    phm_s = ", ".join(f"{s['p_hm'].mean():.4f}" for s in stats)
+    e_m1_s = ", ".join(f"{s['E_m1'][i0]:+.3f}" for s in stats)
+    e_m2_s = ", ".join(f"{s['E_m2'][i0]:+.3f}" for s in stats)
+    kink_pop = max(s["kdens"] for s in stats) > 1e-3
+    A(f"**(a) отжиг населяет кинки:** decay {decays}: плотность кинков = [{kdns_s}]; "
+      f"⟨P(h=−1)⟩ = [{phm_s}]. "
+      f"{'Кинки/голономия НАСЕЛЕНЫ (>0).' if kink_pop else 'Кинки ПОЧТИ ОТСУТСТВУЮТ даже при отжиге.'} "
+      "Направление тренда с decay — см. таблицу.")
+    all_ferro_uncond = all(s["E_m1"][i0] > 0 for s in stats)
+    A(f"\n**(b) безусловная E(θ) остаётся ферро:** "
+      f"{'✅' if all_ferro_uncond else '❌'} (E_M1(0) = [{e_m1_s}]).")
+    maxgap = float(np.nanmax([s["cond_gap"] for s in stats]))
+    cond_signal = maxgap > 0.05
+    A(f"\n**(c) условная E(θ|h) различается?** max по ячейкам |E(θ|h+)−E(θ|h−)| = {maxgap:.3f}. "
+      + ("⚠️ ЕСТЬ различие ⇒ первый сигнал видимости спинорной структуры — паранойя и к архитектору."
+         if cond_signal else
+         "В пределах шума ⇒ спинорная структура невидима и в условной наблюдаемой."))
+    A(f"\n**M2 (голономно-одетая):** E_M2(0) = [{e_m2_s}] против E_M1(0) = [{e_m1_s}]. "
+      "Заметная антиферро-компонента в M2 появляется лишь при заметной популяции h=−1. "
+      "M1 и M2 — РАЗНЫЕ определения наблюдаемой (не подгонка).")
+    A("\n> Интерпретация — с архитектором (CLAUDE.md).")
     return "\n".join(L) + "\n"

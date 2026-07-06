@@ -98,7 +98,8 @@ def main():
     A(f"\nМакс |ΔE| при удвоении N,B = **{dmax:.4f}**. "
       f"{'Форма устойчива → не конечно-размерный артефакт.' if dmax < 0.03 else 'ЗАВИСИТ от N,B — подозрительно!'}\n")
     # фиты формы на большом прогоне
-    p_big, sgn_big, _ = analysis.fit_chord_signed(big, COARSE)
+    p_big, _ = analysis.fit_chord_p(analysis.singlet_counts(big), COARSE)
+    sgn_big = -1 if analysis.E_from_counts(big)[0] > 0 else 1
     h_big = analysis.harmonics(COARSE, E_big)
     A(f"Фит формы (N=128,B=16384): p̂={p_big:.3f}, знак={'ферро' if sgn_big<0 else 'антиферро'}; "
       f"гармоники A1={h_big['A1']:+.3f}, A3={h_big['A3']:+.3f}.\n")

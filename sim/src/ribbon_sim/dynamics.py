@@ -39,12 +39,14 @@ def build_relaxer(cfg):
     energy_batch = jax.vmap(e_fn, in_axes=(0, None, None))
 
     @jax.jit
-    def run(key, q0, a, b):
+    def run(key, q0, a, b, step0=0):
+        # step0 — глобальное смещение шага (для отжига через блоки, R5b): T
+        # использует decay^(step0+i), иначе каждый блок сбрасывал бы T к T0.
         def step(carry, i):
             q, k = carry
             k, sub = jax.random.split(k)
-            # SPEC §2.3: геометрический отжиг T = T0 * decay^step.
-            T = T0 * decay ** i
+            # SPEC §2.3: геометрический отжиг T = T0 * decay^(глобальный шаг).
+            T = T0 * decay ** (step0 + i).astype(jnp.float32)
             g = grad_batch(q, a, b)
             # q += −lr*grad + sqrt(2*lr*T)*noise, затем проекция на S³.
             noise = jax.random.normal(sub, q.shape) * jnp.sqrt(2.0 * lr * T)
@@ -96,6 +98,15 @@ def kink_count(q):
 def branch_index(s, t):
     """Индекс ветви на ленту в порядке [pp,pm,mp,mm]: 0..3."""
     return jnp.where(s > 0, jnp.where(t > 0, 0, 1), jnp.where(t > 0, 2, 3))
+
+
+def holonomy(q):
+    """ℤ₂-голономия ленты h = sign(Π_i <q_i,q_{i+1}>) = (−1)^(число кинков) (R5b).
+
+    q формы (B, N, 4) → (B,) со значениями ±1. Единственная спинорная наблюдаемая,
+    не факторизующаяся через SU(2)→SO(3) (гейдж-слепую к знаку кватерниона).
+    """
+    return jnp.where(kink_count(q) % 2 == 0, 1, -1)
 
 
 def branch_counts(s, t):

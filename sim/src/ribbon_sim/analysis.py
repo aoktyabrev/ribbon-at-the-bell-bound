@@ -122,19 +122,26 @@ def reproducibility(counts_a, counts_b, alpha=0.05):
 # --------------------------------------------------------------------------- #
 #  Модели-соперники (SPEC §1, §4.3)
 # --------------------------------------------------------------------------- #
-# Знак корреляции (corr_sign):
-#   +1 — «синглетная»/антиферро конвенция, E(0) = −1 (закон хорды как в SPEC §1);
-#   −1 — «ферро» конвенция, E(0) = +1 (концы ленты выравниваются, а не антивыравниваются).
-# Изотропная упругая лента оказалась ферро; закон хорды написан для +1, поэтому фит
-# ОБЯЗАН перебирать знак, иначе MLE вырождается на границу сетки. Это исправление
-# вырождения, а не подгонка p: показатель p падает туда, куда падает.
+# Конвенция знака (директива архитектора, R1_theory_prediction §5): упругая лента
+# ФЕРРО (E_sim(0)=+1), семейства SPEC §1 записаны в СИНГЛЕТНОЙ конвенции (E(0)=−1).
+# Сырые счётчики хранятся в ферро-конвенции; ПЕРЕД фитом делаем точный глобальный
+# флип t̃=−t (singlet_counts), затем фитим семейства «как есть». Перебор знака
+# (бывший fit_chord_signed) УДАЛЁН.
 
 
-def chord_probs(theta, p, sign=+1):
-    """P[pp,pm,mp,mm] для закона хорды P ∝ |s·a − t·b|^p (SPEC §2.6), со знаком.
+def singlet_counts(counts):
+    """Глобальный флип t̃=−t: ферро-счётчики → синглетная конвенция.
+
+    t̃=−t переставляет ветви [pp,pm,mp,mm] → [pm,pp,mm,mp] ⇒ E_singlet = −E_ferro.
+    """
+    counts = np.asarray(counts, dtype=np.float64)
+    return counts[..., [1, 0, 3, 2]]
+
+
+def chord_probs(theta, p):
+    """P[pp,pm,mp,mm] для закона хорды P ∝ |s·a − t·b|^p (SPEC §2.6, синглет).
 
     w_same = |sin(θ/2)|^p (ветви pp,mm), w_opp = |cos(θ/2)|^p (ветви pm,mp).
-    sign=+1 → антиферро (E(0)=−1); sign=−1 → ферро (те же веса, роли same↔opp).
     """
     theta = np.asarray(theta, dtype=np.float64)
     s2 = np.sin(theta / 2) ** 2
@@ -142,15 +149,13 @@ def chord_probs(theta, p, sign=+1):
     ws = s2 ** (p / 2)
     wo = c2 ** (p / 2)
     Z = 2 * (ws + wo)
-    if sign >= 0:
-        return np.stack([ws / Z, wo / Z, wo / Z, ws / Z], axis=-1)
-    return np.stack([wo / Z, ws / Z, ws / Z, wo / Z], axis=-1)
+    return np.stack([ws / Z, wo / Z, wo / Z, ws / Z], axis=-1)
 
 
-def saw_probs(theta, sign=+1):
-    """P[pp,pm,mp,mm] для пилы E = 2θ/π − 1 (SPEC §1), со знаком корреляции."""
+def saw_probs(theta):
+    """P[pp,pm,mp,mm] для пилы E = 2θ/π − 1 (SPEC §1, синглетная конвенция)."""
     theta = np.asarray(theta, dtype=np.float64)
-    E = (2 * theta / np.pi - 1) * (1 if sign >= 0 else -1)
+    E = 2 * theta / np.pi - 1
     p_same = (1 + E) / 4  # на каждую из pp, mm
     p_opp = (1 - E) / 4   # на каждую из pm, mp
     return np.stack([p_same, p_opp, p_opp, p_same], axis=-1)
@@ -162,12 +167,12 @@ def _loglik(counts, probs):
     return float(np.sum(counts * np.log(probs)))
 
 
-def loglik_chord(counts, thetas, p, sign=+1):
-    return _loglik(counts, chord_probs(thetas, p, sign))
+def loglik_chord(counts, thetas, p):
+    return _loglik(counts, chord_probs(thetas, p))
 
 
-def loglik_saw(counts, thetas, sign=+1):
-    return _loglik(counts, saw_probs(thetas, sign))
+def loglik_saw(counts, thetas):
+    return _loglik(counts, saw_probs(thetas))
 
 
 def _golden_max(f, lo, hi, tol=1e-5, iters=80):
@@ -192,29 +197,20 @@ def _golden_max(f, lo, hi, tol=1e-5, iters=80):
     return float(x), f(x)
 
 
-def _fit_p_for_sign(counts, thetas, sign, p_lo=0.2, p_hi=6.0):
+def fit_chord_p(counts, thetas, p_lo=0.2, p_hi=6.0):
+    """MLE p закона хорды (синглетная конвенция): сетка + золотое сечение.
+
+    ВНИМАНИЕ: ожидает счётчики уже в СИНГЛЕТНОЙ конвенции (см. singlet_counts).
+    Возврат (p_hat, loglik).
+    """
+    counts = np.asarray(counts, dtype=np.float64)
+    thetas = np.asarray(thetas, dtype=np.float64)
     grid = np.linspace(p_lo, p_hi, 60)
-    lls = [loglik_chord(counts, thetas, p, sign) for p in grid]
+    lls = [loglik_chord(counts, thetas, p) for p in grid]
     i = int(np.argmax(lls))
     lo = grid[max(i - 1, 0)]
     hi = grid[min(i + 1, len(grid) - 1)]
-    return _golden_max(lambda p: loglik_chord(counts, thetas, p, sign), lo, hi)
-
-
-def fit_chord_signed(counts, thetas):
-    """MLE закона хорды с ПЕРЕБОРОМ знака корреляции. Возврат (p_hat, sign, loglik)."""
-    counts = np.asarray(counts, dtype=np.float64)
-    thetas = np.asarray(thetas, dtype=np.float64)
-    p_pos, ll_pos = _fit_p_for_sign(counts, thetas, +1)
-    p_neg, ll_neg = _fit_p_for_sign(counts, thetas, -1)
-    if ll_neg > ll_pos:
-        return p_neg, -1, ll_neg
-    return p_pos, +1, ll_pos
-
-
-def fit_chord_p(counts, thetas):
-    """Обратная совместимость: MLE p в антиферро-конвенции (sign=+1). Возврат (p_hat, ll)."""
-    return _fit_p_for_sign(np.asarray(counts, float), np.asarray(thetas, float), +1)
+    return _golden_max(lambda p: loglik_chord(counts, thetas, p), lo, hi)
 
 
 def aic(loglik, k):
@@ -223,20 +219,18 @@ def aic(loglik, k):
 
 
 def compare_models(counts, thetas):
-    """Фит пила/хорда-p/хорда-p=2 со знаком корреляции + AIC (SPEC §4.3).
+    """Фит пила/хорда-p/хорда-p=2 + AIC (SPEC §4.3), СИНГЛЕТНАЯ конвенция.
 
-    Знак берётся из фита хорды (данные решают ферро/антиферро); пила и хорда-p=2
-    оцениваются в том же знаке для честного сравнения.
+    Ожидает счётчики уже в синглетной конвенции (вызывающий делает singlet_counts).
     """
     counts = np.asarray(counts, dtype=np.float64)
     thetas = np.asarray(thetas, dtype=np.float64)
 
-    p_hat, sign, ll_chord = fit_chord_signed(counts, thetas)
-    ll_saw = loglik_saw(counts, thetas, sign)
-    ll_p2 = loglik_chord(counts, thetas, 2.0, sign)
+    p_hat, ll_chord = fit_chord_p(counts, thetas)
+    ll_saw = loglik_saw(counts, thetas)
+    ll_p2 = loglik_chord(counts, thetas, 2.0)
     return {
         "p_hat": p_hat,
-        "corr_sign": sign,             # +1 антиферро (синглет), −1 ферро
         "aic_saw": aic(ll_saw, 0),
         "aic_chord_p": aic(ll_chord, 1),
         "aic_chord_p2": aic(ll_p2, 0),
@@ -245,13 +239,12 @@ def compare_models(counts, thetas):
 
 
 def bootstrap_p(counts, thetas, n_boot=1000, seed=0):
-    """Bootstrap CI на p (SPEC §4.3): ресемпл мультиномиала по каждой θ.
+    """Bootstrap CI на p (SPEC §4.3, синглетная конвенция): ресемпл мультиномиала.
 
-    Знак фиксируется по полным данным; в каждом ресемпле оценивается p при этом знаке.
+    Ожидает счётчики уже в синглетной конвенции (вызывающий делает singlet_counts).
     """
     counts = np.asarray(counts, dtype=np.float64)
     thetas = np.asarray(thetas, dtype=np.float64)
-    _, sign, _ = fit_chord_signed(counts, thetas)
     rng = np.random.default_rng(seed)
     n = counts.sum(-1)
     props = counts / n[:, None]
@@ -261,10 +254,9 @@ def bootstrap_p(counts, thetas, n_boot=1000, seed=0):
         resampled = np.stack(
             [rng.multinomial(int(n[i]), props[i]) for i in range(len(thetas))]
         )
-        ps[b], _ = _fit_p_for_sign(resampled, thetas, sign)
+        ps[b], _ = fit_chord_p(resampled, thetas)
     return {
         "p_mean": float(np.mean(ps)),
-        "corr_sign": sign,
         "ci95": (float(np.percentile(ps, 2.5)), float(np.percentile(ps, 97.5))),
         "samples": ps,
     }
