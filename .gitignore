@@ -1,0 +1,9 @@
+# окружение
+sim/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# результаты: трекаем только report.md (SPEC §6), не тяжёлые артефакты
+sim/results/**/*.png
+sim/results/**/*.npz

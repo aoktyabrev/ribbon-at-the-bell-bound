@@ -1,0 +1,22 @@
+[project]
+name = "ribbon-sim"
+version = "0.1.0"
+description = "Elastic ribbon relaxation — empirical p of the chord law (see SPEC.md)"
+requires-python = ">=3.11"
+dependencies = [
+    "jax[cuda12]>=0.4.30",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+    "pyyaml>=6.0",
+    "pytest>=8.0",
+]
+
+# Проект — приложение, а не пакет: uv управляет только venv и зависимостями,
+# импорт ribbon_sim обеспечивается через pythonpath (src-layout).
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

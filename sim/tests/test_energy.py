@@ -1,0 +1,87 @@
+"""Тесты энергии (SPEC §7): минимумы зажима и градиент против конечных разностей."""
+
+import jax
+
+jax.config.update("jax_enable_x64", True)  # x64 ради точности конечных разностей
+
+import jax.numpy as jnp
+import numpy as np
+
+from ribbon_sim.energy import e_clamp, e_elastic, e_total
+from ribbon_sim.frames import axis, haar_quaternions, normalize
+
+
+def _unit(v):
+    return v / jnp.linalg.norm(v)
+
+
+def test_clamp_minima_at_plus_minus_a():
+    a = jnp.array([0.0, 0.0, 1.0], dtype=jnp.float64)
+    k_c = 1.3
+    # n = +a: тождество; n = −a: поворот на π вокруг x
+    q_plus = jnp.array([1.0, 0.0, 0.0, 0.0], dtype=jnp.float64)
+    q_minus = jnp.array([0.0, 1.0, 0.0, 0.0], dtype=jnp.float64)
+    assert np.allclose(axis(q_plus), a, atol=1e-9)
+    assert np.allclose(axis(q_minus), -a, atol=1e-9)
+    # оба — минимумы со значением −k_c
+    assert np.allclose(float(e_clamp(q_plus, a, k_c)), -k_c, atol=1e-9)
+    assert np.allclose(float(e_clamp(q_minus, a, k_c)), -k_c, atol=1e-9)
+
+
+def test_clamp_is_global_minimum():
+    a = _unit(jnp.array([0.2, -0.5, 0.8], dtype=jnp.float64))
+    k_c = 1.0
+    qs = haar_quaternions(jax.random.PRNGKey(11), (5000,))
+    e = jax.vmap(lambda q: e_clamp(q, a, k_c))(qs.astype(jnp.float64))
+    # (n·a)² ≤ 1 ⇒ E ≥ −k_c для любого q
+    assert np.all(np.asarray(e) >= -k_c - 1e-9)
+    # минимум достигается (есть q с E ≈ −k_c)
+    assert float(jnp.min(e)) < -k_c + 1e-2
+
+
+def test_clamp_sign_symmetry():
+    # квадратичный зажим ±-симметричен: E(q) = E(антипод оси)
+    a = _unit(jnp.array([0.3, 0.4, 0.5], dtype=jnp.float64))
+    qs = haar_quaternions(jax.random.PRNGKey(12), (100,)).astype(jnp.float64)
+    e_q = jax.vmap(lambda q: e_clamp(q, a, 1.0))(qs)
+    e_flip = jax.vmap(lambda q: e_clamp(q, -a, 1.0))(qs)
+    assert np.allclose(np.asarray(e_q), np.asarray(e_flip), atol=1e-10)
+
+
+def test_grad_matches_finite_differences():
+    """jax.grad(E_total) против центральных конечных разностей, rtol 1e-4 (SPEC §7)."""
+    N = 6
+    key = jax.random.PRNGKey(20)
+    q = haar_quaternions(key, (N,)).astype(jnp.float64)
+    a = _unit(jnp.array([0.1, 0.2, 0.97], dtype=jnp.float64))
+    b = _unit(jnp.array([0.8, -0.1, 0.4], dtype=jnp.float64))
+    k_e, k_c = 0.7, 1.1
+
+    g = jax.grad(e_total)(q, a, b, k_e, k_c, False)
+
+    h = 1e-6
+    fd = np.zeros_like(np.asarray(q))
+    qn = np.asarray(q)
+    for i in range(N):
+        for j in range(4):
+            qp = qn.copy(); qp[i, j] += h
+            qm = qn.copy(); qm[i, j] -= h
+            ep = float(e_total(jnp.array(qp), a, b, k_e, k_c, False))
+            em = float(e_total(jnp.array(qm), a, b, k_e, k_c, False))
+            fd[i, j] = (ep - em) / (2 * h)
+
+    assert np.allclose(np.asarray(g), fd, rtol=1e-4, atol=1e-6)
+
+
+def test_elastic_zero_for_aligned_chain():
+    # все кадры одинаковы ⇒ E_elastic ≈ 0
+    q = jnp.tile(jnp.array([1.0, 0.0, 0.0, 0.0], dtype=jnp.float64), (10, 1))
+    assert float(e_elastic(q, k_e=1.0)) < 1e-4
+
+
+def test_elastic_positive_and_scales_with_ke():
+    q = haar_quaternions(jax.random.PRNGKey(21), (10,)).astype(jnp.float64)
+    e1 = float(e_elastic(q, k_e=1.0))
+    e2 = float(e_elastic(q, k_e=2.0))
+    assert e1 > 0
+    assert np.allclose(e2, 2 * e1, rtol=1e-9)
