@@ -99,6 +99,34 @@ def test_chordal_elastic_properties():
                        float(e_elastic(q_flip, 1.0, elastic="chordal")), atol=1e-10)
 
 
+def test_spinor_elastic_penalizes_antipode():
+    """elastic='spinor' (R5): d(q,−q)=π штрафуется, а geodesic (модуль) — нет."""
+    q = jnp.array([1.0, 0.0, 0.0, 0.0], dtype=jnp.float64)
+    chain = jnp.stack([q, -q])  # соседи-антиподы = кинк
+    assert float(e_elastic(chain, 1.0, elastic="geodesic")) < 1e-4
+    assert np.allclose(float(e_elastic(chain, 1.0, elastic="spinor")),
+                       np.pi ** 2, atol=2e-2)
+
+
+def test_spinor_grad_matches_finite_differences():
+    N = 5
+    q = haar_quaternions(jax.random.PRNGKey(32), (N,)).astype(jnp.float64)
+    a = _unit(jnp.array([0.1, 0.2, 0.97], dtype=jnp.float64))
+    b = _unit(jnp.array([0.8, -0.1, 0.4], dtype=jnp.float64))
+    k_e, k_c = 0.7, 1.1
+    g = jax.grad(e_total)(q, a, b, k_e, k_c, False, "spinor")
+    h = 1e-6
+    fd = np.zeros_like(np.asarray(q)); qn = np.asarray(q)
+    for i in range(N):
+        for j in range(4):
+            qp = qn.copy(); qp[i, j] += h
+            qm = qn.copy(); qm[i, j] -= h
+            ep = float(e_total(jnp.array(qp), a, b, k_e, k_c, False, "spinor"))
+            em = float(e_total(jnp.array(qm), a, b, k_e, k_c, False, "spinor"))
+            fd[i, j] = (ep - em) / (2 * h)
+    assert np.allclose(np.asarray(g), fd, rtol=1e-4, atol=1e-6)
+
+
 def test_chordal_grad_matches_finite_differences():
     """jax.grad для chordal-режима против конечных разностей (SPEC §7, фаза C)."""
     N = 5

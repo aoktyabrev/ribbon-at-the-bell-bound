@@ -15,14 +15,18 @@ def e_elastic(q, k_e, spinor=False, elastic="geodesic"):
     q формы (N, 4). Изотропная фаза 1: все соседние связи равноправны.
     Метрика связи (elastic):
       - "geodesic": L = d² = arccos(|<p,q>|)²  — по SPEC §2.2 (по умолчанию);
+      - "spinor":   L = arccos(<p,q>)²         — БЕЗ модуля, различает q и −q
+        (720°-периодичность, SPEC §2.2 фаза 3, R5). d(q,−q)=π ⇒ полуоборотные
+        «кинки» между соседями энергетически штрафуются и застревают при T=0;
       - "chordal":  L = 1 − <p,q>²             — гладкая альтернатива без arccos,
-        проверка робастности (фаза C). Тоже ±-симметрична (квадрат снимает знак),
-        поэтому spinor к ней не применяется.
+        проверка робастности (фаза C). ±-симметрична (квадрат снимает знак).
     """
     if elastic == "chordal":
         c = jnp.sum(q[:-1] * q[1:], axis=-1)  # (N-1,)
         return k_e * jnp.sum(1.0 - c * c)
-    if elastic != "geodesic":
+    if elastic == "spinor":
+        spinor = True  # геодезия без модуля
+    elif elastic != "geodesic":
         raise ValueError(f"неизвестный режим elastic: {elastic!r}")
     d = geodesic(q[:-1], q[1:], spinor=spinor)  # (N-1,)
     return k_e * jnp.sum(d * d)

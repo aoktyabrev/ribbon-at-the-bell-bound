@@ -5,7 +5,12 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from ribbon_sim.dynamics import branch_counts, build_relaxer, classify
+from ribbon_sim.dynamics import (
+    branch_counts,
+    build_relaxer,
+    classify,
+    kink_count,
+)
 from ribbon_sim.frames import haar_quaternions
 
 BASE = {"N": 8, "k_e": 0.5, "k_c": 1.0, "spinor": False,
@@ -100,6 +105,29 @@ def test_probe_drops_after_relaxation():
     assert delta_final.mean() < delta_init.mean()
     # после релаксации доля «шевелящихся» лент падает
     assert np.mean(delta_final > 1e-6) < np.mean(delta_init > 1e-6)
+
+
+def test_kink_count():
+    """kink_count считает пары соседей с <q_i,q_{i+1}> < 0 (R5)."""
+    q = jnp.array([1.0, 0.0, 0.0, 0.0])
+    chain = jnp.stack([q, q, -q, -q])[None]  # (1,4,4): один переход q→−q
+    assert int(kink_count(chain)[0]) == 1
+    smooth = jnp.stack([q, q, q, q])[None]
+    assert int(kink_count(smooth)[0]) == 0
+
+
+def test_spinor_elastic_runs_and_kinks_countable():
+    """R5: spinor-режим релаксирует, kink_count в [0, N−1]. Застревают ли кинки —
+    это ФИЗИЧЕСКИЙ вопрос R5 (пре-рег b), а не свойство кода: не ассертим его тут."""
+    cfg = dict(BASE, elastic="spinor", k_e=2.0, N=32, steps=1500, lr=0.02)
+    relax = build_relaxer(cfg)["run"]
+    q0 = haar_quaternions(jax.random.PRNGKey(20), (512, cfg["N"]))
+    a, b = _ab()
+    qf, e_trace = relax(jax.random.PRNGKey(21), q0, a, b)
+    assert np.all(np.diff(np.asarray(e_trace)) <= 1e-4)  # энергия не растёт при T=0
+    kc = np.asarray(kink_count(qf))
+    assert kc.min() >= 0 and kc.max() <= cfg["N"] - 1
+    assert np.allclose(np.asarray(jnp.linalg.norm(qf, axis=-1)), 1.0, atol=1e-5)
 
 
 def test_chordal_elastic_runs_and_relaxes():

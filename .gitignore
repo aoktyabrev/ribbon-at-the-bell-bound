@@ -10,3 +10,4 @@ sim/results/**/*.npz
 
 # Windows ADS-мусор от скачанных файлов
 *:Zone.Identifier
+sim/results/*.log

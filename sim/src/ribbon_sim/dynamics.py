@@ -82,6 +82,22 @@ def classify(q_final, a, b):
     return s, t
 
 
+def kink_count(q):
+    """Число полуоборотных кинков на ленту: пары соседей с <q_i, q_{i+1}> < 0 (R5).
+
+    q формы (B, N, 4) → (B,). В спинорном режиме такой кинк (соседи в разных
+    полушариях S³) стоит энергии arccos(<0)² и при T=0 застревает; в geodesic
+    он энергетически нейтрален (модуль снимает знак) — диагностический счётчик.
+    """
+    c = jnp.sum(q[:, :-1] * q[:, 1:], axis=-1)  # (B, N-1)
+    return jnp.sum(c < 0, axis=-1)
+
+
+def branch_index(s, t):
+    """Индекс ветви на ленту в порядке [pp,pm,mp,mm]: 0..3."""
+    return jnp.where(s > 0, jnp.where(t > 0, 0, 1), jnp.where(t > 0, 2, 3))
+
+
 def branch_counts(s, t):
     """Счётчики четырёх ветвей (SPEC §4.1): (n_pp, n_pm, n_mp, n_mm)."""
     n_pp = jnp.sum((s > 0) & (t > 0))

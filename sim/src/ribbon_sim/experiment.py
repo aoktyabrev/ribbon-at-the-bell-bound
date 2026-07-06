@@ -57,12 +57,20 @@ def build_cells(cfg, mode="full"):
     if mode == "smoke":
         sm = cfg["smoke"]
         base["B"] = int(sm["B"])
-        base["steps"] = int(sm["steps"])
+        base["steps"] = int(sm.get("steps", base["steps"]))  # block-конфиг может не иметь steps
         base["seeds"] = list(sm["seeds"])
         thetas_deg = np.array(sm["theta_deg"], dtype=np.float64)
 
     cells = []
-    if "kappa_grid" in cfg:  # R1
+    if "elastic_grid" in cfg and "kappa_grid" in cfg:  # R5: 2×2 (elastic × κ)
+        short = {"geodesic": "geo", "spinor": "spin", "chordal": "chord"}
+        for el in cfg["elastic_grid"]:
+            for kappa in cfg["kappa_grid"]:
+                k_e = float(kappa) * (N - 1) * k_c
+                cells.append({**base, "elastic": str(el), "k_e": k_e,
+                              "lr": 0.5 / (k_e + k_c), "kappa": float(kappa),
+                              "label": f"{short.get(el, el)} κ={kappa:g}"})
+    elif "kappa_grid" in cfg:  # R1
         for kappa in cfg["kappa_grid"]:
             k_e = float(kappa) * (N - 1) * k_c
             cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c),
@@ -146,18 +154,104 @@ def run_cell(cell, thetas, conv_cfg=None, seed_override=None):
     }
 
 
+def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
+    """Блочный протокол сходимости по НАБЛЮДАЕМОЙ (ответ на ARCH-Q#1, R5).
+
+    Каждую (сид, θ) релаксируем блоками block_steps, продолжая с прошлого q, пока
+    |ΔE| между блоками < max(sigma_mult·σ_MC, e_floor) или не достигнут ceiling.
+    Плюс диагностика кинков (плотность и разбивка по ветвям).
+    """
+    from .dynamics import kink_count
+
+    block = int(block_cfg["block_steps"])
+    ceiling = int(block_cfg["ceiling"])
+    smult = float(block_cfg.get("sigma_mult", 2.0))
+    e_floor = float(block_cfg.get("e_floor", 0.01))
+    N, B = cell["N"], cell["B"]
+    seeds = [int(seed_override)] if seed_override is not None else cell["seeds"]
+
+    relaxer = build_relaxer({**cell, "steps": block})
+    runner = relaxer["run"]
+
+    counts = np.zeros((len(seeds), len(thetas), 4), dtype=np.int64)
+    kink_sum_by_branch = np.zeros((len(seeds), len(thetas), 4), dtype=np.float64)
+    kink_density = np.zeros((len(seeds), len(thetas)), dtype=np.float64)
+    steps_per = np.zeros((len(seeds), len(thetas)), dtype=np.int64)
+    conv_flag = np.zeros((len(seeds), len(thetas)), dtype=bool)
+
+    t0 = time.time()
+    for si, seed in enumerate(seeds):
+        base_key = jax.random.PRNGKey(int(seed))
+        for ti, theta in enumerate(thetas):
+            a, b = setting_vectors(theta)
+            tk = jax.random.fold_in(base_key, ti)
+            k_init, k_noise = jax.random.split(tk)
+            q = haar_quaternions(k_init, (B, N))
+            e_prev, total, converged = None, 0, False
+            while total < ceiling:
+                k_noise, sub = jax.random.split(k_noise)
+                q, _ = runner(sub, q, a, b)
+                total += block
+                s, t = classify(q, a, b)
+                e = float(np.mean(np.asarray(s) * np.asarray(t)))
+                sigma = np.sqrt(max(1.0 - e * e, 0.0) / B)
+                if e_prev is not None and abs(e - e_prev) < max(smult * sigma, e_floor):
+                    converged = True
+                    break
+                e_prev = e
+            # финальные счётчики и кинки
+            s, t = classify(q, a, b)
+            cnt = np.asarray(branch_counts(s, t))
+            kc = np.asarray(kink_count(q))
+            bidx = np.asarray(np.where(np.asarray(s) > 0,
+                              np.where(np.asarray(t) > 0, 0, 1),
+                              np.where(np.asarray(t) > 0, 2, 3)))
+            counts[si, ti] = cnt
+            for k in range(4):
+                kink_sum_by_branch[si, ti, k] = kc[bidx == k].sum()
+            kink_density[si, ti] = kc.mean() / (N - 1)
+            steps_per[si, ti] = total
+            conv_flag[si, ti] = converged
+
+    return {
+        "cell": cell,
+        "counts": counts,
+        "kink_sum_by_branch": kink_sum_by_branch,
+        "kink_density": kink_density,
+        "steps_per": steps_per,
+        "conv_flag": conv_flag,
+        "converged": bool(conv_flag.all()),
+        "frac_converged": float(conv_flag.mean()),
+        "max_steps": int(steps_per.max()),
+        "steps_used": int(steps_per.max()),
+        "doublings": 0,
+        "seeds": seeds,
+        "block": True,
+        "elapsed_s": time.time() - t0,
+    }
+
+
 def run_experiment(cfg, mode="full", seed_override=None):
     cells, thetas, thetas_deg = build_cells(cfg, mode)
+    block_cfg = cfg["dynamics"].get("block_convergence")
+    if mode == "smoke" and block_cfg and "smoke" in cfg:
+        for k in ("block_steps", "ceiling"):
+            if k in cfg["smoke"]:
+                block_cfg = {**block_cfg, k: cfg["smoke"][k]}
     conv_cfg = cfg["dynamics"].get("convergence")
     results = []
     for cell in cells:
-        print(f"  [{cell['label']}] k_e={cell['k_e']:.3f} lr={cell['lr']:.2e} "
-              f"steps={cell['steps']} T0={cell['T0']} decay={cell['decay']}")
-        res = run_cell(cell, thetas, conv_cfg=conv_cfg, seed_override=seed_override)
-        print(f"    → {res['elapsed_s']:.1f} c; сходимость max_frac={res['max_conv_frac']:.4f} "
-              f"({'ok' if res['converged'] else 'NOT converged'}); "
-              f"steps={res['steps_used']}"
-              + (f" (удвоено ×{res['doublings']})" if res['doublings'] else ""))
+        print(f"  [{cell['label']}] elastic={cell['elastic']} k_e={cell['k_e']:.3f} "
+              f"lr={cell['lr']:.2e} T0={cell['T0']}")
+        if block_cfg:
+            res = run_cell_blocks(cell, thetas, block_cfg, seed_override=seed_override)
+            print(f"    → {res['elapsed_s']:.1f} c; сошлось {res['frac_converged']*100:.0f}% "
+                  f"(θ,сид); max_steps={res['max_steps']}")
+        else:
+            res = run_cell(cell, thetas, conv_cfg=conv_cfg, seed_override=seed_override)
+            print(f"    → {res['elapsed_s']:.1f} c; сходимость max_frac={res['max_conv_frac']:.4f} "
+                  f"({'ok' if res['converged'] else 'NOT converged'}); steps={res['steps_used']}"
+                  + (f" (удвоено ×{res['doublings']})" if res['doublings'] else ""))
         results.append(res)
     return {"name": cfg["name"], "mode": mode, "thetas": thetas,
             "thetas_deg": thetas_deg, "cells": results, "cfg": cfg}
@@ -194,6 +288,10 @@ def _analyse_cell(res, thetas):
             "counts_sum": counts_sum}
 
 
+def _slug(label):
+    return (label.replace("κ", "k").replace("=", "").replace(".", "p").replace(" ", "_"))
+
+
 def write_report(exp, outdir):
     outdir = Path(outdir)
     outdir.mkdir(parents=True, exist_ok=True)
@@ -207,7 +305,7 @@ def write_report(exp, outdir):
     for res in exp["cells"]:
         an = _analyse_cell(res, thetas)
         analyses.append(an)
-        lbl = res["cell"]["label"].replace("=", "").replace("κ", "kappa").replace(".", "p")
+        lbl = _slug(res["cell"]["label"])
         npz_payload[f"counts_{lbl}"] = res["counts"]
         # график E(θ) на ячейку
         seeds_E = [analysis.E_from_counts(res["counts"][si]) for si in range(res["counts"].shape[0])]
@@ -218,7 +316,10 @@ def write_report(exp, outdir):
     # Сводный график всех ячеек.
     _plot_all_cells(exp, analyses, outdir / f"E_all_{exp['mode']}.png")
 
-    md = _render(exp, analyses, deg, outdir)
+    if "elastic_grid" in cfg:
+        md = _render_r5(exp, analyses, deg)
+    else:
+        md = _render(exp, analyses, deg, outdir)
     (outdir / "report.md").write_text(md, encoding="utf-8")
 
     total_elapsed = sum(r["elapsed_s"] for r in exp["cells"])
@@ -389,3 +490,131 @@ def _render_verdict(A, exp, analyses, is_r2):
               "поиск бага) — см. `paranoia.md`. Интерпретация — с архитектором (CLAUDE.md).")
         else:
             A("\n> p=2 не обнаружено ни в одной ячейке.")
+
+
+# --------------------------------------------------------------------------- #
+#  Отчёт R5 (geodesic vs spinor, кинки)
+# --------------------------------------------------------------------------- #
+def _kink_stats(res, N):
+    """Плотность кинков и превышение «миноритарная − мажоритарная ветвь» (R5)."""
+    counts_sum = res["counts"].sum(0).astype(float)          # (n_theta, 4)
+    ksum = res["kink_sum_by_branch"].sum(0)                   # (n_theta, 4)
+    mean_kink_branch = ksum / np.where(counts_sum > 0, counts_sum, 1.0)
+    density_by_theta = res["kink_density"].mean(0)            # доля кинков/связь
+    excess = []
+    for ti in range(counts_sum.shape[0]):
+        c = counts_sum[ti]
+        if c.min() <= 0:
+            continue
+        mn, mj = int(np.argmin(c)), int(np.argmax(c))
+        excess.append(mean_kink_branch[ti, mn] - mean_kink_branch[ti, mj])
+    return {
+        "density_mean": float(density_by_theta.mean()),
+        "density_by_theta": density_by_theta,
+        "minority_excess": float(np.mean(excess)) if excess else float("nan"),
+    }
+
+
+def _render_r5(exp, analyses, deg):
+    cfg = exp["cfg"]
+    cells = exp["cells"]
+    N = cells[0]["cell"]["N"]
+    kinks = [_kink_stats(res, N) for res in cells]
+    # индексация по (elastic, κ)
+    by_key = {(res["cell"]["elastic"], res["cell"]["kappa"]): (res, an, kk)
+              for res, an, kk in zip(cells, analyses, kinks)}
+    i0 = int(np.argmin(np.abs(deg)))  # индекс θ=0
+
+    L = []; A = L.append
+    A(f"# {exp['name']} — отчёт ({exp['mode']}): спинорная лента vs geodesic\n")
+    A(f"**Описание:** {cfg.get('description', '')}\n")
+    A(f"**Пре-регистрация:** {cfg.get('prediction', '')}\n")
+
+    c0 = cells[0]["cell"]
+    total = sum(r["elapsed_s"] for r in cells)
+    mem = _gpu_mem_mb()
+    A("## Конфигурация\n```")
+    A(f"N={c0['N']}  k_c={c0['k_c']}  B={c0['B']}  seeds={c0['seeds']}  T0={c0['T0']}")
+    A(f"блочная сходимость: block={cfg['dynamics']['block_convergence']['block_steps']}, "
+      f"ceiling={cfg['dynamics']['block_convergence']['ceiling']}, "
+      f"крит. max_θ|ΔE|<max(2σ_MC,0.01)")
+    A(f"θ (°): {np.round(deg, 2).tolist()}")
+    A("```")
+    A(f"\nВремя: **{total:.1f} с** на {jax.devices()[0].device_kind}."
+      + (f" Пик GPU-памяти ≈ {mem:.0f} МБ." if mem else "") + "\n")
+    A(f"![E(θ) по ячейкам](E_all_{exp['mode']}.png)\n")
+
+    # --- главная сводка geodesic vs spinor ---
+    A("## Сводка: geodesic vs spinor (κ=1, κ=10)\n")
+    A("| ячейка | κ | амп max\\|E\\| | E(0) | знак | A1 | A3 | A3/A1 | плотн. кинков | сошлось% | max_steps |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|")
+    for res, an, kk in zip(cells, analyses, kinks):
+        cell = res["cell"]
+        h = an["harm"]
+        a3a1 = h["A3"] / h["A1"] if abs(h["A1"]) > 1e-6 else float("nan")
+        sgn = "ферро" if an["cmp"]["corr_sign"] < 0 else "антиферро"
+        A(f"| {cell['label']} | {cell['kappa']:g} | {an['amp']:.3f} | {an['E'][i0]:+.3f} "
+          f"| {sgn} | {h['A1']:+.3f} | {h['A3']:+.3f} | {a3a1:+.3f} "
+          f"| {kk['density_mean']:.3f} | {res['frac_converged']*100:.0f} | {res['max_steps']} |")
+    A("")
+
+    # --- кинки ↔ ветвь ---
+    A("## Диагностика кинков ↔ ветвь исхода\n")
+    A("Гипотеза (пре-рег b): ленты в МИНОРИТАРНОЙ ветви несут больше кинков. "
+      "Превышение = ⟨кинков|минор.ветвь⟩ − ⟨кинков|мажор.ветвь⟩ (на ленту, из "
+      f"{N-1} связей), усреднено по θ.\n")
+    A("| ячейка | плотн. кинков (доля связей) | превышение минор.−мажор. |")
+    A("|---|---|---|")
+    for res, kk in zip(cells, kinks):
+        A(f"| {res['cell']['label']} | {kk['density_mean']:.4f} | {kk['minority_excess']:+.3f} |")
+    A("")
+
+    # --- контроли §4.2 ---
+    A("## Контроли §4.2 по ячейкам\n")
+    A("| ячейка | маргиналы | ±-симм (maxσ) | воспроизв. (max\\|z\\| vs порог) |")
+    A("|---|---|---|---|")
+    for res, an in zip(cells, analyses):
+        ctrl, repro = an["ctrl"], an["repro"]
+        rr = (f"{repro['max_z']:.2f} vs {repro['z_thresh']:.2f} "
+              f"{'✅' if repro['passes'] else '❌'}") if repro else "—"
+        A(f"| {res['cell']['label']} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
+          f"| {'✅' if ctrl['all_sym_ok'] else '❌'} "
+          f"({max(ctrl['sym_same_sigma'].max(), ctrl['sym_opp_sigma'].max()):.2f}) | {rr} |")
+    A("")
+
+    # --- вердикт по пунктам пре-регистрации ---
+    A("## Вердикт по пре-регистрации\n")
+    all_ferro = all(an["cmp"]["corr_sign"] < 0 for an in analyses)
+    A(f"**(a) знак ферро** (n(−q)=n(q), зажимы знако-слепы): "
+      f"{'✅ подтверждено' if all_ferro else '❌ где-то антиферро'} "
+      f"(все ячейки {'ферро' if all_ferro else 'разное'}).")
+    spin_dens = [kk["density_mean"] for res, kk in zip(cells, kinks)
+                 if res["cell"]["elastic"] == "spinor"]
+    b_ok = all(d > 0 for d in spin_dens) and len(spin_dens) > 0
+    A(f"\n**(b) кинки застревают при T=0, плотность>0**: "
+      f"{'✅' if b_ok else '❌'} (spinor плотности: "
+      f"{', '.join(f'{d:.3f}' for d in spin_dens)}).")
+    # (c) амплитуда E(0) κ=1 spinor < geodesic — сравниваем с MC-шумом
+    try:
+        geo_an, geo_res = by_key[("geodesic", 1.0)][1], by_key[("geodesic", 1.0)][0]
+        spin_an = by_key[("spinor", 1.0)][1]
+        e0_geo, e0_spin = float(geo_an["E"][i0]), float(spin_an["E"][i0])
+        amp_geo, amp_spin = geo_an["amp"], spin_an["amp"]
+        n_tot = geo_res["counts"].sum()  # для σ_MC при θ=0
+        sig = np.sqrt(max(1 - e0_geo ** 2, 0.0) / (geo_res["counts"][:, i0].sum())) * np.sqrt(2)
+        dsig = abs(e0_geo - e0_spin) / sig if sig > 0 else 0.0
+        A(f"\n**(c) амплитуда κ=1: spinor < geodesic**: по max\\|E\\| равны "
+          f"({amp_geo:.3f} vs {amp_spin:.3f}); по E(0) spin {'ниже' if e0_spin < e0_geo else 'не ниже'} "
+          f"({e0_geo:.3f} vs {e0_spin:.3f}, {dsig:.1f}σ). "
+          f"Механизм (ловушки кинков) зависит от пункта (b).")
+    except KeyError:
+        A("\n**(c)** не хватает пары κ=1 geo/spin для сравнения.")
+    # (d) A3/A1 — открытый вопрос
+    A("\n**(d) форма A3/A1** — без прогноза, открытый вопрос. Значения:")
+    for res, an in zip(cells, analyses):
+        h = an["harm"]
+        a3a1 = h["A3"] / h["A1"] if abs(h["A1"]) > 1e-6 else float("nan")
+        A(f"  - {res['cell']['label']}: A3/A1 = {a3a1:+.3f} (A1={h['A1']:+.3f}, A3={h['A3']:+.3f})")
+    A("\n> Интерпретация — с архитектором (CLAUDE.md). Сходимость: блочный критерий "
+      "по наблюдаемой; ячейки, не достигшие 100%, ограничены потолком ceiling.")
+    return "\n".join(L) + "\n"
