@@ -9,11 +9,21 @@ import jax.numpy as jnp
 from .frames import axis, geodesic
 
 
-def e_elastic(q, k_e, spinor=False):
-    """E_elastic = k_e * Σ_{i=0}^{N-2} d(q[i], q[i+1])²   (SPEC §2.2).
+def e_elastic(q, k_e, spinor=False, elastic="geodesic"):
+    """E_elastic = k_e * Σ_{i=0}^{N-2} L(q[i], q[i+1])   (SPEC §2.2).
 
     q формы (N, 4). Изотропная фаза 1: все соседние связи равноправны.
+    Метрика связи (elastic):
+      - "geodesic": L = d² = arccos(|<p,q>|)²  — по SPEC §2.2 (по умолчанию);
+      - "chordal":  L = 1 − <p,q>²             — гладкая альтернатива без arccos,
+        проверка робастности (фаза C). Тоже ±-симметрична (квадрат снимает знак),
+        поэтому spinor к ней не применяется.
     """
+    if elastic == "chordal":
+        c = jnp.sum(q[:-1] * q[1:], axis=-1)  # (N-1,)
+        return k_e * jnp.sum(1.0 - c * c)
+    if elastic != "geodesic":
+        raise ValueError(f"неизвестный режим elastic: {elastic!r}")
     d = geodesic(q[:-1], q[1:], spinor=spinor)  # (N-1,)
     return k_e * jnp.sum(d * d)
 
@@ -28,7 +38,7 @@ def e_clamp(q_end, axis_vec, k_c):
     return -k_c * proj * proj
 
 
-def e_total(q, a, b, k_e, k_c, spinor=False):
+def e_total(q, a, b, k_e, k_c, spinor=False, elastic="geodesic"):
     """Полная энергия одной ленты (SPEC §2.2):
 
         E_total = E_elastic + E_clamp_A + E_clamp_B
@@ -38,7 +48,7 @@ def e_total(q, a, b, k_e, k_c, spinor=False):
     разности и jax.grad видят одну и ту же функцию (тест SPEC §7).
     """
     return (
-        e_elastic(q, k_e, spinor=spinor)
+        e_elastic(q, k_e, spinor=spinor, elastic=elastic)
         + e_clamp(q[0], a, k_c)
         + e_clamp(q[-1], b, k_c)
     )

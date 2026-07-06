@@ -120,21 +120,23 @@ E(θ) ≈ 0 для всех θ, маргиналы 0.5. Если нет — ба
 ## 6. Структура проекта
 
 ```
-sim/
-  SPEC.md                  # этот файл
+quantum_entanglement/          # корень репозитория
+  SPEC.md                      # этот файл (документы — в корне)
   CLAUDE.md
-  pyproject.toml
-  src/ribbon_sim/
-    frames.py              # кватернионы: normalize, rotmat, axis, geodesic, log-map
-    energy.py              # E_elastic (изотроп/Коссера/спинор), E_clamp
-    dynamics.py            # ланжевен + отжиг, scan, батч-релаксация
-    experiment.py          # загрузка yaml, свип θ, счётчики, сохранение
-    analysis.py            # MLE-фиты, AIC, bootstrap, гармоники, контроли
-    plots.py               # кривые, фиты, 3D-снапшот
-  experiments/R0.yaml .. R5.yaml
-  results/                 # gitignore, кроме report.md
-  tests/                   # см. §7
-  run.py                   # CLI: python run.py R1 [--seed 2]
+  ribbon_model_note.md         # научный контекст
+  sim/                         # весь код симуляции
+    pyproject.toml
+    src/ribbon_sim/
+      frames.py              # кватернионы: normalize, rotmat, axis, geodesic, log-map
+      energy.py              # E_elastic (изотроп/Коссера/спинор, geodesic|chordal), E_clamp
+      dynamics.py            # ланжевен + отжиг, scan, батч-релаксация
+      experiment.py          # загрузка yaml, свип θ, счётчики, сохранение
+      analysis.py            # MLE-фиты, AIC, bootstrap, гармоники, контроли
+      plots.py               # кривые, фиты, 3D-снапшот
+    experiments/R0.yaml .. R5.yaml
+    results/                 # gitignore, кроме report.md
+    tests/                   # см. §7
+    run.py                   # CLI: python run.py R1 [--seed 2]
 ```
 
 ## 7. Валидация (пишется ДО экспериментов)

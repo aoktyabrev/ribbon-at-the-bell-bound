@@ -1,7 +1,8 @@
 """Батч-релаксация: ланжевен с геометрическим отжигом (SPEC §2.3).
 
 Чистый JAX: jit(vmap(grad)) по батчу лент + lax.scan по шагам. Никаких
-питоновских циклов по шагам/батчу.
+питоновских циклов по шагам/батчу. spinor/elastic — статические (замыкание),
+чтобы не тащить их через vmap как трассируемые аргументы.
 """
 
 import jax
@@ -11,20 +12,15 @@ from jax import lax
 from .energy import e_total
 from .frames import axis, normalize
 
-# vmap энергии/градиента по оси батча B; a, b, k_e, k_c, spinor — общие.
-_grad_single = jax.grad(e_total)
-_grad_batch = jax.vmap(_grad_single, in_axes=(0, None, None, None, None, None))
-_energy_batch = jax.vmap(e_total, in_axes=(0, None, None, None, None, None))
-
 
 def build_relaxer(cfg):
-    """Собирает jit-функцию релаксации по конфигу.
+    """Собирает jit-функции релаксации и зонда сходимости по конфигу.
 
-    cfg — dict с ключами: lr, T0, decay, steps, k_e, k_c, spinor(опц).
-    steps статичен (длина lax.scan). Возврат: run(key, q0, a, b) →
-        (q_final (B,N,4), energy_trace (steps,)).
-    a, b — трассируемые аргументы, так что jit компилируется один раз и
-    переиспользуется на всём свипе θ.
+    cfg — dict: lr, T0, decay, steps, k_e, k_c, spinor(опц), elastic(опц).
+    steps статичен (длина lax.scan). Возврат dict:
+      - run(key, q0, a, b) → (q_final (B,N,4), e_trace (steps,) — средняя по батчу);
+      - probe(q, a, b) → |ΔE| на ленту за один шаг T=0 (B,) — критерий сходимости.
+    a, b трассируемы ⇒ одна компиляция на весь свип θ.
     """
     lr = float(cfg["lr"])
     T0 = float(cfg["T0"])
@@ -33,6 +29,14 @@ def build_relaxer(cfg):
     k_e = float(cfg["k_e"])
     k_c = float(cfg["k_c"])
     spinor = bool(cfg.get("spinor", False))
+    elastic = str(cfg.get("elastic", "geodesic"))
+
+    # Замыкаем spinor/elastic в чистую функцию энергии одной ленты.
+    def e_fn(q, a, b):
+        return e_total(q, a, b, k_e, k_c, spinor=spinor, elastic=elastic)
+
+    grad_batch = jax.vmap(jax.grad(e_fn), in_axes=(0, None, None))
+    energy_batch = jax.vmap(e_fn, in_axes=(0, None, None))
 
     @jax.jit
     def run(key, q0, a, b):
@@ -41,17 +45,26 @@ def build_relaxer(cfg):
             k, sub = jax.random.split(k)
             # SPEC §2.3: геометрический отжиг T = T0 * decay^step.
             T = T0 * decay ** i
-            g = _grad_batch(q, a, b, k_e, k_c, spinor)
+            g = grad_batch(q, a, b)
             # q += −lr*grad + sqrt(2*lr*T)*noise, затем проекция на S³.
             noise = jax.random.normal(sub, q.shape) * jnp.sqrt(2.0 * lr * T)
             q = normalize(q - lr * g + noise)
-            e = jnp.mean(_energy_batch(q, a, b, k_e, k_c, spinor))
+            e = jnp.mean(energy_batch(q, a, b))
             return (q, k), e
 
         (q_final, _), e_trace = lax.scan(step, (q0, key), jnp.arange(steps))
         return q_final, e_trace
 
-    return run
+    @jax.jit
+    def probe(q, a, b):
+        # Один детерминированный (T=0) шаг: |ΔE| на ленту как мера остаточного дрейфа.
+        e0 = energy_batch(q, a, b)
+        g = grad_batch(q, a, b)
+        q1 = normalize(q - lr * g)
+        e1 = energy_batch(q1, a, b)
+        return jnp.abs(e1 - e0)
+
+    return {"run": run, "probe": probe, "lr": lr, "steps": steps}
 
 
 def classify(q_final, a, b):

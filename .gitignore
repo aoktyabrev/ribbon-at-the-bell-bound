@@ -7,3 +7,6 @@ __pycache__/
 # результаты: трекаем только report.md (SPEC §6), не тяжёлые артефакты
 sim/results/**/*.png
 sim/results/**/*.npz
+
+# Windows ADS-мусор от скачанных файлов
+*:Zone.Identifier

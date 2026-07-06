@@ -66,6 +66,21 @@ def test_harmonics_recovers_cos():
     assert abs(h["c0"]) < 1e-6
 
 
+def test_reproducibility_maxstat():
+    # два независимых сида из ОДНОГО распределения ⇒ контроль проходит,
+    # порог max-статистики строже поточечного 3σ (больше при n=25)
+    ca = analysis.synthetic_counts(THETAS, p=2.0, n_per_point=200_000, seed=10)
+    cb = analysis.synthetic_counts(THETAS, p=2.0, n_per_point=200_000, seed=11)
+    rep = analysis.reproducibility(ca, cb)
+    assert rep["passes"]
+    assert rep["z_thresh"] > 3.0  # Бонферрони на 25 сравнениях строже 3σ
+    assert rep["global_p"] > 0.05
+    # грубо сдвинутый второй сид (другой p) — контроль обязан провалиться
+    cc = analysis.synthetic_counts(THETAS, p=1.0, n_per_point=200_000, seed=12)
+    rep_bad = analysis.reproducibility(ca, cc)
+    assert not rep_bad["passes"]
+
+
 def test_marginals_half_for_symmetric():
     counts = analysis.synthetic_counts(THETAS, p=2.0, n_per_point=500_000, seed=6)
     p_s, p_t = analysis.marginals(counts)

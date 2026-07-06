@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """CLI прогона экспериментов (SPEC §6).
 
-    python run.py R0                # полный прогон
-    python run.py R0 --smoke        # smoke-версия
-    python run.py R0 --seed 2       # переопределить сид
+    python run.py R1                # полный прогон
+    python run.py R1 --smoke        # smoke-версия
+    python run.py R1 --seed 2       # переопределить сид
 """
 
 import argparse
@@ -24,28 +24,25 @@ from ribbon_sim import experiment  # noqa: E402
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("name", help="имя эксперимента, напр. R0")
-    ap.add_argument("--smoke", action="store_true", help="smoke-версия (SPEC CLAUDE.md)")
+    ap.add_argument("name", help="имя эксперимента, напр. R1")
+    ap.add_argument("--smoke", action="store_true", help="smoke-версия (CLAUDE.md)")
     ap.add_argument("--seed", type=int, default=None, help="переопределить сид")
     args = ap.parse_args()
 
-    cfg_path = ROOT / "experiments" / f"{args.name}.yaml"
-    cfg = experiment.load_config(cfg_path)
+    cfg = experiment.load_config(ROOT / "experiments" / f"{args.name}.yaml")
     mode = "smoke" if args.smoke else "full"
 
     print(f"[{args.name}] режим={mode}  seed_override={args.seed}")
-    res = experiment.run_sweep(cfg, mode=mode, seed_override=args.seed)
+    exp = experiment.run_experiment(cfg, mode=mode, seed_override=args.seed)
 
     subdir = args.name if mode == "full" else f"{args.name}/smoke"
     outdir = ROOT / "results" / subdir
-    rep = experiment.write_report(cfg, res, outdir)
+    rep = experiment.write_report(exp, outdir)
 
-    print(f"[{args.name}] прогон {res['elapsed_s']:.1f} с; "
-          f"вердикт {'PASS' if rep['verdict_pass'] else 'FAIL'}; "
-          f"max|E|={rep['max_absE']:.4f} (порог {rep['E_tol']:.4f})")
-    print(f"[{args.name}] отчёт: {rep['path']}")
-    if not rep["verdict_pass"] and mode == "full":
-        sys.exit(1)
+    print(f"[{args.name}] готово за {rep['total_elapsed']:.1f} с суммарно; отчёт: {rep['path']}")
+    for res, an in zip(exp["cells"], rep["analyses"]):
+        print(f"    {res['cell']['label']}: амплитуда max|E|={an['amp']:.3f}, "
+              f"лучшая={an['best']}, p̂={an['cmp']['p_hat']:.3f}")
 
 
 if __name__ == "__main__":

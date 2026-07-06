@@ -85,3 +85,36 @@ def test_elastic_positive_and_scales_with_ke():
     e2 = float(e_elastic(q, k_e=2.0))
     assert e1 > 0
     assert np.allclose(e2, 2 * e1, rtol=1e-9)
+
+
+def test_chordal_elastic_properties():
+    # chordal = 1 − <p,q>²: ноль на совпадении, ±-симметрия, положительность
+    q_aligned = jnp.tile(jnp.array([1.0, 0.0, 0.0, 0.0], dtype=jnp.float64), (8, 1))
+    assert abs(float(e_elastic(q_aligned, 1.0, elastic="chordal"))) < 1e-12
+    q = haar_quaternions(jax.random.PRNGKey(30), (8,)).astype(jnp.float64)
+    assert float(e_elastic(q, 1.0, elastic="chordal")) > 0
+    # ±-симметрия: инверсия знака любого кадра не меняет chordal-энергию
+    q_flip = q.at[3].multiply(-1.0)
+    assert np.allclose(float(e_elastic(q, 1.0, elastic="chordal")),
+                       float(e_elastic(q_flip, 1.0, elastic="chordal")), atol=1e-10)
+
+
+def test_chordal_grad_matches_finite_differences():
+    """jax.grad для chordal-режима против конечных разностей (SPEC §7, фаза C)."""
+    N = 5
+    q = haar_quaternions(jax.random.PRNGKey(31), (N,)).astype(jnp.float64)
+    a = _unit(jnp.array([0.1, 0.2, 0.97], dtype=jnp.float64))
+    b = _unit(jnp.array([0.8, -0.1, 0.4], dtype=jnp.float64))
+    k_e, k_c = 0.7, 1.1
+    g = jax.grad(e_total)(q, a, b, k_e, k_c, False, "chordal")
+    h = 1e-6
+    fd = np.zeros_like(np.asarray(q))
+    qn = np.asarray(q)
+    for i in range(N):
+        for j in range(4):
+            qp = qn.copy(); qp[i, j] += h
+            qm = qn.copy(); qm[i, j] -= h
+            ep = float(e_total(jnp.array(qp), a, b, k_e, k_c, False, "chordal"))
+            em = float(e_total(jnp.array(qm), a, b, k_e, k_c, False, "chordal"))
+            fd[i, j] = (ep - em) / (2 * h)
+    assert np.allclose(np.asarray(g), fd, rtol=1e-4, atol=1e-6)
