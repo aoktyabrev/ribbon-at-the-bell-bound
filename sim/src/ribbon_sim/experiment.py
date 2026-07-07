@@ -875,12 +875,22 @@ def _render_holo(exp, analyses, deg):
     A(f"- Антиферро-компонента в M2: {'⚠️ ЕСТЬ' if m2_anti else 'нет'} (E_M2(0) = {e_m2_s}).")
     A(f"- Условное расщепление E(θ|h): max|E(h+)−E(h−)| = {maxgap:.3f} "
       + ("⚠️ ЕСТЬ ⇒ сигнал видимости спинора" if maxgap > 0.05 else "(в шуме/нет h−)") + ".")
-    if is_sector and len(stats) >= 2:
-        # R4b: зависит ли E(θ) от сектора Tw
-        sect_gap = float(np.nanmax(np.abs(stats[0]["E_m1"] - stats[-1]["E_m1"])))
-        A(f"- **Зависимость E(θ) от сектора Tw (R4b):** max_θ|E_M1[{cells[0]['cell']['sector']:g}] "
-          f"− E_M1[{cells[-1]['cell']['sector']:g}]| = {sect_gap:.3f} "
-          + ("⚠️ ЗАВИСИТ ⇒ топология видна через связь!" if sect_gap > 0.05 else "(не зависит — топология не видна)") + ".")
+    if is_sector:
+        # R4b: зависит ли E(θ) от сектора Tw — сравниваем ОДИНАКОВЫЕ k_t/k_b между секторами
+        sectors = sorted({res["cell"]["sector"] for res in cells})
+        if len(sectors) >= 2:
+            by_rs = {(res["cell"]["sector"], res["cell"].get("ratio", 1.0)): st
+                     for res, st in zip(cells, stats)}
+            ratios = sorted({res["cell"].get("ratio", 1.0) for res in cells})
+            s0, s1 = sectors[0], sectors[-1]
+            worst = 0.0
+            for rr in ratios:
+                if (s0, rr) in by_rs and (s1, rr) in by_rs:
+                    g = float(np.nanmax(np.abs(by_rs[(s0, rr)]["E_m1"] - by_rs[(s1, rr)]["E_m1"])))
+                    A(f"- **E(θ|Tw={s0:g})−E(θ|Tw={s1:g}) при k_t/k_b={rr:g}:** max_θ = {g:.3f}.")
+                    worst = max(worst, g)
+            A("  " + ("⚠️ E ЗАВИСИТ от сектора Tw ⇒ топология видна через связь!"
+                      if worst > 0.05 else "E НЕ зависит от сектора Tw (топология невидима в осях)."))
     A("\n> Центральный вопрос, уверенность низкая; обе гипотезы легальны. "
       "Интерпретация — с архитектором (CLAUDE.md).")
     return "\n".join(L) + "\n"
