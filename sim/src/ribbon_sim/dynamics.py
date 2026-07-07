@@ -49,7 +49,8 @@ def build_relaxer(cfg):
             T = T0 * decay ** (step0 + i).astype(jnp.float32)
             g = grad_batch(q, a, b)
             # q += −lr*grad + sqrt(2*lr*T)*noise, затем проекция на S³.
-            noise = jax.random.normal(sub, q.shape) * jnp.sqrt(2.0 * lr * T)
+            # noise приводим к dtype состояния (иначе float64-прогон ломает scan-carry).
+            noise = (jax.random.normal(sub, q.shape) * jnp.sqrt(2.0 * lr * T)).astype(q.dtype)
             q = normalize(q - lr * g + noise)
             e = jnp.mean(energy_batch(q, a, b))
             return (q, k), e
