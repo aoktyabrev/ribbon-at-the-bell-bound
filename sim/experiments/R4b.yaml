@@ -34,8 +34,8 @@ dynamics:
   decay: 1.0
   steps: 25000
   block_convergence:
-    block_steps: 25000
-    ceiling: 200000
+    block_steps: 50000
+    ceiling: 600000          # аудит R4a: изгиб-жёсткая сходится к ~400k (иначе транзиент)
     sigma_mult: 2.0
     e_floor: 0.01
 
