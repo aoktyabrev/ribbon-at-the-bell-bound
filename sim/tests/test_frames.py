@@ -7,11 +7,13 @@ import pytest
 
 from ribbon_sim.frames import (
     axis,
+    conj,
     geodesic,
     haar_quaternions,
     log_map,
     normalize,
     quat_mul,
+    relative_log,
     rotmat,
 )
 
@@ -91,6 +93,36 @@ def test_haar_uniform_mean_axis_is_zero():
     qs = haar_quaternions(jax.random.PRNGKey(7), (200000,))
     mean_axis = jnp.mean(axis(qs), axis=0)
     assert np.all(np.abs(np.asarray(mean_axis)) < 1e-2)
+
+
+def test_relative_log_pure_twist_and_bend():
+    phi = 0.6
+    z_rot = jnp.array([np.cos(phi / 2), 0.0, 0.0, np.sin(phi / 2)])  # поворот вокруг z
+    x_rot = jnp.array([np.cos(phi / 2), np.sin(phi / 2), 0.0, 0.0])  # поворот вокруг x
+    # цепочка [I, z_rot]: ω = (0,0,φ) — чистая скрутка
+    chain_tw = jnp.stack([IDENTITY, z_rot])
+    omega_tw = relative_log(chain_tw)[0]
+    assert np.allclose(np.asarray(omega_tw), [0.0, 0.0, phi], atol=1e-5)
+    # цепочка [I, x_rot]: ω = (φ,0,0) — чистый изгиб
+    chain_bend = jnp.stack([IDENTITY, x_rot])
+    omega_bend = relative_log(chain_bend)[0]
+    assert np.allclose(np.asarray(omega_bend), [phi, 0.0, 0.0], atol=1e-5)
+
+
+def test_relative_log_material_frame():
+    # относительный поворот берётся в фрейме i: заранее повёрнутая цепочка даёт тот же ω
+    phi = 0.5
+    q0 = haar_quaternions(jax.random.PRNGKey(40), (1,))[0]
+    z_rel = jnp.array([np.cos(phi / 2), 0.0, 0.0, np.sin(phi / 2)])
+    q1 = quat_mul(q0, z_rel)  # q1 = q0 ∘ (твист вокруг локального z)
+    omega = relative_log(jnp.stack([q0, q1]))[0]
+    assert np.allclose(np.asarray(omega), [0.0, 0.0, phi], atol=1e-5)
+
+
+def test_conj_is_inverse():
+    qs = _rand_quats(jax.random.PRNGKey(41), 10)
+    prod = quat_mul(conj(qs), qs)
+    assert np.allclose(np.asarray(prod), IDENTITY, atol=1e-6)
 
 
 def test_log_map_recovers_angle():

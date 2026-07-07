@@ -7,7 +7,7 @@ jax.config.update("jax_enable_x64", True)  # x64 ради точности ко�
 import jax.numpy as jnp
 import numpy as np
 
-from ribbon_sim.energy import e_clamp, e_elastic, e_total
+from ribbon_sim.energy import e_clamp, e_cosserat, e_elastic, e_total
 from ribbon_sim.frames import axis, haar_quaternions, normalize
 
 
@@ -97,6 +97,39 @@ def test_chordal_elastic_properties():
     q_flip = q.at[3].multiply(-1.0)
     assert np.allclose(float(e_elastic(q, 1.0, elastic="chordal")),
                        float(e_elastic(q_flip, 1.0, elastic="chordal")), atol=1e-10)
+
+
+def test_cosserat_separates_twist_and_bend():
+    """R3: чистая скрутка даёт только k_t·φ², чистый изгиб — только k_b·φ²."""
+    phi = 0.5
+    z_rot = jnp.array([np.cos(phi / 2), 0.0, 0.0, np.sin(phi / 2)], dtype=jnp.float64)
+    x_rot = jnp.array([np.cos(phi / 2), np.sin(phi / 2), 0.0, 0.0], dtype=jnp.float64)
+    ident = jnp.array([1.0, 0.0, 0.0, 0.0], dtype=jnp.float64)
+    k_b, k_t = 2.0, 3.0
+    e_tw = float(e_cosserat(jnp.stack([ident, z_rot]), k_b, k_t))
+    e_bend = float(e_cosserat(jnp.stack([ident, x_rot]), k_b, k_t))
+    assert np.allclose(e_tw, k_t * phi ** 2, atol=1e-6)     # только скрутка
+    assert np.allclose(e_bend, k_b * phi ** 2, atol=1e-6)   # только изгиб
+
+
+def test_cosserat_grad_matches_finite_differences():
+    """jax.grad Коссера против конечных разностей (SPEC §7, R3)."""
+    N = 5
+    q = haar_quaternions(jax.random.PRNGKey(33), (N,)).astype(jnp.float64)
+    a = _unit(jnp.array([0.1, 0.2, 0.97], dtype=jnp.float64))
+    b = _unit(jnp.array([0.8, -0.1, 0.4], dtype=jnp.float64))
+    k_c, k_b, k_t = 1.1, 2.0, 0.5
+    g = jax.grad(e_total)(q, a, b, 0.0, k_c, False, "cosserat", k_b, k_t)
+    h = 1e-6
+    fd = np.zeros_like(np.asarray(q)); qn = np.asarray(q)
+    for i in range(N):
+        for j in range(4):
+            qp = qn.copy(); qp[i, j] += h
+            qm = qn.copy(); qm[i, j] -= h
+            ep = float(e_total(jnp.array(qp), a, b, 0.0, k_c, False, "cosserat", k_b, k_t))
+            em = float(e_total(jnp.array(qm), a, b, 0.0, k_c, False, "cosserat", k_b, k_t))
+            fd[i, j] = (ep - em) / (2 * h)
+    assert np.allclose(np.asarray(g), fd, rtol=1e-4, atol=1e-6)
 
 
 def test_spinor_elastic_penalizes_antipode():

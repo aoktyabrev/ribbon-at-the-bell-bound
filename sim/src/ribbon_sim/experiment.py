@@ -76,6 +76,18 @@ def build_cells(cfg, mode="full"):
             k_e = float(kappa) * (N - 1) * k_c
             cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c),
                           "kappa": float(kappa), "label": f"κ={kappa:g}"})
+    elif "cosserat_grid" in cfg:  # R3: свип k_t/k_b при фикс. суммарной жёсткости
+        kappa_eq = float(cfg.get("kappa_equiv", 1.0))
+        k_e_eq = kappa_eq * (N - 1) * k_c
+        total = 3.0 * (k_e_eq / 4.0)   # 2k_b + k_t = 3·(k_e/4): изотроп. Коссера ≡ geodesic κ
+        lr = 0.5 / (total + k_c)       # одинаковый lr (суммарная жёсткость фиксирована)
+        for ratio in cfg["cosserat_grid"]:
+            r = float(ratio)
+            k_b = total / (2.0 + r)
+            k_t = r * k_b
+            cells.append({**base, "elastic": "cosserat", "k_e": 0.0, "k_b": k_b, "k_t": k_t,
+                          "lr": lr, "kappa": kappa_eq, "ratio": r,
+                          "label": f"kt/kb={r:g}"})
     elif "decay_grid" in cfg:  # R2 / R5b
         k_e = float(phys["k_e"])
         kappa = float(phys.get("kappa", k_e / ((N - 1) * k_c)))
@@ -317,7 +329,8 @@ def _analyse_cell(res, thetas):
 
 
 def _slug(label):
-    return (label.replace("κ", "k").replace("=", "").replace(".", "p").replace(" ", "_"))
+    return (label.replace("κ", "k").replace("=", "").replace(".", "p")
+            .replace(" ", "_").replace("/", "-"))
 
 
 def write_report(exp, outdir):
@@ -344,11 +357,16 @@ def write_report(exp, outdir):
     # Сводный график всех ячеек.
     _plot_all_cells(exp, analyses, outdir / f"E_all_{exp['mode']}.png")
 
-    is_r5b = "decay_grid" in cfg and "block_convergence" in cfg["dynamics"]
+    # R5b-отчёт (голономия) только для СПИНОРНЫХ decay-ячеек; geodesic-decay (R2-лайт)
+    # идёт по обычному R2-пути.
+    is_r5b = ("decay_grid" in cfg and "block_convergence" in cfg["dynamics"]
+              and str(cfg["physics"].get("elastic", "geodesic")) == "spinor")
     if "elastic_grid" in cfg:
         md = _render_r5(exp, analyses, deg)
     elif is_r5b:
         md = _render_r5b(exp, analyses, deg, outdir)
+    elif "cosserat_grid" in cfg:
+        md = _render_r3(exp, analyses, deg)
     else:
         md = _render(exp, analyses, deg, outdir)
     (outdir / "report.md").write_text(md, encoding="utf-8")
@@ -423,7 +441,7 @@ def _render(exp, analyses, deg, outdir):
         d_aic = aics_sorted[1][1] - aics_sorted[0][1]
         lo, hi = an["boot"]["ci95"]
         if is_r2:
-            T_fin = cell["T0"] * cell["decay"] ** cell["steps"]
+            T_fin = cell["T0"] * cell["decay"] ** res.get("max_steps", cell["steps"])
             key = f"{cell['decay_val']:g} ({T_fin:.1e})"
         else:
             key = f"{cell['kappa']:g}"
@@ -451,7 +469,8 @@ def _render_cell(A, res, an, deg, mode):
     lbl_f = lbl.replace("=", "").replace("κ", "kappa").replace(".", "p")
     A(f"## Ячейка {lbl}\n")
     A(f"lr={cell['lr']:.3e}  steps={res['steps_used']}"
-      + (f" (удвоено ×{res['doublings']}, история {res['steps_history']})" if res["doublings"] else "")
+      + (f" (удвоено ×{res['doublings']}, история {res['steps_history']})"
+         if res.get("doublings") and res.get("steps_history") else "")
       + f"  T0={cell['T0']}  decay={cell['decay']}  время {res['elapsed_s']:.1f} с\n")
     A(f"![E]({'E_' + lbl_f + '_' + mode + '.png'})\n")
 
@@ -464,8 +483,12 @@ def _render_cell(A, res, an, deg, mode):
         A(f"воспроизводимость (max-статистика) {'✅' if repro['passes'] else '❌'} "
           f"max|z|={repro['max_z']:.2f} vs порог {repro['z_thresh']:.2f} "
           f"(семейный p={repro['global_p']:.3f}); ")
-    A(f"сходимость: доля лент |ΔE|/шаг>1e-6 = {res['max_conv_frac']:.4f} "
-      f"({'сошлось' if res['converged'] else 'НЕ сошлось'}).\n")
+    if "max_conv_frac" in res:  # старый run_cell (энерго-критерий)
+        A(f"сходимость: доля лент |ΔE|/шаг>1e-6 = {res['max_conv_frac']:.4f} "
+          f"({'сошлось' if res['converged'] else 'НЕ сошлось'}).\n")
+    else:                        # блочный протокол
+        A(f"сходимость (блочная по наблюдаемой): {res['frac_converged']*100:.0f}% (θ,сид), "
+          f"max_steps={res['max_steps']}.\n")
 
     cmp = an["cmp"]
     sgn = "ферро E(0)=+1" if an["ferro"] else "антиферро E(0)=−1"
@@ -500,8 +523,23 @@ def _render_verdict(A, exp, analyses, is_r2):
             for res, an in zip(exp["cells"], analyses))
         A(f"- Амплитуды max|E| по скоростям отжига: {amp_str}.")
         A(f"- Лучшие модели: {best_str}.")
-        A("- Проверка гипотезы «термическая мера сглаживает кривую, форма семейства "
-          "не меняется» — сопоставить амплитуды и лучшие модели с R1 (см. сводку).")
+        # Явный вердикт по гипотезе архитектора (амплитуда растёт, форма к ступени).
+        amps = [an["amp"] for an in analyses]
+        a1s = [an["harm"]["A1"] for an in analyses]
+        decays_v = [r["cell"].get("decay_val", 0) for r in exp["cells"]]
+        # порядок по замедлению отжига (рост decay)
+        order = np.argsort(decays_v)
+        amps_o = [amps[i] for i in order]
+        a1_o = [a1s[i] for i in order]
+        amp_grows = all(amps_o[i] <= amps_o[i + 1] + 1e-3 for i in range(len(amps_o) - 1))
+        near_step = max(amps) > 0.9  # |E(0)|→1 = ступень (не косинус)
+        A(f"\n> **Вердикт (гипотеза архитектора §4):** амплитуда с замедлением отжига "
+          f"{'РАСТЁТ' if amp_grows else 'НЕ растёт монотонно'} "
+          f"({', '.join(f'{a:.3f}' for a in amps_o)}); "
+          f"A1(cosθ) {', '.join(f'{a:+.2f}' for a in a1_o)} → форма ведёт "
+          f"{'к СТУПЕНИ (|E(0)|→1), не к косинусу' if near_step else 'НЕ к ступени'}. "
+          f"{'✅ гипотеза подтверждена' if (amp_grows and near_step) else '❌ гипотеза не подтверждена'}. "
+          "Изотропная лента (T>0) не даёт квантовую косинусную форму — «ножницы» §4.")
     else:
         for res, an in zip(exp["cells"], analyses):
             sgn = "ферро" if an["ferro"] else "антиферро"
@@ -648,6 +686,71 @@ def _render_r5(exp, analyses, deg):
         A(f"  - {res['cell']['label']}: A3/A1 = {a3a1:+.3f} (A1={h['A1']:+.3f}, A3={h['A3']:+.3f})")
     A("\n> Интерпретация — с архитектором (CLAUDE.md). Сходимость: блочный критерий "
       "по наблюдаемой; ячейки, не достигшие 100%, ограничены потолком ceiling.")
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+#  Отчёт R3 (анизотропия Коссера: свип k_t/k_b)
+# --------------------------------------------------------------------------- #
+def _render_r3(exp, analyses, deg):
+    cfg = exp["cfg"]
+    cells = exp["cells"]
+    i0 = int(np.argmin(np.abs(deg)))
+    L = []; A = L.append
+    A(f"# {exp['name']} — отчёт ({exp['mode']}): анизотропия Коссера (изгиб/скрутка)\n")
+    A(f"**Описание:** {cfg.get('description', '')}\n")
+    A(f"**Пре-регистрация:** {cfg.get('prediction', '')}\n")
+
+    total = sum(r["elapsed_s"] for r in cells)
+    mem = _gpu_mem_mb()
+    c0 = cells[0]["cell"]
+    A("## Конфигурация\n```")
+    A(f"elastic=cosserat  N={c0['N']}  B={c0['B']}  seeds={c0['seeds']}  T0={c0['T0']}")
+    A(f"суммарная жёсткость 2k_b+k_t фиксирована (κ={c0.get('kappa',1)}-эквивалент), lr={c0['lr']:.2e}")
+    A(f"θ (°): {np.round(deg, 2).tolist()}")
+    A("```")
+    A(f"\nВремя: **{total:.1f} с** на {jax.devices()[0].device_kind}."
+      + (f" Пик GPU-памяти ≈ {mem:.0f} МБ." if mem else "") + "\n")
+    A(f"![E(θ) по ячейкам](E_all_{exp['mode']}.png)\n")
+
+    A("## Сводка: анизотропия k_t/k_b → форма\n")
+    A("| k_t/k_b | k_b | k_t | амп max\\|E\\| | E(0) | знак | A1 | A3 | A3/A1 | сошлось% | max_steps |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|")
+    for res, an in zip(cells, analyses):
+        cell = res["cell"]; h = an["harm"]
+        a3a1 = h["A3"] / h["A1"] if abs(h["A1"]) > 1e-6 else float("nan")
+        sgn = "ферро" if an["ferro"] else "антиферро"
+        A(f"| {cell['ratio']:g} | {cell['k_b']:.2f} | {cell['k_t']:.2f} | {an['amp']:.3f} "
+          f"| {an['E'][i0]:+.3f} | {sgn} | {h['A1']:+.3f} | {h['A3']:+.3f} | {a3a1:+.3f} "
+          f"| {res['frac_converged']*100:.0f} | {res['max_steps']} |")
+    A("")
+
+    A("## Контроли §4.2\n")
+    A("| k_t/k_b | маргиналы | ±-симм (maxσ) | воспроизв. |")
+    A("|---|---|---|---|")
+    for res, an in zip(cells, analyses):
+        ctrl, repro = an["ctrl"], an["repro"]
+        rr = (f"{repro['max_z']:.2f}<{repro['z_thresh']:.2f} {'✅' if repro['passes'] else '❌'}") if repro else "—"
+        A(f"| {res['cell']['ratio']:g} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
+          f"| {'✅' if ctrl['all_sym_ok'] else '❌'} "
+          f"({max(ctrl['sym_same_sigma'].max(), ctrl['sym_opp_sigma'].max()):.2f}) | {rr} |")
+    A("")
+
+    A("## Вердикт по пре-регистрации\n")
+    all_ferro = all(an["ferro"] for an in analyses)
+    amps = [an["amp"] for an in analyses]
+    a3a1s = [an["harm"]["A3"] / an["harm"]["A1"] if abs(an["harm"]["A1"]) > 1e-6 else float("nan")
+             for an in analyses]
+    ratios = [c["cell"]["ratio"] for c in cells]
+    A(f"**Знак ферро:** {'✅ все ячейки' if all_ferro else '❌ где-то антиферро'}.")
+    A(f"\n**Двигает ли анизотропия ножницы?** по k_t/k_b {ratios}: "
+      f"амплитуда = {[f'{x:.3f}' for x in amps]}; A3/A1 = {[f'{x:+.3f}' for x in a3a1s]}.")
+    amp_spread = max(amps) - min(amps)
+    A(f"\nРазброс амплитуды по анизотропии = {amp_spread:.3f}. "
+      + ("⚠️ Анизотропия ЗАМЕТНО двигает наблюдаемые — к архитектору."
+         if amp_spread > 0.05 else
+         "Анизотропия почти НЕ двигает форму (амплитуда/A3-A1 стабильны) при фикс. суммарной жёсткости."))
+    A("\n> Интерпретация — с архитектором (CLAUDE.md).")
     return "\n".join(L) + "\n"
 
 

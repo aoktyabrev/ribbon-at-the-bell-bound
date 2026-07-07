@@ -30,10 +30,12 @@ def build_relaxer(cfg):
     k_c = float(cfg["k_c"])
     spinor = bool(cfg.get("spinor", False))
     elastic = str(cfg.get("elastic", "geodesic"))
+    k_b = float(cfg.get("k_b", 1.0))
+    k_t = float(cfg.get("k_t", 1.0))
 
-    # Замыкаем spinor/elastic в чистую функцию энергии одной ленты.
+    # Замыкаем spinor/elastic/жёсткости в чистую функцию энергии одной ленты.
     def e_fn(q, a, b):
-        return e_total(q, a, b, k_e, k_c, spinor=spinor, elastic=elastic)
+        return e_total(q, a, b, k_e, k_c, spinor=spinor, elastic=elastic, k_b=k_b, k_t=k_t)
 
     grad_batch = jax.vmap(jax.grad(e_fn), in_axes=(0, None, None))
     energy_batch = jax.vmap(e_fn, in_axes=(0, None, None))
