@@ -118,14 +118,17 @@ def test_geodesic_grad_bitwise_equivariant():
     assert np.array_equal(np.asarray(gj), np.asarray(quat_mul(g, _J)))
 
 
-def test_cosserat_chordal_grad_equivariant_tight():
+def test_cosserat_chordal_grad_unbiased():
     """cosserat_chordal: НЕ побитово (quat_mul суммирует 4 члена в фикс. порядке ⇒
-    перестановка при флипе даёт ~1e-6 ULP-шум), НО ошибка НЕСМЕЩЁННАЯ ⇒ не усиливается
-    в асимметрию (в отличие от atan2, decisions.md R3). Проверяем малый разброс."""
-    q = haar_quaternions(jax.random.PRNGKey(60), (10,))
+    ULP-перестановки при флипе). Политика (архитектор): побитовость требуем только от
+    geodesic; для chordal — НЕСМЕЩЁННОСТЬ: средний знаковый сдвиг по орбите ≈ 0 (ULP-шум
+    не усиливается в асимметрию, в отличие от atan2). decisions.md R3."""
+    q = haar_quaternions(jax.random.PRNGKey(61), (2000,))  # много кадров ⇒ статистика
     g = _grad_elastic("cosserat_chordal", q)
-    gj = _grad_elastic("cosserat_chordal", quat_mul(q, _J))
-    assert np.allclose(np.asarray(gj), np.asarray(quat_mul(g, _J)), atol=1e-4)
+    diff = np.asarray(_grad_elastic("cosserat_chordal", quat_mul(q, _J))) - np.asarray(quat_mul(g, _J))
+    assert np.max(np.abs(diff)) < 1e-4          # поэлементно только ULP-шум
+    # средний знаковый сдвиг по орбите ≈ 0 (несмещённость): |mean| ≪ поэлементного масштаба
+    assert abs(float(np.mean(diff))) < 1e-9
 
 
 @pytest.mark.xfail(reason="atan2-Cosserat float32-неэквивариантность градиента — "
