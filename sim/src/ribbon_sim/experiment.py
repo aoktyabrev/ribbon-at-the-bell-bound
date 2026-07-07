@@ -81,11 +81,12 @@ def build_cells(cfg, mode="full"):
         k_e_eq = kappa_eq * (N - 1) * k_c
         total = 3.0 * (k_e_eq / 4.0)   # 2k_b + k_t = 3·(k_e/4): изотроп. Коссера ≡ geodesic κ
         lr = 0.5 / (total + k_c)       # одинаковый lr (суммарная жёсткость фиксирована)
+        el = str(phys.get("elastic", "cosserat_chordal"))  # cosserat_chordal (v2) по умолчанию
         for ratio in cfg["cosserat_grid"]:
             r = float(ratio)
             k_b = total / (2.0 + r)
             k_t = r * k_b
-            cells.append({**base, "elastic": "cosserat", "k_e": 0.0, "k_b": k_b, "k_t": k_t,
+            cells.append({**base, "elastic": el, "k_e": 0.0, "k_b": k_b, "k_t": k_t,
                           "lr": lr, "kappa": kappa_eq, "ratio": r,
                           "label": f"kt/kb={r:g}"})
     elif "twist_sectors" in cfg:  # R4a/R4b: связь Tw=const, сектора Tw в единицах 2π

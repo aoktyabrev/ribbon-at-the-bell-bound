@@ -18,7 +18,7 @@ physics:
   N: 64
   k_c: 1.0
   k_e: 0.0          # не используется в режиме cosserat (жёсткости через k_b,k_t)
-  elastic: cosserat
+  elastic: cosserat_chordal
 
 kappa_equiv: 1.0    # калибровка суммарной жёсткости к geodesic κ=1
 cosserat_grid: [0.1, 1.0, 10.0]   # k_t/k_b

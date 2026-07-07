@@ -6,18 +6,37 @@
 
 import jax.numpy as jnp
 
-from .frames import axis, geodesic, relative_log
+from .frames import axis, geodesic, quat_conj_mul, relative_log
 
 
 def e_cosserat(q, k_b, k_t, spinor=False):
-    """Анизотропная энергия Коссера (SPEC §3, R3): изгиб + скрутка раздельно.
+    """Анизотропная энергия Коссера через ЛОГ-отображение (atan2), R3-v1.
 
         E = Σ_i [ k_b·(ω_x² + ω_y²) + k_t·ω_z² ],   ω_i = log(q_i⁻¹⊗q_{i+1}) в фрейме i.
+
+    ДЕФЕКТ (decisions.md, R3): многошаговый градиент (conj→mul→log_map/atan2) НЕ
+    побитово ±-эквивариантен во float32 ⇒ нарушает ±-симметрию исходов. Оставлен для
+    сверки старое/новое и мини-fp64-теста. Рабочий режим — cosserat_chordal.
     """
     omega = relative_log(q, spinor=spinor)  # (N-1, 3)
     bend = omega[..., 0] ** 2 + omega[..., 1] ** 2
     twist = omega[..., 2] ** 2
     return jnp.sum(k_b * bend + k_t * twist)
+
+
+def e_cosserat_chordal(q, k_b, k_t):
+    """Хордальная энергия Коссера (R3-v2, решение архитектора): полином по компонентам
+    относительного кватерниона r_i = q_i⁻¹⊗q_{i+1} = (w, x, y, z):
+
+        E = Σ_i [ 4·k_b·(x² + y²) + 4·k_t·z² ].
+
+    Без atan2/arccos/log_map ⇒ градиент ПОБИТОВО ±-эквивариантен (только произведения,
+    квадраты и суммы). Для малых поворотов 4(x²+y²)≈ω_x²+ω_y², 4z²≈ω_z². Знаковая
+    скрутка τ̃_i = 2·z_i (см. frames.total_twist).
+    """
+    r = quat_conj_mul(q[:-1], q[1:])  # (N-1, 4) = conj(q_i)⊗q_{i+1}
+    x, y, z = r[..., 1], r[..., 2], r[..., 3]
+    return jnp.sum(4.0 * k_b * (x * x + y * y) + 4.0 * k_t * (z * z))
 
 
 def e_elastic(q, k_e, spinor=False, elastic="geodesic", k_b=1.0, k_t=1.0):
@@ -32,6 +51,8 @@ def e_elastic(q, k_e, spinor=False, elastic="geodesic", k_b=1.0, k_t=1.0):
       - "chordal":  L = 1 − <p,q>²             — гладкая альтернатива без arccos,
         проверка робастности (фаза C). ±-симметрична (квадрат снимает знак).
     """
+    if elastic == "cosserat_chordal":
+        return e_cosserat_chordal(q, k_b, k_t)
     if elastic == "cosserat":
         return e_cosserat(q, k_b, k_t, spinor=spinor)
     if elastic == "chordal":

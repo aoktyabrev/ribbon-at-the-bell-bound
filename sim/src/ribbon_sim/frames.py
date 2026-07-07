@@ -82,6 +82,11 @@ def conj(q):
     return q * jnp.array([1.0, -1.0, -1.0, -1.0])
 
 
+def quat_conj_mul(p, q):
+    """Относительный поворот r = p⁻¹⊗q = conj(p)⊗q (в материальном фрейме p)."""
+    return quat_mul(conj(p), q)
+
+
 def exp_quat(omega):
     """Экспонента so(3)→S³: вектор поворота omega ∈ R³ → единичный кватернион.
 
@@ -97,37 +102,46 @@ def exp_quat(omega):
 
 
 def total_twist(q):
-    """Суммарная скрутка Tw = Σ_i τ_i = Σ_i ω_z(q_i⁻¹⊗q_{i+1}) (R4).
+    """Суммарная скрутка Tw = Σ_i τ̃_i, где τ̃_i = 2·z_i — хордальная скрутка
+    (z-компонента относительного кватерниона r_i = q_i⁻¹⊗q_{i+1}), R4/архитектор.
 
-    q формы (..., N, 4) → (...,). Спинорная ветвь (без модуля): различает Tw=0 и 2π.
+    q формы (..., N, 4) → (...,). Без atan2/log_map: гладко и знаково-непрерывно;
+    z различает Tw=0 и Tw=2π-секторы (спинорная ℤ₂-структура).
     """
-    omega = relative_log(q, spinor=True)  # (..., N-1, 3)
-    return jnp.sum(omega[..., 2], axis=-1)
+    r = quat_conj_mul(q[..., :-1, :], q[..., 1:, :])      # (..., N-1, 4)
+    return jnp.sum(2.0 * r[..., 3], axis=-1)
 
 
-def twist_free_init(key, shape, total_twist=0.0, sigma_bend=0.5):
-    """Случайная лента в секторе заданной суммарной скрутки (R4).
+def twist_free_init(key, shape, total_twist=0.0, sigma_bend=0.25):
+    """Случайная лента в секторе заданной суммарной скрутки Tw=Σ2z_i (R4).
 
-    Каждая связь: относительный поворот ω_i = (bx, by, δτ), где δτ = Tw/(N−1)
-    фиксирует скрутку, а изгиб (bx,by) ~ Normal(0, sigma_bend) — случаен. Мера
-    объявлена заранее (note §2.7): равномерный первый фрейм × гауссов изгиб при
-    фиксированной поканальной скрутке. shape = (B, N) → (B, N, 4).
+    Каждая связь: относительный кватернион r_i = (w, bx, by, z_link) с фиксированной
+    z-компонентой z_link = Tw/(2(N−1)) (⇒ Σ2z_i = Tw ТОЧНО) и случайным изгибом
+    (bx,by) ~ Normal(0, sigma_bend). Мера объявлена заранее (note §2.7). shape=(B,N)→(B,N,4).
     """
     import jax.random as jr
 
     B, N = shape
     k0, kb = jr.split(key)
     q0 = haar_quaternions(k0, (B,))                       # (B, 4)
-    dtau = total_twist / (N - 1)
+    z_link = total_twist / (2.0 * (N - 1))
     bend = jr.normal(kb, (B, N - 1, 2)) * sigma_bend
-    omega = jnp.concatenate([bend, jnp.full((B, N - 1, 1), dtau)], axis=-1)
-    r = exp_quat(omega)                                   # (B, N-1, 4)
+    x, y = bend[..., 0], bend[..., 1]
+    z = jnp.full_like(x, z_link)
+    # Ограничиваем изгиб, чтобы x²+y²+z² ≤ 0.95 (w²≥0.05): z (скрутка) остаётся ТОЧНОЙ,
+    # r всегда единичный, без пола 1e-6, искажавшего z у хвостовых лент.
+    b2 = x * x + y * y
+    max_b2 = jnp.maximum(0.95 - z * z, 1e-6)
+    scale = jnp.where(b2 > max_b2, jnp.sqrt(max_b2 / jnp.maximum(b2, 1e-12)), 1.0)
+    x, y = x * scale, y * scale
+    w = jnp.sqrt(1.0 - x * x - y * y - z * z)
+    r = jnp.stack([w, x, y, z], axis=-1)                  # (B, N-1, 4), уже единичный
     q = q0
     frames = [q0]
     for i in range(N - 1):
-        q = quat_mul(q, r[:, i, :])
+        q = normalize(quat_mul(q, r[:, i, :]))            # нормировка на шаге: без дрейфа |q|
         frames.append(q)
-    return normalize(jnp.stack(frames, axis=1))           # (B, N, 4)
+    return jnp.stack(frames, axis=1)                      # (B, N, 4)
 
 
 def relative_log(q, spinor=False):

@@ -130,6 +130,25 @@ def test_spinor_elastic_runs_and_kinks_countable():
     assert np.allclose(np.asarray(jnp.linalg.norm(qf, axis=-1)), 1.0, atol=1e-5)
 
 
+def test_cosserat_chordal_restores_pm_symmetry():
+    """R3-фикс (архитектор): chordal-Коссера восстанавливает ±-симметрию исходов при
+    θ=0, где atan2-Коссера её грубо ломал (|P(pp)−P(mm)|≈0.7). Физический гейт."""
+    cfg = {"N": 16, "B": 2048, "k_e": 0.0, "k_c": 1.0, "spinor": False,
+           "elastic": "cosserat_chordal", "k_b": 15.75, "k_t": 15.75,
+           "T0": 0.0, "decay": 1.0, "steps": 20000, "lr": 0.0104}
+    relax = build_relaxer(cfg)["run"]
+    a = jnp.array([0.0, 0.0, 1.0]); b = jnp.array([0.0, 0.0, 1.0])  # θ=0
+    acc = np.zeros(4)
+    for sd in (0, 1):
+        q0 = haar_quaternions(jax.random.PRNGKey(sd), (cfg["B"], cfg["N"]))
+        qf, _ = relax(jax.random.PRNGKey(70 + sd), q0, a, b)
+        s, t = classify(qf, a, b)
+        acc += np.asarray(branch_counts(s, t))
+    n = acc.sum()
+    pp, mm = acc[0] / n, acc[3] / n
+    assert abs(pp - mm) < 0.1, f"±-симметрия сломана: P(pp)={pp:.3f}, P(mm)={mm:.3f}"
+
+
 def test_twist_projection_conserves_twist():
     """R4: проекция градиента держит Tw = const (|ΔTw| < 1e-4 за прогон)."""
     cfg = dict(BASE, elastic="spinor", k_e=2.0, N=16, steps=1000, lr=0.02,
