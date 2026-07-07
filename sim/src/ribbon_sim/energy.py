@@ -24,6 +24,24 @@ def e_cosserat(q, k_b, k_t, spinor=False):
     return jnp.sum(k_b * bend + k_t * twist)
 
 
+def e_cosserat_geo(q, k_b, k_t, spinor=False):
+    """Анизотропная энергия Коссера на ГЕОДЕЗИЧЕСКОЙ жёсткости (R3-v3, архитектор):
+
+        E_i = k_b·d²(q_i,q_{i+1}) + (k_t−k_b)·d²·z²/(x²+y²+z²+1e-12),
+
+    d — геодезия текущего режима (geodesic|spinor), (w,x,y,z)=r_i=q_i⁻¹⊗q_{i+1}.
+    z²/|vec|² = (доля оси поворота вдоль локального z)² ⇒ E = d²·(k_b·(1−f)+k_t·f),
+    f=твист-доля. При k_t=k_b твист-член ТОЖДЕСТВЕННО 0 ⇒ E = geodesic (рабочая, R1).
+    Жёсткая (растёт с углом, как d²) И почти симметричная (доминанта k_b·d² — geodesic,
+    побитово эквивариантна; твист-член — несмещённый ULP-шум, как chordal).
+    """
+    d = geodesic(q[:-1], q[1:], spinor=spinor)            # (N-1,)
+    r = quat_conj_mul(q[:-1], q[1:])                      # (N-1, 4)
+    x, y, z = r[..., 1], r[..., 2], r[..., 3]
+    twist_frac = z * z / (x * x + y * y + z * z + 1e-12)
+    return jnp.sum(k_b * d * d + (k_t - k_b) * d * d * twist_frac)
+
+
 def e_cosserat_chordal(q, k_b, k_t):
     """Хордальная энергия Коссера (R3-v2, решение архитектора): полином по компонентам
     относительного кватерниона r_i = q_i⁻¹⊗q_{i+1} = (w, x, y, z):
@@ -51,6 +69,8 @@ def e_elastic(q, k_e, spinor=False, elastic="geodesic", k_b=1.0, k_t=1.0):
       - "chordal":  L = 1 − <p,q>²             — гладкая альтернатива без arccos,
         проверка робастности (фаза C). ±-симметрична (квадрат снимает знак).
     """
+    if elastic == "cosserat_geo":
+        return e_cosserat_geo(q, k_b, k_t, spinor=spinor)
     if elastic == "cosserat_chordal":
         return e_cosserat_chordal(q, k_b, k_t)
     if elastic == "cosserat":

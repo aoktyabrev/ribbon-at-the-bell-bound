@@ -49,6 +49,7 @@ def build_cells(cfg, mode="full"):
         "steps": int(dyn["steps"]),
         "B": int(run["B"]),
         "seeds": list(run["seeds"]),
+        "mirror_pairs": bool(run.get("mirror_pairs", False)),  # R3-geo: зеркальные пары
     }
 
     sw = cfg["sweep"]
@@ -79,13 +80,15 @@ def build_cells(cfg, mode="full"):
     elif "cosserat_grid" in cfg:  # R3: свип k_t/k_b при фикс. суммарной жёсткости
         kappa_eq = float(cfg.get("kappa_equiv", 1.0))
         k_e_eq = kappa_eq * (N - 1) * k_c
-        total = 3.0 * (k_e_eq / 4.0)   # 2k_b + k_t = 3·(k_e/4): изотроп. Коссера ≡ geodesic κ
-        lr = 0.5 / (total + k_c)       # одинаковый lr (суммарная жёсткость фиксирована)
-        el = str(phys.get("elastic", "cosserat_chordal"))  # cosserat_chordal (v2) по умолчанию
+        el = str(phys.get("elastic", "cosserat_geo"))
+        # cosserat_geo: E_iso=k_b·d² ⇒ 2k_b+k_t=3·k_e (⟨твист-доля⟩=1/3), ρ=1 ⇒ k_b=k_t=k_e≡geodesic κ.
+        # старые chordal/atan2: E~k_b·|ω|²≈k_b·4d² ⇒ множитель /4.
+        total = 3.0 * k_e_eq if el == "cosserat_geo" else 3.0 * (k_e_eq / 4.0)
         for ratio in cfg["cosserat_grid"]:
             r = float(ratio)
             k_b = total / (2.0 + r)
             k_t = r * k_b
+            lr = 0.5 / (max(k_b, k_t) + k_c)  # ρ=1: max=k_e ⇒ lr=lr(R1 κ)
             cells.append({**base, "elastic": el, "k_e": 0.0, "k_b": k_b, "k_t": k_t,
                           "lr": lr, "kappa": kappa_eq, "ratio": r,
                           "label": f"kt/kb={r:g}"})
@@ -191,9 +194,10 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
     Плюс диагностика кинков (плотность и разбивка по ветвям).
     """
     from .dynamics import holonomy, kink_count
-    from .frames import twist_free_init
+    from .frames import mirror_flip, twist_free_init
 
     twist_target = cell.get("twist_target") if cell.get("twist_project") else None
+    mirror = bool(cell.get("mirror_pairs", False))  # зеркальные пары q / q⊗j (R3-geo)
     block = int(block_cfg["block_steps"])
     ceiling = int(block_cfg["ceiling"])
     smult = float(block_cfg.get("sigma_mult", 2.0))
@@ -216,6 +220,8 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
     counts_hplus = np.zeros((nS, nT, 4), dtype=np.int64)       # ветви при h=+1
     counts_hminus = np.zeros((nS, nT, 4), dtype=np.int64)      # ветви при h=−1
     n_hminus = np.zeros((nS, nT), dtype=np.int64)
+    counts_h1 = np.zeros((nS, nT, 4), dtype=np.int64)          # зеркальная половина q
+    counts_h2 = np.zeros((nS, nT, 4), dtype=np.int64)          # зеркальная половина q⊗j
     kink_sum_by_branch = np.zeros((nS, nT, 4), dtype=np.float64)
     kink_density = np.zeros((nS, nT), dtype=np.float64)
     steps_per = np.zeros((nS, nT), dtype=np.int64)
@@ -232,6 +238,9 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
                 q = twist_free_init(k_init, (B, N), total_twist=twist_target)
             else:
                 q = haar_quaternions(k_init, (B, N))
+            if mirror:  # вторая половина = зеркало первой (q⊗j): ±-симметрия по построению
+                half = B // 2
+                q = q.at[half:].set(mirror_flip(q[:half]))
             e_prev, total, converged = None, 0, False
             while total < ceiling:
                 k_noise, sub = jax.random.split(k_noise)
@@ -254,6 +263,10 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
             h = np.asarray(holonomy(q))
             kc = np.asarray(kink_count(q))
             counts[si, ti] = npbc(s, t)
+            if mirror:  # E по каждой зеркальной половине (новый контроль §4.2)
+                half = B // 2
+                counts_h1[si, ti] = npbc(s[:half], t[:half])
+                counts_h2[si, ti] = npbc(s[half:], t[half:])
             counts_M2[si, ti] = npbc(s, h * t)               # M2: голономно-одетая t̃
             counts_hplus[si, ti] = npbc(s[h > 0], t[h > 0])
             counts_hminus[si, ti] = npbc(s[h < 0], t[h < 0])
@@ -272,6 +285,9 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
         "counts_hplus": counts_hplus,
         "counts_hminus": counts_hminus,
         "n_hminus": n_hminus,
+        "counts_h1": counts_h1,
+        "counts_h2": counts_h2,
+        "mirror": mirror,
         "kink_sum_by_branch": kink_sum_by_branch,
         "kink_density": kink_density,
         "steps_per": steps_per,
@@ -343,8 +359,12 @@ def _analyse_cell(res, thetas):
     amp = float(np.max(np.abs(E)))
     i0 = int(np.argmin(np.abs(thetas)))
     ferro = bool(E[i0] > 0)  # знак корреляции при θ→0: ферро E(0)>0
+    # Зеркальный контроль (R3-geo): |E_half1 − E_half2| < 2σ_MC по max-статистике.
+    mirror = None
+    if res.get("mirror") and res["counts_h1"].sum() > 0:
+        mirror = analysis.reproducibility(res["counts_h1"].sum(0), res["counts_h2"].sum(0))
     return {"E": E, "ctrl": ctrl, "repro": repro, "cmp": cmp, "boot": boot,
-            "harm": harm, "aics": aics, "best": best, "amp": amp,
+            "harm": harm, "aics": aics, "best": best, "amp": amp, "mirror": mirror,
             "ferro": ferro, "E0": float(E[i0]), "counts_sum": counts_sum}
 
 
@@ -823,14 +843,27 @@ def _render_r3(exp, analyses, deg):
     A("")
 
     A("## Контроли §4.2\n")
-    A("| k_t/k_b | маргиналы | ±-симм (maxσ) | воспроизв. |")
-    A("|---|---|---|---|")
-    for res, an in zip(cells, analyses):
-        ctrl, repro = an["ctrl"], an["repro"]
-        rr = (f"{repro['max_z']:.2f}<{repro['z_thresh']:.2f} {'✅' if repro['passes'] else '❌'}") if repro else "—"
-        A(f"| {res['cell']['ratio']:g} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
-          f"| {'✅' if ctrl['all_sym_ok'] else '❌'} "
-          f"({max(ctrl['sym_same_sigma'].max(), ctrl['sym_opp_sigma'].max()):.2f}) | {rr} |")
+    mirror_on = any(a.get("mirror") for a in analyses)
+    if mirror_on:
+        A("*Зеркальные пары (q / q⊗j): ±-симметрия и маргиналы ТОЖДЕСТВЕННЫ по построению "
+          "(вычеркнуты, решение архитектора). НОВЫЙ контроль — согласованность зеркальных "
+          "половин |E_h1(θ)−E_h2(θ)| по max-статистике.*\n")
+        A("| k_t/k_b | зеркало \\|E_h1−E_h2\\| (max\\|z\\| vs порог) | воспроизв. (сиды) |")
+        A("|---|---|---|")
+        for res, an in zip(cells, analyses):
+            m, repro = an["mirror"], an["repro"]
+            mm = (f"{m['max_z']:.2f}<{m['z_thresh']:.2f} {'✅' if m['passes'] else '❌'}") if m else "—"
+            rr = (f"{repro['max_z']:.2f} {'✅' if repro['passes'] else '❌'}") if repro else "—"
+            A(f"| {res['cell']['ratio']:g} | {mm} | {rr} |")
+    else:
+        A("| k_t/k_b | маргиналы | ±-симм (maxσ) | воспроизв. |")
+        A("|---|---|---|---|")
+        for res, an in zip(cells, analyses):
+            ctrl, repro = an["ctrl"], an["repro"]
+            rr = (f"{repro['max_z']:.2f}<{repro['z_thresh']:.2f} {'✅' if repro['passes'] else '❌'}") if repro else "—"
+            A(f"| {res['cell']['ratio']:g} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
+              f"| {'✅' if ctrl['all_sym_ok'] else '❌'} "
+              f"({max(ctrl['sym_same_sigma'].max(), ctrl['sym_opp_sigma'].max()):.2f}) | {rr} |")
     A("")
 
     A("## Вердикт по пре-регистрации\n")

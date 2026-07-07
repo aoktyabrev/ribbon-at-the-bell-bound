@@ -8,7 +8,14 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from ribbon_sim.energy import e_clamp, e_cosserat, e_cosserat_chordal, e_elastic, e_total
+from ribbon_sim.energy import (
+    e_clamp,
+    e_cosserat,
+    e_cosserat_chordal,
+    e_cosserat_geo,
+    e_elastic,
+    e_total,
+)
 from ribbon_sim.frames import axis, haar_quaternions, normalize, quat_mul
 
 _J = jnp.array([0.0, 1.0, 0.0, 0.0])  # 180° вокруг x: флип оси n→−n (q→q⊗j)
@@ -108,6 +115,39 @@ def test_chordal_elastic_properties():
     q_flip = q.at[3].multiply(-1.0)
     assert np.allclose(float(e_elastic(q, 1.0, elastic="chordal")),
                        float(e_elastic(q_flip, 1.0, elastic="chordal")), atol=1e-10)
+
+
+def test_cosserat_geo_separates_twist_and_bend():
+    """cosserat_geo (R3-v3): чистая скрутка → k_t·d²; чистый изгиб → k_b·d² (d=φ/2)."""
+    phi = 0.6
+    z_rot = jnp.array([np.cos(phi / 2), 0.0, 0.0, np.sin(phi / 2)], dtype=jnp.float64)
+    x_rot = jnp.array([np.cos(phi / 2), np.sin(phi / 2), 0.0, 0.0], dtype=jnp.float64)
+    ident = jnp.array([1.0, 0.0, 0.0, 0.0], dtype=jnp.float64)
+    k_b, k_t = 2.0, 3.0
+    d2 = (phi / 2) ** 2
+    e_tw = float(e_cosserat_geo(jnp.stack([ident, z_rot]), k_b, k_t))
+    e_bend = float(e_cosserat_geo(jnp.stack([ident, x_rot]), k_b, k_t))
+    assert np.allclose(e_tw, k_t * d2, atol=1e-6)     # чистая скрутка → k_t
+    assert np.allclose(e_bend, k_b * d2, atol=1e-6)   # чистый изгиб → k_b
+
+
+def test_cosserat_geo_isotropic_equals_geodesic():
+    """ПРИЁМКА (гейт энергии): cosserat_geo при k_b=k_t ≡ geodesic (твист-член ≡ 0)."""
+    q = haar_quaternions(jax.random.PRNGKey(62), (12,)).astype(jnp.float64)
+    k = 63.0
+    e_geo = float(e_cosserat_geo(q, k, k))
+    e_ref = float(e_elastic(q, k, elastic="geodesic"))
+    assert np.allclose(e_geo, e_ref, atol=1e-12)
+
+
+def test_cosserat_geo_grad_unbiased():
+    """cosserat_geo: доминанта k_b·d² побитово эквивариантна (geodesic), твист-член —
+    несмещённый ULP-шум. Средний знаковый сдвиг по орбите ≈ 0 (политика архитектора)."""
+    q = haar_quaternions(jax.random.PRNGKey(63), (2000,))
+    g = _grad_elastic("cosserat_geo", q, kb=22.5, kt=2.25)
+    diff = np.asarray(_grad_elastic("cosserat_geo", quat_mul(q, _J), kb=22.5, kt=2.25)) \
+        - np.asarray(quat_mul(g, _J))
+    assert abs(float(np.mean(diff))) < 1e-9
 
 
 def test_geodesic_grad_bitwise_equivariant():
