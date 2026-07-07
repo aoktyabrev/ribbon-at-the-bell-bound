@@ -77,6 +77,20 @@ def build_cells(cfg, mode="full"):
             k_e = float(kappa) * (N - 1) * k_c
             cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c),
                           "kappa": float(kappa), "label": f"κ={kappa:g}"})
+    elif "twist_sectors" in cfg and "cosserat_grid" in cfg:  # R4a/R4b: сектор × анизотропия
+        kappa_eq = float(cfg.get("kappa_equiv", 1.0))
+        k_e_eq = kappa_eq * (N - 1) * k_c
+        el = str(phys.get("elastic", "cosserat_geo"))
+        total = 3.0 * k_e_eq if el == "cosserat_geo" else 3.0 * (k_e_eq / 4.0)
+        for sec in cfg["twist_sectors"]:
+            tw = float(sec) * 2.0 * np.pi
+            for ratio in cfg["cosserat_grid"]:
+                r = float(ratio)
+                k_b = total / (2.0 + r); k_t = r * k_b
+                cells.append({**base, "elastic": el, "k_e": 0.0, "k_b": k_b, "k_t": k_t,
+                              "lr": 0.5 / (max(k_b, k_t) + k_c), "kappa": kappa_eq, "ratio": r,
+                              "twist_project": True, "twist_target": tw, "sector": float(sec),
+                              "label": f"Tw={sec:g}·2π kt/kb={r:g}"})
     elif "cosserat_grid" in cfg:  # R3: свип k_t/k_b при фикс. суммарной жёсткости
         kappa_eq = float(cfg.get("kappa_equiv", 1.0))
         k_e_eq = kappa_eq * (N - 1) * k_c
@@ -92,7 +106,7 @@ def build_cells(cfg, mode="full"):
             cells.append({**base, "elastic": el, "k_e": 0.0, "k_b": k_b, "k_t": k_t,
                           "lr": lr, "kappa": kappa_eq, "ratio": r,
                           "label": f"kt/kb={r:g}"})
-    elif "twist_sectors" in cfg:  # R4a/R4b: связь Tw=const, сектора Tw в единицах 2π
+    elif "twist_sectors" in cfg:  # (одиночная жёсткость, если без cosserat_grid)
         k_e = float(phys["k_e"])
         kappa = float(phys.get("kappa", k_e / ((N - 1) * k_c)))
         for sec in cfg["twist_sectors"]:
@@ -186,18 +200,27 @@ def run_cell(cell, thetas, conv_cfg=None, seed_override=None):
     }
 
 
-def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
+def run_cell_blocks(cell, thetas, block_cfg, seed_override=None,
+                    measure_theta_deg=None, thetas_deg=None):
     """Блочный протокол сходимости по НАБЛЮДАЕМОЙ (ответ на ARCH-Q#1, R5).
 
     Каждую (сид, θ) релаксируем блоками block_steps, продолжая с прошлого q, пока
     |ΔE| между блоками < max(sigma_mult·σ_MC, e_floor) или не достигнут ceiling.
-    Плюс диагностика кинков (плотность и разбивка по ветвям).
+    Плюс диагностика кинков и (R4) диагностика меры на выбранных θ.
     """
     from .dynamics import holonomy, kink_count
-    from .frames import mirror_flip, twist_free_init
+    from .frames import axis, mirror_flip, quat_conj_mul, total_twist, twist_free_init
 
     twist_target = cell.get("twist_target") if cell.get("twist_project") else None
     mirror = bool(cell.get("mirror_pairs", False))  # зеркальные пары q / q⊗j (R3-geo)
+    # индексы θ для диагностики меры (R4): ближайшие к запрошенным углам
+    meas_idx = {}
+    if measure_theta_deg is not None and thetas_deg is not None:
+        for td in measure_theta_deg:
+            j = int(np.argmin(np.abs(np.asarray(thetas_deg) - td)))
+            meas_idx[j] = td
+    measure = {td: {"c_A": [], "c_B": [], "s": [], "t": [], "tau": [],
+                    "Tw0": [], "Tw1": []} for td in meas_idx.values()}
     block = int(block_cfg["block_steps"])
     ceiling = int(block_cfg["ceiling"])
     smult = float(block_cfg.get("sigma_mult", 2.0))
@@ -241,6 +264,7 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
             if mirror:  # вторая половина = зеркало первой (q⊗j): ±-симметрия по построению
                 half = B // 2
                 q = q.at[half:].set(mirror_flip(q[:half]))
+            tw0 = float(np.mean(np.asarray(total_twist(q)))) if ti in meas_idx else 0.0
             e_prev, total, converged = None, 0, False
             while total < ceiling:
                 k_noise, sub = jax.random.split(k_noise)
@@ -277,6 +301,18 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
             kink_density[si, ti] = kc.mean() / (N - 1)
             steps_per[si, ti] = total
             conv_flag[si, ti] = converged
+            # диагностика меры (R4): c_A=n_A·a, c_B=n_B·b, профиль скрутки τ̃_i=2z
+            if ti in meas_idx:
+                td = meas_idx[ti]
+                nA = np.asarray(axis(q[:, 0])); nB = np.asarray(axis(q[:, -1]))
+                aa = np.asarray(a); bb = np.asarray(b)
+                rlink = np.asarray(quat_conj_mul(q[:, :-1], q[:, 1:]))  # (B, N-1, 4)
+                tau = 2.0 * rlink[..., 3]                 # τ̃_i на связь (B, N-1)
+                m = measure[td]
+                m["c_A"].append(nA @ aa); m["c_B"].append(nB @ bb)
+                m["s"].append(s); m["t"].append(t)
+                m["tau"].append(tau.mean(0))              # средний профиль по батчу
+                m["Tw0"].append(tw0); m["Tw1"].append(float(np.mean(tau.sum(1))))
 
     return {
         "cell": cell,
@@ -288,6 +324,12 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
         "counts_h1": counts_h1,
         "counts_h2": counts_h2,
         "mirror": mirror,
+        "measure": {td: {
+            "c_A": np.concatenate(m["c_A"]), "c_B": np.concatenate(m["c_B"]),
+            "s": np.concatenate(m["s"]), "t": np.concatenate(m["t"]),
+            "tau": np.mean(np.stack(m["tau"]), 0),
+            "Tw0": float(np.mean(m["Tw0"])), "Tw1": float(np.mean(m["Tw1"])),
+        } for td, m in measure.items()} if measure else None,
         "kink_sum_by_branch": kink_sum_by_branch,
         "kink_density": kink_density,
         "steps_per": steps_per,
@@ -311,12 +353,15 @@ def run_experiment(cfg, mode="full", seed_override=None):
             if k in cfg["smoke"]:
                 block_cfg = {**block_cfg, k: cfg["smoke"][k]}
     conv_cfg = cfg["dynamics"].get("convergence")
+    md = cfg.get("measure_diag")
+    meas_theta = md["theta_deg"] if (md and md.get("enabled")) else None
     results = []
     for cell in cells:
         print(f"  [{cell['label']}] elastic={cell['elastic']} k_e={cell['k_e']:.3f} "
               f"lr={cell['lr']:.2e} T0={cell['T0']}")
         if block_cfg:
-            res = run_cell_blocks(cell, thetas, block_cfg, seed_override=seed_override)
+            res = run_cell_blocks(cell, thetas, block_cfg, seed_override=seed_override,
+                                  measure_theta_deg=meas_theta, thetas_deg=thetas_deg)
             print(f"    → {res['elapsed_s']:.1f} c; сошлось {res['frac_converged']*100:.0f}% "
                   f"(θ,сид); max_steps={res['max_steps']}")
         else:
@@ -392,6 +437,12 @@ def write_report(exp, outdir):
         seeds_E = [analysis.E_from_counts(res["counts"][si]) for si in range(res["counts"].shape[0])]
         plots.plot_E_curve(thetas, an["E"], outdir / f"E_{lbl}_{exp['mode']}.png",
                            seeds_E=seeds_E, title=f"{exp['name']} {res['cell']['label']} ({exp['mode']})")
+        # диагностика меры (R4): гистограммы c_A,c_B + профиль скрутки
+        if res.get("measure"):
+            plots.plot_measure_diag(res["measure"], outdir / f"meas_{lbl}_{exp['mode']}.png",
+                                    title=f"{exp['name']} {res['cell']['label']}: мера c_A,c_B")
+            plots.plot_twist_profile(res["measure"], outdir / f"twist_{lbl}_{exp['mode']}.png",
+                                     title=f"{exp['name']} {res['cell']['label']}: профиль τ̃_i")
     np.savez(outdir / f"counts_{exp['mode']}.npz", **npz_payload)
 
     # Сводный график всех ячеек.
@@ -777,12 +828,41 @@ def _render_holo(exp, analyses, deg):
           f"| {sgn} | {gap:.3f} | {res['frac_converged']*100:.0f} |")
     A("")
 
-    A("## Контроли §4.2\n| ячейка | маргиналы | ±-симм | воспроизв. |\n|---|---|---|---|")
-    for res, an in zip(cells, analyses):
-        ctrl, repro = an["ctrl"], an["repro"]
-        rr = ("✅" if repro["passes"] else "❌") if repro else "—"
-        A(f"| {res['cell']['label']} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
-          f"| {'✅' if ctrl['all_sym_ok'] else '❌'} | {rr} |")
+    # --- диагностика меры (R4) ---
+    if any(res.get("measure") for res in cells):
+        A("## Диагностика эффективной меры\n")
+        A("Гистограммы c_A=n_A·a, c_B=n_B·b по ветвям и θ (плотность, uniform-сфера=0.5); "
+          "оверлеи uniform / KS∝max(c,0) / δ-пик |c|=1. Профиль скрутки ⟨τ̃_i⟩ по ленте + "
+          "контроль связи Tw до/после.\n")
+        for res in cells:
+            if not res.get("measure"):
+                continue
+            lbl = _slug(res["cell"]["label"])
+            tw_ok = all(abs(m["Tw1"] - m["Tw0"]) < 1e-3 for m in res["measure"].values())
+            dtw = max(abs(m["Tw1"] - m["Tw0"]) for m in res["measure"].values())
+            A(f"### {res['cell']['label']}  (Tw сохранена: {'✅' if tw_ok else '❌'}, "
+              f"max|ΔTw|={dtw:.1e})\n")
+            A(f"![мера](meas_{lbl}_{exp['mode']}.png)\n")
+            A(f"![твист](twist_{lbl}_{exp['mode']}.png)\n")
+
+    A("## Контроли §4.2\n")
+    mirror_on = any(a.get("mirror") for a in analyses)
+    if mirror_on:
+        A("*Зеркальные пары: ±-симметрия и маргиналы тождественны по построению (вычеркнуты). "
+          "Контроль — согласованность зеркальных половин |E_h1−E_h2| max-статистикой.*\n")
+        A("| ячейка | зеркало \\|E_h1−E_h2\\| | воспроизв. (сиды) |\n|---|---|---|")
+        for res, an in zip(cells, analyses):
+            m, repro = an.get("mirror"), an["repro"]
+            mm = (f"{m['max_z']:.2f}<{m['z_thresh']:.2f} {'✅' if m['passes'] else '❌'}") if m else "—"
+            rr = (f"{repro['max_z']:.2f} {'✅' if repro['passes'] else '❌'}") if repro else "—"
+            A(f"| {res['cell']['label']} | {mm} | {rr} |")
+    else:
+        A("| ячейка | маргиналы | ±-симм | воспроизв. |\n|---|---|---|---|")
+        for res, an in zip(cells, analyses):
+            ctrl, repro = an["ctrl"], an["repro"]
+            rr = ("✅" if repro["passes"] else "❌") if repro else "—"
+            A(f"| {res['cell']['label']} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
+              f"| {'✅' if ctrl['all_sym_ok'] else '❌'} | {rr} |")
     A("")
 
     A("## Вердикт по пре-регистрации\n")
