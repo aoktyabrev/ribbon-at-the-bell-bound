@@ -8,6 +8,7 @@ import pytest
 from ribbon_sim.frames import (
     axis,
     conj,
+    exp_quat,
     geodesic,
     haar_quaternions,
     log_map,
@@ -15,6 +16,8 @@ from ribbon_sim.frames import (
     quat_mul,
     relative_log,
     rotmat,
+    total_twist,
+    twist_free_init,
 )
 
 IDENTITY = jnp.array([1.0, 0.0, 0.0, 0.0])
@@ -117,6 +120,21 @@ def test_relative_log_material_frame():
     q1 = quat_mul(q0, z_rel)  # q1 = q0 ∘ (твист вокруг локального z)
     omega = relative_log(jnp.stack([q0, q1]))[0]
     assert np.allclose(np.asarray(omega), [0.0, 0.0, phi], atol=1e-5)
+
+
+def test_exp_quat_inverse_of_log():
+    omega = jax.random.normal(jax.random.PRNGKey(50), (30, 3)) * 0.3  # |ω| < π
+    q = exp_quat(omega)
+    assert np.allclose(np.asarray(jnp.linalg.norm(q, axis=-1)), 1.0, atol=1e-6)
+    assert np.allclose(np.asarray(log_map(q)), np.asarray(omega), atol=1e-5)
+
+
+def test_twist_free_init_sets_twist():
+    # сектор Tw=0 и Tw=2π: суммарная скрутка каждой ленты = целевой
+    for T in [0.0, 2 * np.pi]:
+        q = twist_free_init(jax.random.PRNGKey(51), (128, 16), total_twist=T)
+        tw = np.asarray(total_twist(q))
+        assert np.allclose(tw, T, atol=1e-3), f"T={T}, max откл={np.max(np.abs(tw-T)):.2e}"
 
 
 def test_conj_is_inverse():

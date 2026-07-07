@@ -10,7 +10,7 @@ import jax.numpy as jnp
 from jax import lax
 
 from .energy import e_total
-from .frames import axis, normalize
+from .frames import axis, normalize, total_twist
 
 
 def build_relaxer(cfg):
@@ -32,6 +32,7 @@ def build_relaxer(cfg):
     elastic = str(cfg.get("elastic", "geodesic"))
     k_b = float(cfg.get("k_b", 1.0))
     k_t = float(cfg.get("k_t", 1.0))
+    twist_project = bool(cfg.get("twist_project", False))  # R4: связь Tw = const
 
     # Замыкаем spinor/elastic/жёсткости в чистую функцию энергии одной ленты.
     def e_fn(q, a, b):
@@ -39,9 +40,28 @@ def build_relaxer(cfg):
 
     grad_batch = jax.vmap(jax.grad(e_fn), in_axes=(0, None, None))
     energy_batch = jax.vmap(e_fn, in_axes=(0, None, None))
+    twist_batch = jax.vmap(total_twist)                # Tw на ленту (B,)
+    twistgrad_batch = jax.vmap(jax.grad(total_twist))  # ∇Tw на ленту (B,N,4)
+
+    def _project(u, q):
+        """Проекция смещения u на касательную к Tw=const (R4, 1-й порядок):
+        u ← u − (⟨u,∇Tw⟩ / |∇Tw|²)·∇Tw, поленточно."""
+        gt = twistgrad_batch(q)
+        num = jnp.sum(u * gt, axis=(-2, -1))
+        den = jnp.sum(gt * gt, axis=(-2, -1)) + 1e-12
+        return u - (num / den)[:, None, None] * gt
+
+    def _correct(q, tw_target):
+        """Ньютоновская коррекция Tw → target (SHAKE-стиль): гасит дрейф проекции 1-го
+        порядка + перенормировки до |ΔTw|<1e-4 (порог архитектора)."""
+        gt = twistgrad_batch(q)
+        den = jnp.sum(gt * gt, axis=(-2, -1)) + 1e-12
+        resid = (tw_target - twist_batch(q)) / den
+        return normalize(q + resid[:, None, None] * gt)
 
     @jax.jit
     def run(key, q0, a, b, step0=0):
+        tw_target = twist_batch(q0)  # целевая скрутка = скрутка инициализации
         # step0 — глобальное смещение шага (для отжига через блоки, R5b): T
         # использует decay^(step0+i), иначе каждый блок сбрасывал бы T к T0.
         def step(carry, i):
@@ -53,7 +73,13 @@ def build_relaxer(cfg):
             # q += −lr*grad + sqrt(2*lr*T)*noise, затем проекция на S³.
             # noise приводим к dtype состояния (иначе float64-прогон ломает scan-carry).
             noise = (jax.random.normal(sub, q.shape) * jnp.sqrt(2.0 * lr * T)).astype(q.dtype)
-            q = normalize(q - lr * g + noise)
+            u = -lr * g + noise
+            if twist_project:  # R4: проекция смещения + коррекция Tp к target
+                u = _project(u, q)
+                q = normalize(q + u)
+                q = _correct(q, tw_target)
+            else:
+                q = normalize(q + u)
             e = jnp.mean(energy_batch(q, a, b))
             return (q, k), e
 

@@ -82,6 +82,54 @@ def conj(q):
     return q * jnp.array([1.0, -1.0, -1.0, -1.0])
 
 
+def exp_quat(omega):
+    """Экспонента so(3)→S³: вектор поворота omega ∈ R³ → единичный кватернион.
+
+    omega формы (..., 3) → (..., 4). q = (cos|ω|/2, sin(|ω|/2)·ω/|ω|).
+    """
+    theta = jnp.linalg.norm(omega, axis=-1, keepdims=True)  # (...,1)
+    half = 0.5 * theta
+    # sin(half)/theta с пределом 1/2 при theta→0
+    safe = jnp.where(theta > 1e-12, theta, 1.0)
+    coef = jnp.where(theta > 1e-12, jnp.sin(half) / safe, 0.5)
+    w = jnp.cos(half)
+    return jnp.concatenate([w, coef * omega], axis=-1)
+
+
+def total_twist(q):
+    """Суммарная скрутка Tw = Σ_i τ_i = Σ_i ω_z(q_i⁻¹⊗q_{i+1}) (R4).
+
+    q формы (..., N, 4) → (...,). Спинорная ветвь (без модуля): различает Tw=0 и 2π.
+    """
+    omega = relative_log(q, spinor=True)  # (..., N-1, 3)
+    return jnp.sum(omega[..., 2], axis=-1)
+
+
+def twist_free_init(key, shape, total_twist=0.0, sigma_bend=0.5):
+    """Случайная лента в секторе заданной суммарной скрутки (R4).
+
+    Каждая связь: относительный поворот ω_i = (bx, by, δτ), где δτ = Tw/(N−1)
+    фиксирует скрутку, а изгиб (bx,by) ~ Normal(0, sigma_bend) — случаен. Мера
+    объявлена заранее (note §2.7): равномерный первый фрейм × гауссов изгиб при
+    фиксированной поканальной скрутке. shape = (B, N) → (B, N, 4).
+    """
+    import jax.random as jr
+
+    B, N = shape
+    k0, kb = jr.split(key)
+    q0 = haar_quaternions(k0, (B,))                       # (B, 4)
+    dtau = total_twist / (N - 1)
+    bend = jr.normal(kb, (B, N - 1, 2)) * sigma_bend
+    omega = jnp.concatenate([bend, jnp.full((B, N - 1, 1), dtau)], axis=-1)
+    r = exp_quat(omega)                                   # (B, N-1, 4)
+    q = q0
+    frames = [q0]
+    for i in range(N - 1):
+        q = quat_mul(q, r[:, i, :])
+        frames.append(q)
+    return normalize(jnp.stack(frames, axis=1))           # (B, N, 4)
+
+
 def relative_log(q, spinor=False):
     """Лог-отображение относительных поворотов соседей в МАТЕРИАЛЬНОМ фрейме (R3).
 

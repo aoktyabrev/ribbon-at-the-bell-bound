@@ -88,6 +88,20 @@ def build_cells(cfg, mode="full"):
             cells.append({**base, "elastic": "cosserat", "k_e": 0.0, "k_b": k_b, "k_t": k_t,
                           "lr": lr, "kappa": kappa_eq, "ratio": r,
                           "label": f"kt/kb={r:g}"})
+    elif "twist_sectors" in cfg:  # R4a/R4b: связь Tw=const, сектора Tw в единицах 2π
+        k_e = float(phys["k_e"])
+        kappa = float(phys.get("kappa", k_e / ((N - 1) * k_c)))
+        for sec in cfg["twist_sectors"]:
+            tw = float(sec) * 2.0 * np.pi
+            cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c), "kappa": kappa,
+                          "twist_project": True, "twist_target": tw, "sector": float(sec),
+                          "label": f"Tw={sec:g}·2π"})
+    elif "soft_ke_grid" in cfg:  # мягкая лента: k_e ≈ T0, спинор, отжиг
+        for ke in cfg["soft_ke_grid"]:
+            ke = float(ke)
+            cells.append({**base, "k_e": ke, "lr": 0.5 / (ke + k_c),
+                          "kappa": ke / ((N - 1) * k_c), "k_e_soft": ke,
+                          "label": f"k_e={ke:g}"})
     elif "decay_grid" in cfg:  # R2 / R5b
         k_e = float(phys["k_e"])
         kappa = float(phys.get("kappa", k_e / ((N - 1) * k_c)))
@@ -176,7 +190,9 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
     Плюс диагностика кинков (плотность и разбивка по ветвям).
     """
     from .dynamics import holonomy, kink_count
+    from .frames import twist_free_init
 
+    twist_target = cell.get("twist_target") if cell.get("twist_project") else None
     block = int(block_cfg["block_steps"])
     ceiling = int(block_cfg["ceiling"])
     smult = float(block_cfg.get("sigma_mult", 2.0))
@@ -211,7 +227,10 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None):
             a, b = setting_vectors(theta)
             tk = jax.random.fold_in(base_key, ti)
             k_init, k_noise = jax.random.split(tk)
-            q = haar_quaternions(k_init, (B, N))
+            if twist_target is not None:  # R4: инициализация в секторе Tw=target
+                q = twist_free_init(k_init, (B, N), total_twist=twist_target)
+            else:
+                q = haar_quaternions(k_init, (B, N))
             e_prev, total, converged = None, 0, False
             while total < ceiling:
                 k_noise, sub = jax.random.split(k_noise)
@@ -363,6 +382,8 @@ def write_report(exp, outdir):
               and str(cfg["physics"].get("elastic", "geodesic")) == "spinor")
     if "elastic_grid" in cfg:
         md = _render_r5(exp, analyses, deg)
+    elif "twist_sectors" in cfg or "soft_ke_grid" in cfg:
+        md = _render_holo(exp, analyses, deg)
     elif is_r5b:
         md = _render_r5b(exp, analyses, deg, outdir)
     elif "cosserat_grid" in cfg:
@@ -686,6 +707,81 @@ def _render_r5(exp, analyses, deg):
         A(f"  - {res['cell']['label']}: A3/A1 = {a3a1:+.3f} (A1={h['A1']:+.3f}, A3={h['A3']:+.3f})")
     A("\n> Интерпретация — с архитектором (CLAUDE.md). Сходимость: блочный критерий "
       "по наблюдаемой; ячейки, не достигшие 100%, ограничены потолком ceiling.")
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+#  Отчёт R4a/R4b/мягкая лента (голономия M1/M2, условная E(θ|h))
+# --------------------------------------------------------------------------- #
+def _render_holo(exp, analyses, deg):
+    cfg = exp["cfg"]
+    cells = exp["cells"]
+    i0 = int(np.argmin(np.abs(deg)))
+    is_sector = "twist_sectors" in cfg
+    L = []; A = L.append
+    A(f"# {exp['name']} — отчёт ({exp['mode']}): "
+      + ("связь Tw=const, голономия M1/M2" if is_sector else "мягкая лента, отжиг, голономия") + "\n")
+    A(f"**Описание:** {cfg.get('description', '')}\n")
+    A(f"**Пре-регистрация:** {cfg.get('prediction', '')}\n")
+    A("**M1** — осевая наблюдаемая (s,t); **M2** — голономно-одетая t̃=h·sign(n_B·b). "
+      "Разные ОПРЕДЕЛЕНИЯ наблюдаемой, сравнивать бок о бок.\n")
+
+    c0 = cells[0]["cell"]; total = sum(r["elapsed_s"] for r in cells); mem = _gpu_mem_mb()
+    A("## Конфигурация\n```")
+    A(f"elastic={c0['elastic']}  N={c0['N']}  B={c0['B']}  seeds={c0['seeds']}  T0={c0['T0']}  "
+      f"decay={c0['decay']}" + ("  twist_project=on" if c0.get('twist_project') else ""))
+    A(f"θ (°): {np.round(deg, 2).tolist()}")
+    A("```")
+    A(f"\nВремя: **{total:.1f} с** на {jax.devices()[0].device_kind}."
+      + (f" Пик GPU-памяти ≈ {mem:.0f} МБ." if mem else "") + "\n")
+    A(f"![E(θ) M1 по ячейкам](E_all_{exp['mode']}.png)\n")
+
+    A("## Сводка: M1 vs M2, голономия\n")
+    A("| ячейка | плотн. кинков | ⟨P(h=−1)⟩ | E_M1(0) | E_M2(0) | знак M1 | max_θ\\|E(h+)−E(h−)\\| | сошлось% |")
+    A("|---|---|---|---|---|---|---|---|")
+    stats = []
+    for res, an in zip(cells, analyses):
+        cell = res["cell"]; B = cell["B"]; ns = len(res["seeds"]); ntot = B * ns
+        E_m1 = an["E"]
+        E_m2 = analysis.E_from_counts(res["counts_M2"].sum(0))
+        p_hm = res["n_hminus"].sum(0) / ntot
+        E_hp = _E_safe(res["counts_hplus"].sum(0))
+        E_hm = _E_safe(res["counts_hminus"].sum(0))
+        diff = E_hp - E_hm
+        gap = float(np.nanmax(np.abs(diff))) if np.isfinite(diff).any() else float("nan")
+        kd = float(res["kink_density"].mean())
+        sgn = "ферро" if an["ferro"] else "антиферро"
+        stats.append({"E_m1": E_m1, "E_m2": E_m2, "p_hm": p_hm, "gap": gap, "kd": kd, "sgn": sgn})
+        A(f"| {cell['label']} | {kd:.4f} | {p_hm.mean():.4f} | {E_m1[i0]:+.3f} | {E_m2[i0]:+.3f} "
+          f"| {sgn} | {gap:.3f} | {res['frac_converged']*100:.0f} |")
+    A("")
+
+    A("## Контроли §4.2\n| ячейка | маргиналы | ±-симм | воспроизв. |\n|---|---|---|---|")
+    for res, an in zip(cells, analyses):
+        ctrl, repro = an["ctrl"], an["repro"]
+        rr = ("✅" if repro["passes"] else "❌") if repro else "—"
+        A(f"| {res['cell']['label']} | {'✅' if ctrl['all_marg_ok'] else '❌'} "
+          f"| {'✅' if ctrl['all_sym_ok'] else '❌'} | {rr} |")
+    A("")
+
+    A("## Вердикт по пре-регистрации\n")
+    m1_ferro = all(s["E_m1"][i0] > 0 for s in stats)
+    m2_anti = any(s["E_m2"][i0] < -0.02 for s in stats)
+    maxgap = float(np.nanmax([s["gap"] for s in stats]))
+    e_m1_s = ", ".join(f"{s['E_m1'][i0]:+.3f}" for s in stats)
+    e_m2_s = ", ".join(f"{s['E_m2'][i0]:+.3f}" for s in stats)
+    A(f"- Знак M1: {'все ферро' if m1_ferro else 'ГДЕ-ТО АНТИФЕРРО'} (E_M1(0) = {e_m1_s}).")
+    A(f"- Антиферро-компонента в M2: {'⚠️ ЕСТЬ' if m2_anti else 'нет'} (E_M2(0) = {e_m2_s}).")
+    A(f"- Условное расщепление E(θ|h): max|E(h+)−E(h−)| = {maxgap:.3f} "
+      + ("⚠️ ЕСТЬ ⇒ сигнал видимости спинора" if maxgap > 0.05 else "(в шуме/нет h−)") + ".")
+    if is_sector and len(stats) >= 2:
+        # R4b: зависит ли E(θ) от сектора Tw
+        sect_gap = float(np.nanmax(np.abs(stats[0]["E_m1"] - stats[-1]["E_m1"])))
+        A(f"- **Зависимость E(θ) от сектора Tw (R4b):** max_θ|E_M1[{cells[0]['cell']['sector']:g}] "
+          f"− E_M1[{cells[-1]['cell']['sector']:g}]| = {sect_gap:.3f} "
+          + ("⚠️ ЗАВИСИТ ⇒ топология видна через связь!" if sect_gap > 0.05 else "(не зависит — топология не видна)") + ".")
+    A("\n> Центральный вопрос, уверенность низкая; обе гипотезы легальны. "
+      "Интерпретация — с архитектором (CLAUDE.md).")
     return "\n".join(L) + "\n"
 
 

@@ -11,7 +11,7 @@ from ribbon_sim.dynamics import (
     classify,
     kink_count,
 )
-from ribbon_sim.frames import haar_quaternions
+from ribbon_sim.frames import haar_quaternions, total_twist, twist_free_init
 
 BASE = {"N": 8, "k_e": 0.5, "k_c": 1.0, "spinor": False,
         "lr": 0.01, "T0": 0.0, "decay": 1.0, "steps": 300}
@@ -128,6 +128,20 @@ def test_spinor_elastic_runs_and_kinks_countable():
     kc = np.asarray(kink_count(qf))
     assert kc.min() >= 0 and kc.max() <= cfg["N"] - 1
     assert np.allclose(np.asarray(jnp.linalg.norm(qf, axis=-1)), 1.0, atol=1e-5)
+
+
+def test_twist_projection_conserves_twist():
+    """R4: проекция градиента держит Tw = const (|ΔTw| < 1e-4 за прогон)."""
+    cfg = dict(BASE, elastic="spinor", k_e=2.0, N=16, steps=1000, lr=0.02,
+               twist_project=True)
+    relax = build_relaxer(cfg)["run"]
+    q0 = twist_free_init(jax.random.PRNGKey(30), (256, cfg["N"]), total_twist=0.0)
+    tw0 = np.asarray(total_twist(q0))
+    a, b = _ab()
+    qf, _ = relax(jax.random.PRNGKey(31), q0, a, b)
+    twf = np.asarray(total_twist(qf))
+    dmax = float(np.max(np.abs(twf - tw0)))
+    assert dmax < 1e-4, f"max|ΔTw| = {dmax:.2e}"
 
 
 def test_chordal_elastic_runs_and_relaxes():
