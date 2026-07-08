@@ -4,6 +4,7 @@
 Ось конца n(q) = R(q)·e_z — третий столбец матрицы поворота.
 """
 
+import jax
 import jax.numpy as jnp
 
 # Порог обрезки аргумента arccos. В float32 машинный eps ≈ 1.2e-7, поэтому
@@ -149,6 +150,48 @@ def twist_free_init(key, shape, total_twist=0.0, sigma_bend=0.25):
         q = normalize(quat_mul(q, r[:, i, :]))            # нормировка на шаге: без дрейфа |q|
         frames.append(q)
     return jnp.stack(frames, axis=1)                      # (B, N, 4)
+
+
+def sector_sample(key, shape, target=0.0, sigma_bend=0.35, sigma_twist=0.12):
+    """ЧЕСТНАЯ выборка сектора Tw=target (архитектор, фикс R4b-degenerate-init).
+
+    Каждая лента — НЕЗАВИСИМАЯ точка сектора с РАЗНООБРАЗНОЙ формой И РАЗНООБРАЗНЫМ
+    распределением скрутки, при ТОЧНОМ Σ2z_i=target. В отличие от twist_free_init
+    (одинаковый z по всем связям ⇒ вырожденные бассейны, R4b красный: сиды флипались
+    в противоположные ветви), здесь на каждой связи:
+      - изгиб (x,y) ~ Normal(0,σ_bend) — случайно и независимо;
+      - скрутка z_i ~ Normal(0,σ_twist), СДВИНУТА так, что Σ2z_i=target ровно.
+    z_i физически мал (|z|<1, w вещественно): 2π делится на N−1 связей ⇒ z̄≈π/L≈0.05.
+    Прямая конструкция (не GD: спуск по (Tw−target)² расходился). shape=(B,N) →
+    (q (B,N,4), max|Tw−target|).
+    """
+    import jax.random as jr
+
+    B, N = shape
+    L = N - 1
+    k0, kb, kt = jr.split(key, 3)
+    q0 = haar_quaternions(k0, (B,))                       # разнообразная база
+    bend = jr.normal(kb, (B, L, 2)) * sigma_bend
+    z_raw = jr.normal(kt, (B, L)) * sigma_twist
+    z_raw = jnp.clip(z_raw, -0.5, 0.5)                    # держим |z| физичным
+    # сдвиг на ленту: Σz_i = target/2 ровно ⇒ Σ2z_i = target
+    z = z_raw - jnp.mean(z_raw, axis=1, keepdims=True) + (target / 2.0) / L
+    x, y = bend[..., 0], bend[..., 1]
+    # ограничим изгиб так, чтобы x²+y²+z² ≤ 0.81 (w ≥ 0.44): z (скрутка) остаётся ровным
+    b2 = x * x + y * y
+    max_b2 = jnp.maximum(0.81 - z * z, 1e-6)
+    scale = jnp.where(b2 > max_b2, jnp.sqrt(max_b2 / jnp.maximum(b2, 1e-12)), 1.0)
+    x, y = x * scale, y * scale
+    w = jnp.sqrt(1.0 - x * x - y * y - z * z)             # ≥ 0, вещественно
+    r = jnp.stack([w, x, y, z], axis=-1)                 # (B, L, 4), единичный
+    q = q0
+    frames = [q0]
+    for i in range(L):
+        q = normalize(quat_mul(q, r[:, i, :]))
+        frames.append(q)
+    q = jnp.stack(frames, axis=1)                        # (B, N, 4)
+    err = float(jnp.max(jnp.abs(total_twist(q) - target)))
+    return q, err
 
 
 def relative_log(q, spinor=False):

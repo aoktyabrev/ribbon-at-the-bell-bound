@@ -16,6 +16,7 @@ from ribbon_sim.frames import (
     quat_mul,
     relative_log,
     rotmat,
+    sector_sample,
     total_twist,
     twist_free_init,
 )
@@ -135,6 +136,20 @@ def test_twist_free_init_sets_twist():
         q = twist_free_init(jax.random.PRNGKey(51), (128, 16), total_twist=T)
         tw = np.asarray(total_twist(q))
         assert np.allclose(tw, T, atol=1e-3), f"T={T}, max откл={np.max(np.abs(tw-T)):.2e}"
+
+
+def test_sector_sample_exact_and_diverse():
+    """Честный сэмплинг сектора (фикс R4b): Tw=target ТОЧНО + разнообразные ленты.
+    В отличие от twist_free_init (одинаковый z по связям), z_i разнообразны."""
+    from ribbon_sim.frames import quat_conj_mul
+    for T in [0.0, 2 * np.pi]:
+        q, err = sector_sample(jax.random.PRNGKey(52), (256, 64), target=T)
+        tw = np.asarray(total_twist(q))
+        assert np.allclose(tw, T, atol=1e-3), f"T={T}, max откл={err:.2e}"
+        assert err < 1e-3
+        # разнообразие: z-компоненты связей варьируются ПО СВЯЗЯМ внутри ленты
+        z = np.asarray(quat_conj_mul(q[:, :-1], q[:, 1:])[..., 3])  # (B, N-1)
+        assert z.std(axis=1).mean() > 0.02, "скрутка по связям должна варьироваться (не константа)"
 
 
 def test_conj_is_inverse():

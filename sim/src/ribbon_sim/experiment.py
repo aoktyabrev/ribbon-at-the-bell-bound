@@ -209,7 +209,7 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None,
     Плюс диагностика кинков и (R4) диагностика меры на выбранных θ.
     """
     from .dynamics import holonomy, kink_count
-    from .frames import axis, mirror_flip, quat_conj_mul, total_twist, twist_free_init
+    from .frames import axis, mirror_flip, quat_conj_mul, sector_sample, total_twist
 
     twist_target = cell.get("twist_target") if cell.get("twist_project") else None
     mirror = bool(cell.get("mirror_pairs", False))  # зеркальные пары q / q⊗j (R3-geo)
@@ -257,8 +257,8 @@ def run_cell_blocks(cell, thetas, block_cfg, seed_override=None,
             a, b = setting_vectors(theta)
             tk = jax.random.fold_in(base_key, ti)
             k_init, k_noise = jax.random.split(tk)
-            if twist_target is not None:  # R4: инициализация в секторе Tw=target
-                q = twist_free_init(k_init, (B, N), total_twist=twist_target)
+            if twist_target is not None:  # R4: честный сэмплинг сектора Tw=target
+                q, _tw_err = sector_sample(k_init, (B, N), target=twist_target)
             else:
                 q = haar_quaternions(k_init, (B, N))
             if mirror:  # вторая половина = зеркало первой (q⊗j): ±-симметрия по построению
@@ -827,6 +827,22 @@ def _render_holo(exp, analyses, deg):
         A(f"| {cell['label']} | {kd:.4f} | {p_hm.mean():.4f} | {E_m1[i0]:+.3f} | {E_m2[i0]:+.3f} "
           f"| {sgn} | {gap:.3f} | {res['frac_converged']*100:.0f} |")
     A("")
+
+    # --- явные доли ветвей P(s,t|θ,сектор) (архитектор: фрустрация как СМЕСЬ, не сид-флип) ---
+    A("## Доли ветвей P(s,t) [pp,pm,mp,mm] по θ\n")
+    A("Чистая мера ⇒ гладкая смесь ветвей; вырождение/фрустрация ⇒ доминирование одной "
+      "ветви (|E|→1 без смеси) или скачки. Сравнить сиды на согласованность.\n")
+    idxs = [int(np.argmin(np.abs(deg - td))) for td in (0.0, 60.0, 120.0, 180.0)]
+    for res in cells:
+        A(f"**{res['cell']['label']}** (по сидам):")
+        A("| θ° | сид | pp | pm | mp | mm |")
+        A("|---|---|---|---|---|---|")
+        c = res["counts"]  # (nS, nT, 4)
+        for j in idxs:
+            for si in range(c.shape[0]):
+                f = c[si, j] / max(c[si, j].sum(), 1)
+                A(f"| {deg[j]:.0f} | {si} | {f[0]:.2f} | {f[1]:.2f} | {f[2]:.2f} | {f[3]:.2f} |")
+        A("")
 
     # --- диагностика меры (R4) ---
     if any(res.get("measure") for res in cells):
