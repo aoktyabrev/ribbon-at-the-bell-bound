@@ -89,12 +89,17 @@ def check_controls(counts, thetas):
     }
 
 
-def reproducibility(counts_a, counts_b, alpha=0.05):
+def reproducibility(counts_a, counts_b, alpha=0.05, classify_degenerate=False,
+                    degen_dE=0.3, abs_tol=0.06):
     """Воспроизводимость на 2 сидах через max-статистику по всем точкам θ.
 
     Поточечный 3σ на 25 сравнениях завышает частоту ложных срабатываний
-    (~1−0.997^25 ≈ 7%). Контролируем семейную ошибку: считаем глобальный
-    p-value max|z| и сравниваем с порогом Бонферрони z*(n, alpha).
+    (~1−0.997^25 ≈ 7%). Контролируем семейную ошибку: max|z| vs порог Бонферрони.
+
+    classify_degenerate (R4b, архитектор): при чистом зеркальном контроле и честном
+    сэмплере точки |ΔE|>degen_dE — DEGENERATE (сид-флип между конкурирующими минимумами,
+    E не самоусредняется — валидная физика), а |ΔE|<abs_tol — воспроизводимы (гасит
+    артефакт насыщения E→±1, σ→0); вердикт по остальным. По умолчанию OFF (классика R1–R5).
     """
     Ea, Eb = E_from_counts(counts_a), E_from_counts(counts_b)
     na = np.asarray(counts_a, dtype=np.float64).sum(-1)
@@ -104,18 +109,30 @@ def reproducibility(counts_a, counts_b, alpha=0.05):
     dE = Ea - Eb
     z = dE / np.where(sig > 0, sig, 1.0)
     n = len(dE)
-    max_z = float(np.max(np.abs(z)))
-    z_thresh = _bonferroni_z(n, alpha)
-    global_p = 1.0 - (1.0 - _two_sided_p(max_z)) ** n
+    if classify_degenerate:
+        degen = np.abs(dE) > degen_dE            # сид-флип = DEGENERATE (физика)
+        reproducible_pt = np.abs(dE) < abs_tol   # малое |ΔE| = воспроизводимо (насыщение)
+        consider = (~degen) & (~reproducible_pt)
+    else:
+        degen = np.zeros(n, dtype=bool)
+        consider = np.ones(n, dtype=bool)
+    z_eff = np.where(consider, np.abs(z), 0.0)
+    n_consider = max(int(consider.sum()), 1)
+    max_z = float(np.max(z_eff))
+    z_thresh = _bonferroni_z(n_consider, alpha)
+    global_p = 1.0 - (1.0 - _two_sided_p(max_z)) ** n_consider
     return {
         "dE": dE,
         "z": z,
         "max_abs_dE": float(np.max(np.abs(dE))),
         "max_z": max_z,
         "n_points": n,
-        "z_thresh": z_thresh,      # порог max-статистики при данном n и alpha
-        "global_p": global_p,      # семейный p-value наблюдённого max|z|
+        "degenerate": degen,
+        "n_degenerate": int(degen.sum()),
+        "z_thresh": z_thresh,
+        "global_p": global_p,
         "passes": bool(max_z < z_thresh),
+        "has_degenerate": bool(degen.any()),
     }
 
 

@@ -77,6 +77,22 @@ def build_cells(cfg, mode="full"):
             k_e = float(kappa) * (N - 1) * k_c
             cells.append({**base, "k_e": k_e, "lr": 0.5 / (k_e + k_c),
                           "kappa": float(kappa), "label": f"κ={kappa:g}"})
+    elif "twist_sectors" in cfg and "decay_grid" in cfg:  # R4b-anneal: сектор×анизотропия×отжиг
+        kappa_eq = float(cfg.get("kappa_equiv", 1.0))
+        k_e_eq = kappa_eq * (N - 1) * k_c
+        el = str(phys.get("elastic", "cosserat_geo"))
+        total = 3.0 * k_e_eq if el == "cosserat_geo" else 3.0 * (k_e_eq / 4.0)
+        for dcy in cfg["decay_grid"]:
+            for sec in cfg["twist_sectors"]:
+                tw = float(sec) * 2.0 * np.pi
+                for ratio in cfg["cosserat_grid"]:
+                    r = float(ratio)
+                    k_b = total / (2.0 + r); k_t = r * k_b
+                    cells.append({**base, "elastic": el, "k_e": 0.0, "k_b": k_b, "k_t": k_t,
+                                  "lr": 0.5 / (max(k_b, k_t) + k_c), "kappa": kappa_eq, "ratio": r,
+                                  "decay": float(dcy), "decay_val": float(dcy),
+                                  "twist_project": True, "twist_target": tw, "sector": float(sec),
+                                  "label": f"d{dcy:g} Tw{sec:g} kt/kb{r:g}"})
     elif "twist_sectors" in cfg and "cosserat_grid" in cfg:  # R4a/R4b: сектор × анизотропия
         kappa_eq = float(cfg.get("kappa_equiv", 1.0))
         k_e_eq = kappa_eq * (N - 1) * k_c
@@ -391,7 +407,11 @@ def _analyse_cell(res, thetas):
     counts_sum = counts.sum(0)
     E = analysis.E_from_counts(counts_sum)             # физический наблюдаемый (ферро)
     ctrl = analysis.check_controls(counts_sum, thetas)
-    repro = analysis.reproducibility(counts[0], counts[1]) if counts.shape[0] >= 2 else None
+    # DEGENERATE-классификация включается для зеркальных прогонов (R4b): чистое зеркало
+    # + честный сэмплер ⇒ большой |ΔE| сидов = вырожденность, не дефект.
+    cd = bool(res.get("mirror"))
+    repro = (analysis.reproducibility(counts[0], counts[1], classify_degenerate=cd)
+             if counts.shape[0] >= 2 else None)
     # фиты семейств SPEC — в синглетной конвенции (глобальный флип t̃=−t)
     cs = analysis.singlet_counts(counts_sum)
     cmp = analysis.compare_models(cs, thetas)
@@ -454,6 +474,8 @@ def write_report(exp, outdir):
               and str(cfg["physics"].get("elastic", "geodesic")) == "spinor")
     if "elastic_grid" in cfg:
         md = _render_r5(exp, analyses, deg)
+    elif "twist_sectors" in cfg and "decay_grid" in cfg:
+        md = _render_r4anneal(exp, analyses, deg)
     elif "twist_sectors" in cfg or "soft_ke_grid" in cfg:
         md = _render_holo(exp, analyses, deg)
     elif is_r5b:
@@ -783,6 +805,142 @@ def _render_r5(exp, analyses, deg):
 
 
 # --------------------------------------------------------------------------- #
+#  Отчёт R4b-anneal (снятие вырожденности: E(θ|сектор), веса ветвей, decay-универсальность)
+# --------------------------------------------------------------------------- #
+# θ бывших точек фрустрации (квенч R4b) + соседи — где отжиг проверяется на снятие вырожденности.
+_FRUST_THETA = [22.5, 30.0, 37.5, 112.5, 120.0, 127.5, 165.0, 172.5, 180.0]
+
+
+def _antiferro_frac(counts_2d):
+    """Доля антиферро-ветви s·t=−1 (=pm+mp) по θ. counts_2d (n_theta,4)."""
+    c = np.asarray(counts_2d, dtype=np.float64)
+    return (c[..., 1] + c[..., 2]) / np.maximum(c.sum(-1), 1)
+
+
+def _render_r4anneal(exp, analyses, deg):
+    cfg = exp["cfg"]; cells = exp["cells"]
+    L = []; A = L.append
+    A(f"# {exp['name']} — отчёт ({exp['mode']}): отжиг снимает вырожденность Tw=2π\n")
+    A(f"**Описание:** {cfg.get('description', '')}\n")
+    A(f"**Пре-регистрация:** {cfg.get('prediction', '')}\n")
+    total = sum(r["elapsed_s"] for r in cells); mem = _gpu_mem_mb()
+    c0 = cells[0]["cell"]
+    A("## Конфигурация\n```")
+    A(f"cosserat_geo+spinor  N={c0['N']}  B={c0['B']}  seeds={c0['seeds']}  T0={c0['T0']}  "
+      f"честный сэмплер + зеркальные пары + связь Tw=const")
+    A(f"decay∈{cfg['decay_grid']}  Tw∈{cfg['twist_sectors']}·2π  k_t/k_b∈{cfg['cosserat_grid']}")
+    A("```")
+    A(f"\nВремя: **{total:.1f} с** на {jax.devices()[0].device_kind}."
+      + (f" Пик GPU-памяти ≈ {mem:.0f} МБ." if mem else "") + "\n")
+    A(f"![E(θ) по ячейкам](E_all_{exp['mode']}.png)\n")
+
+    # индекс ячеек по (decay, sector, ratio)
+    idx = {(c["cell"]["decay_val"], c["cell"]["sector"], c["cell"]["ratio"]): (c, an)
+           for c, an in zip(cells, analyses)}
+    decays = sorted({c["cell"]["decay_val"] for c in cells})
+    sectors = sorted({c["cell"]["sector"] for c in cells})
+    ratios = sorted({c["cell"]["ratio"] for c in cells})
+    i0 = int(np.argmin(np.abs(deg)))
+
+    # --- сводка ---
+    A("## Сводка: E(θ) и доля антиферро по (decay, сектор, k_t/k_b)\n")
+    A("| decay | Tw | k_t/kb | амп\\|E\\| | E(0) | ⟨антиферро⟩ | сид-флипы (DEGENERATE) | сошлось% |")
+    A("|---|---|---|---|---|---|---|---|")
+    for c, an in zip(cells, analyses):
+        cell = c["cell"]
+        af = float(np.mean(_antiferro_frac(an["counts_sum"])))
+        repro = an.get("repro")
+        nd = repro["n_degenerate"] if repro else 0
+        A(f"| {cell['decay_val']:g} | {cell['sector']:g} | {cell['ratio']:g} | {an['amp']:.3f} "
+          f"| {an['E'][i0]:+.3f} | {af:.3f} | {nd} | {c['frac_converged']*100:.0f} |")
+    A("")
+
+    # --- (a) снял ли отжиг сид-флипы: DEGENERATE-точки по ячейкам ---
+    A("## (a) Устраняет ли отжиг сид-флипы? (DEGENERATE-точки)\n")
+    A("Отжиг должен сделать веса ветвей воспроизводимыми ⇒ 0 DEGENERATE. Если остаются — "
+      "вырожденность ТОЧНАЯ (симметрия), отдельная загадка.\n")
+    A("| decay | Tw | k_t/kb | DEGENERATE θ | max\\|z\\| невырожд. |\n|---|---|---|---|---|")
+    for c, an in zip(cells, analyses):
+        cell = c["cell"]; repro = an.get("repro")
+        if repro and repro["n_degenerate"]:
+            dth = ", ".join(f"{t:.0f}°" for t in deg[repro["degenerate"]])
+        else:
+            dth = "—"
+        mz = f"{repro['max_z']:.2f}" if repro else "—"
+        A(f"| {cell['decay_val']:g} | {cell['sector']:g} | {cell['ratio']:g} | {dth} | {mz} |")
+    A("")
+
+    # --- (c) КЛЮЧЕВОЕ: согласованы ли веса при разных decay ---
+    A("## (c) КЛЮЧЕВОЕ: универсальна ли термо-мера? (веса при двух decay)\n")
+    A(f"Доля антиферро (s·t=−1) в точках фрустрации {[f'{t:g}' for t in _FRUST_THETA]}, "
+      "усреднённая по сидам, при разных decay. Согласие ⇒ мера определена; расхождение ⇒ "
+      "мера зависит от скорости охлаждения (неуниверсальна).\n")
+    frust_idx = [int(np.argmin(np.abs(deg - t))) for t in _FRUST_THETA]
+    if len(decays) >= 2:
+        for sec in sectors:
+            for r in ratios:
+                if all((d, sec, r) in idx for d in decays):
+                    A(f"**Tw={sec:g}·2π, k_t/k_b={r:g}:**")
+                    A("| θ° | " + " | ".join(f"антиф@decay={d:g}" for d in decays) + " | \\|Δ\\| |")
+                    A("|---|" + "---|" * (len(decays) + 1))
+                    worst = 0.0
+                    for j, t in zip(frust_idx, _FRUST_THETA):
+                        afs = [float(np.mean([_antiferro_frac(idx[(d, sec, r)][0]["counts"][si])[j]
+                                              for si in range(idx[(d, sec, r)][0]["counts"].shape[0])]))
+                               for d in decays]
+                        dd = max(afs) - min(afs)
+                        worst = max(worst, dd)
+                        A(f"| {t:g} | " + " | ".join(f"{a:.3f}" for a in afs) + f" | {dd:.3f} |")
+                    verdict = ("✅ веса согласованы (мера универсальна)" if worst < 0.05
+                               else "⚠️ веса ЗАВИСЯТ от decay (мера неуниверсальна)")
+                    A(f"\nmax\\|Δвес\\| = {worst:.3f} → {verdict}\n")
+
+    # --- (b) θ-зависимость антиферро в Tw=2π ---
+    A("## (b) θ-зависимость доли антиферро в Tw=2π (форма открыта)\n")
+    for r in ratios:
+        row = []
+        for d in decays:
+            if (d, 1.0, r) in idx:
+                af = _antiferro_frac(idx[(d, 1.0, r)][1]["counts_sum"])
+                row.append((d, af))
+        if row:
+            A(f"**k_t/k_b={r:g}** доля антиферро по θ (decay={row[0][0]:g}):")
+            af = row[0][1]
+            A("  " + " ".join(f"{deg[i]:.0f}°:{af[i]:.2f}" for i in range(0, len(deg), 4)))
+    A("")
+
+    _render_verdict_r4anneal(A, cells, analyses, deg, sectors, ratios, decays, idx, i0)
+    return "\n".join(L) + "\n"
+
+
+def _render_verdict_r4anneal(A, cells, analyses, deg, sectors, ratios, decays, idx, i0):
+    A("## Вердикт по пре-регистрации\n")
+    # (a)
+    any_degen = any(an.get("repro") and an["repro"]["n_degenerate"] for an in analyses)
+    A(f"**(a) отжиг устраняет сид-флипы:** {'❌ остаются DEGENERATE-точки (вырожденность точная — загадка)' if any_degen else '✅ сид-флипов нет (веса воспроизводимы)'}.")
+    # (c)
+    worst_all = 0.0
+    if len(decays) >= 2:
+        frust_idx = [int(np.argmin(np.abs(deg - t))) for t in _FRUST_THETA]
+        for sec in sectors:
+            for r in ratios:
+                if all((d, sec, r) in idx for d in decays):
+                    for j in frust_idx:
+                        afs = [float(np.mean([_antiferro_frac(idx[(d, sec, r)][0]["counts"][si])[j]
+                                              for si in range(idx[(d, sec, r)][0]["counts"].shape[0])]))
+                               for d in decays]
+                        worst_all = max(worst_all, max(afs) - min(afs))
+    A(f"\n**(c) КЛЮЧЕВОЕ — универсальность меры:** max|Δвес| между decay = {worst_all:.3f} → "
+      + ("✅ мера УНИВЕРСАЛЬНА (не зависит от скорости охлаждения)" if worst_all < 0.05
+         else "⚠️ мера НЕуниверсальна (зависит от decay)") + ".")
+    # антиферро существование
+    af2pi = any(np.mean(_antiferro_frac(an["counts_sum"])) > 0.02
+                for c, an in zip(cells, analyses) if c["cell"]["sector"] > 0)
+    A(f"\n**Доля антиферро в Tw=2π > 0:** {'✅' if af2pi else '❌'} (существование ветви).")
+    A("\n> Интерпретация — с архитектором (CLAUDE.md).")
+
+
+# --------------------------------------------------------------------------- #
 #  Отчёт R4a/R4b/мягкая лента (голономия M1/M2, условная E(θ|h))
 # --------------------------------------------------------------------------- #
 def _render_holo(exp, analyses, deg):
@@ -865,13 +1023,25 @@ def _render_holo(exp, analyses, deg):
     mirror_on = any(a.get("mirror") for a in analyses)
     if mirror_on:
         A("*Зеркальные пары: ±-симметрия и маргиналы тождественны по построению (вычеркнуты). "
-          "Контроль — согласованность зеркальных половин |E_h1−E_h2| max-статистикой.*\n")
-        A("| ячейка | зеркало \\|E_h1−E_h2\\| | воспроизв. (сиды) |\n|---|---|---|")
+          "Контроль — согласованность зеркальных половин |E_h1−E_h2| max-статистикой. "
+          "**DEGENERATE** (архитектор): θ-точки сид-флипа (|ΔE|>0.3) при чистом зеркале и честном "
+          "сэмплере — вырожденность основного состояния при T=0 (E не самоусредняется), валидная "
+          "физика, не стоп-сигнал; исключены из вердикта воспроизводимости.*\n")
+        A("| ячейка | зеркало \\|E_h1−E_h2\\| | воспроизв. невырожд. | DEGENERATE точек |\n|---|---|---|---|")
         for res, an in zip(cells, analyses):
             m, repro = an.get("mirror"), an["repro"]
             mm = (f"{m['max_z']:.2f}<{m['z_thresh']:.2f} {'✅' if m['passes'] else '❌'}") if m else "—"
-            rr = (f"{repro['max_z']:.2f} {'✅' if repro['passes'] else '❌'}") if repro else "—"
-            A(f"| {res['cell']['label']} | {mm} | {rr} |")
+            if repro:
+                nd = repro.get("n_degenerate", 0)
+                deg_th = ""
+                if nd:
+                    dmask = repro["degenerate"]
+                    deg_th = ", ".join(f"{d:.0f}°" for d in deg[dmask])
+                rr = f"{repro['max_z']:.2f}<{repro['z_thresh']:.2f} {'✅' if repro['passes'] else '❌'}"
+                dd = f"**{nd}** ({deg_th})" if nd else "0"
+            else:
+                rr, dd = "—", "—"
+            A(f"| {res['cell']['label']} | {mm} | {rr} | {dd} |")
     else:
         A("| ячейка | маргиналы | ±-симм | воспроизв. |\n|---|---|---|---|")
         for res, an in zip(cells, analyses):

@@ -67,18 +67,33 @@ def test_harmonics_recovers_cos():
 
 
 def test_reproducibility_maxstat():
-    # два независимых сида из ОДНОГО распределения ⇒ контроль проходит,
-    # порог max-статистики строже поточечного 3σ (больше при n=25)
+    # два независимых сида из ОДНОГО распределения ⇒ контроль проходит (классика, degen OFF)
     ca = analysis.synthetic_counts(THETAS, p=2.0, n_per_point=200_000, seed=10)
     cb = analysis.synthetic_counts(THETAS, p=2.0, n_per_point=200_000, seed=11)
     rep = analysis.reproducibility(ca, cb)
     assert rep["passes"]
     assert rep["z_thresh"] > 3.0  # Бонферрони на 25 сравнениях строже 3σ
     assert rep["global_p"] > 0.05
+    assert rep["n_degenerate"] == 0
     # грубо сдвинутый второй сид (другой p) — контроль обязан провалиться
     cc = analysis.synthetic_counts(THETAS, p=1.0, n_per_point=200_000, seed=12)
     rep_bad = analysis.reproducibility(ca, cc)
     assert not rep_bad["passes"]
+
+
+def test_reproducibility_degenerate_classification():
+    # classify_degenerate (R4b): изолированные сид-флипы (|ΔE|>0.3) → DEGENERATE, не провал
+    ca = analysis.synthetic_counts(THETAS, p=2.0, n_per_point=200_000, seed=20)
+    cb = ca.copy()
+    # инвертируем ветви (s·t → −) в ДВУХ точках: имитируем сид-флип конкурирующих минимумов
+    for j in (4, 16):
+        cb[j] = ca[j][[1, 0, 3, 2]]  # своп pp↔pm, mp↔mm ⇒ E меняет знак
+    rep = analysis.reproducibility(ca, cb, classify_degenerate=True)
+    assert rep["n_degenerate"] == 2, rep["n_degenerate"]
+    assert rep["passes"]  # вне вырожденных точек — воспроизводимо
+    # без classify — те же точки валят контроль
+    rep_off = analysis.reproducibility(ca, cb, classify_degenerate=False)
+    assert not rep_off["passes"]
 
 
 def test_marginals_half_for_symmetric():
