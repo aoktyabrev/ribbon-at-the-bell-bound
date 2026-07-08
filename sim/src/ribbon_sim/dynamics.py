@@ -98,6 +98,56 @@ def build_relaxer(cfg):
     return {"run": run, "probe": probe, "lr": lr, "steps": steps}
 
 
+def build_pt_fns(cfg, a, b, tw_target):
+    """(energy_fn, step_fn) для pt.make_pt: реплики над лентами, форма (B,R,N,4).
+
+    energy_fn(state)→(B,R) энергия ленты-реплики; step_fn(state,Ts,key) — ланжевен-шаг
+    ВСЕХ реплик при своих T (Ts形 (R,)) с проекцией Tw=const (сектор общий для реплик).
+    a,b,tw_target фиксированы (одна θ, один сектор). Спинор/жёсткости/lr из cfg.
+    """
+    lr = float(cfg["lr"])
+    k_e, k_c = float(cfg["k_e"]), float(cfg["k_c"])
+    spinor = bool(cfg.get("spinor", False))
+    elastic = str(cfg.get("elastic", "geodesic"))
+    k_b, k_t = float(cfg.get("k_b", 1.0)), float(cfg.get("k_t", 1.0))
+    project = bool(cfg.get("twist_project", False))
+    n_corr = int(cfg.get("n_twist_corr", 20))  # итераций Ньютоновой коррекции Tw
+
+    def e1(q):  # (N,4)→scalar
+        return e_total(q, a, b, k_e, k_c, spinor=spinor, elastic=elastic, k_b=k_b, k_t=k_t)
+
+    energy_fn = jax.vmap(jax.vmap(e1))          # (B,R,N,4)→(B,R)
+    grad_fn = jax.vmap(jax.vmap(jax.grad(e1)))  # (B,R,N,4)→(B,R,N,4)
+    tw_fn = jax.vmap(jax.vmap(total_twist))     # (B,R,N,4)→(B,R)
+    twg_fn = jax.vmap(jax.vmap(jax.grad(total_twist)))
+
+    def step_fn(state, Ts, key):
+        g = grad_fn(state)
+        Tb = Ts[None, :, None, None]            # (1,R,1,1)
+        noise = jax.random.normal(key, state.shape) * jnp.sqrt(2.0 * lr * Tb)
+        u = -lr * g + noise
+        if project:  # проекция + ИТЕРИРОВАННАЯ Ньютонова коррекция Tw→target
+            gt = twg_fn(state)
+            num = jnp.sum(u * gt, axis=(-2, -1))
+            den = jnp.sum(gt * gt, axis=(-2, -1)) + 1e-12
+            u = u - (num / den)[..., None, None] * gt
+            q = normalize(state + u)
+            # Итерированная Ньютонова коррекция: энергетический градиент имеет
+            # твист-компоненту (лента хочет распустить 2π-скрутку), проекция 1-го порядка
+            # + перенормировка оставляют систематический дрейф; ~12 итераций нанизывают Tw.
+            def corr(_, q):
+                gt2 = twg_fn(q)
+                den2 = jnp.sum(gt2 * gt2, axis=(-2, -1)) + 1e-12
+                resid = (tw_target - tw_fn(q)) / den2
+                return normalize(q + resid[..., None, None] * gt2)
+            q = lax.fori_loop(0, n_corr, corr, q)
+        else:
+            q = normalize(state + u)
+        return q
+
+    return energy_fn, step_fn
+
+
 def classify(q_final, a, b):
     """Финальная классификация ветвей (SPEC §2.3):
 
