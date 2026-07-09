@@ -288,6 +288,76 @@ def harmonics(thetas, E):
     return {"c0": float(coef[0]), "A1": float(coef[1]), "A3": float(coef[2])}
 
 
+# --------------------------------------------------------------------------- #
+#  Фиты формы E(θ) для R4c (антиферро-сектор): масштаб. синглет, хорда, ступень/пила
+# --------------------------------------------------------------------------- #
+def _wls_fit(thetas, E, sig, model_fn, p0, bounds, n_grid=200):
+    """1-параметрический WLS-фит E≈model_fn(θ, p): грубая сетка + золотое сечение.
+    Возврат (p_hat, chi2). sig — σ на точку (веса 1/σ²)."""
+    w = 1.0 / np.maximum(sig, 1e-6) ** 2
+
+    def chi2(p):
+        r = E - model_fn(thetas, p)
+        return float(np.sum(w * r * r))
+
+    grid = np.linspace(bounds[0], bounds[1], n_grid)
+    i = int(np.argmin([chi2(p) for p in grid]))
+    lo = grid[max(i - 1, 0)]; hi = grid[min(i + 1, n_grid - 1)]
+    # минимизация: золотое сечение по −chi2
+    x, negchi = _golden_max(lambda p: -chi2(p), lo, hi)
+    return float(x), -float(negchi)
+
+
+def fit_shapes(thetas, E, sig):
+    """Фиты формы E(θ) (R4c): масштаб. синглет −A·cosθ, хорда E_p (со знаком),
+    ступень A·sign(cosθ), пила A·(2θ/π−1)·(−1). AIC по χ². thetas в радианах.
+
+    E_p семейства хорды (антиферро-конвенция, E(0)=−1):
+        E_p(θ) = (cos^p(θ/2) − sin^p(θ/2)) / (cos^p + sin^p)  ⇒ E_p(0)=+1? нет:
+    берём знак так, чтобы E(0)=−1 (антиферро): E_p = (sin^p−cos^p)/(sin^p+cos^p) — но с
+    амплитудным префактором для «ножниц».
+    """
+    thetas = np.asarray(thetas, float); E = np.asarray(E, float); sig = np.asarray(sig, float)
+    c = np.cos(thetas)
+
+    def m_singlet(th, A):     # масштабированный синглет
+        return -A * np.cos(th)
+
+    def m_chord(th, p):       # семейство хорды (антиферро E(0)=−1), без масштаба
+        s2 = np.sin(th / 2) ** 2; c2 = np.cos(th / 2) ** 2
+        ws = s2 ** (p / 2); wo = c2 ** (p / 2)
+        return (ws - wo) / (ws + wo)
+
+    def m_step(th, A):        # ступень (антиферро): −A·sign(cosθ)
+        return -A * np.sign(np.cos(th))
+
+    def m_saw(th, A):         # пила (антиферро): −A·(1−2θ/π)
+        return -A * (1.0 - 2.0 * th / np.pi)
+
+    A_s, chi_s = _wls_fit(thetas, E, sig, m_singlet, 0.7, (0.0, 1.2))
+    p_c, chi_c = _wls_fit(thetas, E, sig, m_chord, 2.0, (0.2, 6.0))
+    A_st, chi_st = _wls_fit(thetas, E, sig, m_step, 0.7, (0.0, 1.2))
+    A_sw, chi_sw = _wls_fit(thetas, E, sig, m_saw, 0.7, (0.0, 1.2))
+    n = len(thetas)
+
+    def aic_c(chi2, k):
+        return chi2 + 2 * k  # χ²+2k (гауссов лог-лик ∝ −χ²/2)
+
+    out = {
+        "singlet": {"A": A_s, "chi2": chi_s, "aic": aic_c(chi_s, 1),
+                    "curve": (-A_s * c)},
+        "chord_p": {"p": p_c, "chi2": chi_c, "aic": aic_c(chi_c, 1),
+                    "curve": m_chord(thetas, p_c)},
+        "step": {"A": A_st, "chi2": chi_st, "aic": aic_c(chi_st, 1),
+                 "curve": m_step(thetas, A_st)},
+        "saw": {"A": A_sw, "chi2": chi_sw, "aic": aic_c(chi_sw, 1),
+                "curve": m_saw(thetas, A_sw)},
+        "n": n,
+    }
+    out["best"] = min(("singlet", "chord_p", "step", "saw"), key=lambda k: out[k]["aic"])
+    return out
+
+
 def synthetic_counts(thetas, p, n_per_point, seed=0):
     """Синтетические счётчики закона хорды при известном p (для тестов §7)."""
     rng = np.random.default_rng(seed)
