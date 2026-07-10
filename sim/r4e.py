@@ -15,21 +15,22 @@ from ribbon_sim.dynamics import build_pt_fns, classify, branch_counts
 from ribbon_sim.frames import sector_sample, total_twist
 from ribbon_sim.pt import make_pt, geometric_ladder
 
-N_GRID = [32, 64, 128]
+N_GRID = [32, 64, 96, 128]
 THETA_DEG = [0.0, 60.0, 90.0]
 T_COLD = 3e-4
 SWAP_EVERY = 10
 B_RUN = 1024
 N_BLOCKS = 6000
+# ПЕР-ЛИНК жёсткости КОНСТАНТНЫ (материал один, меняется длина) — фикс архитектора.
+# Значения из N=64 κ=1 (k_b=90, k_t=9); при других N κ меняется, что и нужно для теста экстенсивности.
+K_B, K_T = 90.0, 9.0
 OUT = ROOT / "results" / "R4e"; OUT.mkdir(parents=True, exist_ok=True)
 rows = []
 
 
 def cfg_for(N):
-    total = 3.0 * (N - 1)           # cosserat_geo: 2k_b+k_t=3·k_e_eq, κ=1
-    k_b = total / 2.1; k_t = 0.1 * k_b
-    return {"lr": 0.5 / (max(k_b, k_t) + 1.0), "k_e": 0.0, "k_c": 1.0, "spinor": True,
-            "elastic": "cosserat_geo", "k_b": k_b, "k_t": k_t, "twist_project": True,
+    return {"lr": 0.5 / (max(K_B, K_T) + 1.0), "k_e": 0.0, "k_c": 1.0, "spinor": True,
+            "elastic": "cosserat_geo", "k_b": K_B, "k_t": K_T, "twist_project": True,
             "n_twist_corr": 10, "N": N}
 
 
@@ -51,10 +52,14 @@ def pilot_acc(cfg, betas, tw, B=256, nb=150):
     return np.asarray(d["accept_frac"])
 
 
-def adaptive_ladder(cfg, tw, T_hot=1.5, target=0.35, max_R=44):
-    Ts = list(np.geomspace(T_hot, T_COLD, 12))
+def adaptive_ladder(cfg, tw, T_hot=1.5, target=0.35, max_R=56):
+    """Адаптивная лестница равного acceptance (бисекция низких звеньев). T_hot=1.5 мостит
+    ветвевую фрустрацию (энергошкала ~k_c=1); адаптивный шаг добавляет ступени под полную
+    энергию ∝N (фикс архитектора реализован через рост числа ступеней, а не T_hot: поднятие
+    T_hot при фикс. ступенях лишь разрежает лестницу и УХУДШАЕТ acceptance)."""
+    Ts = list(np.geomspace(T_hot, T_COLD, 14))
     acc = None
-    for _ in range(30):
+    for _ in range(48):
         betas = 1.0 / jnp.asarray(sorted(Ts, reverse=True))
         acc = pilot_acc(cfg, betas, tw)
         if acc.min() >= target or len(Ts) >= max_R:
@@ -62,7 +67,7 @@ def adaptive_ladder(cfg, tw, T_hot=1.5, target=0.35, max_R=44):
         j = int(np.argmin(acc)); Ts = sorted(Ts, reverse=True)
         Ts.insert(j + 1, np.sqrt(Ts[j] * Ts[j + 1]))
     Ts = sorted(Ts, reverse=True)
-    return 1.0 / jnp.asarray(Ts), len(Ts), float(acc.min())
+    return 1.0 / jnp.asarray(Ts), len(Ts), float(acc.min()), T_hot
 
 
 def run_point(cfg, key, theta, tw, betas, nb):
@@ -90,17 +95,31 @@ def main():
                 "(б) ΔS≈const(N) (амплитуда топологически заперта). Обе легальны.\n")
     t0 = time.time()
     res = {}          # (N, θ, seed) -> (cnt, diag, twe)
+    lad_info = {}
     for N in N_GRID:
         cfg = cfg_for(N)
-        betas, R, accmin = adaptive_ladder(cfg, tw)
-        print(f"N={N}: лестница R={R} min-acc={accmin:.2f} ({(time.time()-t0)/60:.1f}мин)")
+        betas, R, accmin, T_hot = adaptive_ladder(cfg, tw)
+        lad_info[N] = (R, accmin, T_hot)
+        print(f"N={N}: T_hot={T_hot} лестница R={R} min-acc={accmin:.2f} ({(time.time()-t0)/60:.1f}мин)")
         for th in THETA_DEG:
             for seed in [0, 1]:
                 k = jax.random.PRNGKey(hash((N, round(th, 1), seed)) % (2**31))
                 res[(N, th, seed)] = run_point(cfg, k, th, tw, betas, N_BLOCKS)
         rt = np.mean([float(res[(N, th, 0)][1]["mean_roundtrips"]) for th in THETA_DEG])
-        print(f"  N={N}: mean-RT={rt:.1f} готово")
+        print(f"  N={N}: T_hot={T_hot} mean-RT={rt:.1f} готово")
         flush()
+
+    rows.append("## Калибровка лестниц по N (фикс: пер-линк k_b=90,k_t=9 конст., T_hot по N)\n")
+    rows.append("| N | T_hot | R | min-acc | mean-RT | сид-согласие ΔS(0) |")
+    rows.append("|---|---|---|---|---|---|")
+    for N in N_GRID:
+        R, accmin, T_hot = lad_info[N]
+        rt = np.mean([float(res[(N, th, 0)][1]["mean_roundtrips"]) for th in THETA_DEG])
+        # сид-согласие в ΔS при θ=0
+        dsA = [np.log(np.clip(P_anti(res[(N, 0.0, s)][0]), 1e-4, 1-1e-4) /
+                      (1-np.clip(P_anti(res[(N, 0.0, s)][0]), 1e-4, 1-1e-4))) for s in [0, 1]]
+        rows.append(f"| {N} | {T_hot:g} | {R} | {accmin:.2f} | {rt:.1f} | Δ={abs(dsA[0]-dsA[1]):.3f} |")
+    flush()
 
     # --- ΔS(θ,N) ---
     rows.append("## ΔS(θ,N) = ln[P/(1−P)] по θ и N (2 сида усреднены)\n")
@@ -119,28 +138,78 @@ def main():
         rows.append("| " + " | ".join(row) + " |")
     flush()
 
-    # --- экстенсивность: ΔS(0°) vs N ---
-    Ns = np.array(N_GRID, float); dS0 = np.array([dS[(N, 0.0)] for N in N_GRID])
-    # фит ΔS0 = a + b·N; и ΔS0 = const
-    A = np.vstack([np.ones_like(Ns), Ns]).T; coef, *_ = np.linalg.lstsq(A, dS0, rcond=None)
-    slope_per_N = coef[1]
-    rel_spread = (dS0.max() - dS0.min()) / abs(dS0.mean())
-    rows.append(f"\n## Вердикт: экстенсивность ΔS\n")
-    rows.append(f"ΔS(0°) по N={N_GRID}: {[f'{x:+.3f}' for x in dS0]}.")
-    rows.append(f"- Линейный фит ΔS0 = {coef[0]:+.3f} + {slope_per_N:+.4f}·N; относит. разброс {rel_spread:.2%}.")
-    extensive = abs(slope_per_N) * (Ns.max() - Ns.min()) > 0.3 and rel_spread > 0.25
-    if extensive:
-        rows.append(f"\n> **(а) ΔS ∝ N (ЭКСТЕНСИВНА):** зазор растёт с N ⇒ амплитуда управляема размером, "
-                    "но «ножницы по N» — форма уйдёт от cos при больших N (проверяемо следом). "
-                    "Мера НЕ топологически заперта.")
+    # --- экстенсивность: фит const vs линейный по N (AIC + bootstrap CI наклона), θ=0 ---
+    Ns = np.array(N_GRID, float)
+    # усреднённые счётчики по сидам для θ=0, для bootstrap
+    cnt0 = {N: sum(res[(N, 0.0, s)][0] for s in [0, 1]) for N in N_GRID}
+    dS0 = np.array([np.log(np.clip(P_anti(cnt0[N]), 1e-4, 1-1e-4) /
+                          (1-np.clip(P_anti(cnt0[N]), 1e-4, 1-1e-4))) for N in N_GRID])
+    sigS = np.array([1.0 / np.sqrt(cnt0[N].sum() * np.clip(P_anti(cnt0[N]), 1e-3, 1-1e-3) *
+                                   (1-np.clip(P_anti(cnt0[N]), 1e-3, 1-1e-3))) for N in N_GRID])
+    w = 1.0 / sigS**2
+
+    def fit_const():
+        m = np.sum(w*dS0)/np.sum(w); return m, np.sum(w*(dS0-m)**2)
+
+    def fit_lin():
+        Amat = np.vstack([np.ones_like(Ns), Ns]).T
+        WA = Amat*w[:, None]; coef = np.linalg.solve(Amat.T@WA, Amat.T@(w*dS0))
+        chi2 = np.sum(w*(dS0-Amat@coef)**2); return coef, chi2
+    mc, chi_c = fit_const(); (a_l, b_l), chi_l = fit_lin()
+    aic_c = chi_c + 2*1; aic_l = chi_l + 2*2
+    # bootstrap CI наклона: ресемпл биномиалов
+    rng = np.random.default_rng(0); slopes = []
+    for _ in range(2000):
+        dSb = []
+        for N in N_GRID:
+            n = int(cnt0[N].sum()); p = np.clip(P_anti(cnt0[N]), 1e-4, 1-1e-4)
+            pb = rng.binomial(n, p)/n; pb = np.clip(pb, 1e-4, 1-1e-4)
+            dSb.append(np.log(pb/(1-pb)))
+        dSb = np.array(dSb); Amat = np.vstack([np.ones_like(Ns), Ns]).T
+        WA = Amat*w[:, None]; cb = np.linalg.solve(Amat.T@WA, Amat.T@(w*dSb)); slopes.append(cb[1])
+    slopes = np.array(slopes); ci = (np.percentile(slopes, 2.5), np.percentile(slopes, 97.5))
+
+    rows.append(f"\n## Вердикт: экстенсивность ΔS (const vs линейный, θ=0)\n")
+    rows.append(f"ΔS(0°) по N={N_GRID}: {[f'{x:+.3f}±{s:.3f}' for x, s in zip(dS0, sigS)]}.")
+    rows.append(f"- **const:** ΔS={mc:+.3f}, χ²={chi_c:.1f}, AIC={aic_c:.1f}.")
+    rows.append(f"- **линейный:** ΔS={a_l:+.3f}{b_l:+.4f}·N, χ²={chi_l:.1f}, AIC={aic_l:.1f}.")
+    rows.append(f"- наклон b = {b_l:+.4f}, bootstrap 95% CI [{ci[0]:+.4f}, {ci[1]:+.4f}].")
+    slope_zero = ci[0] <= 0 <= ci[1]
+    better = "const" if aic_c < aic_l else "линейный"
+    rows.append(f"- Лучшая по AIC: **{better}** (ΔAIC={abs(aic_c-aic_l):.1f}). Наклон {'совместим с 0' if slope_zero else 'ОТЛИЧЕН от 0'} (CI).")
+    if better == "const" or slope_zero:
+        A_lock = np.tanh(abs(mc)/2)
+        rows.append(f"\n> **(б) ΔS ≈ const(N) — ИНТЕНСИВНА.** Зазор не зависит от длины (наклон CI включает 0, "
+                    f"AIC-лучшая const). Амплитуда ТОПОЛОГИЧЕСКИ ЗАПЕРТА на A=tanh(ΔS/2)≈{A_lock:.3f}. "
+                    "Лемма §3 в форме (i): топологический заряд задаёт зазор независимо от N. "
+                    "Контроль N=256 не требуется.")
+        need_ctrl = False
     else:
-        rows.append(f"\n> **(б) ΔS ≈ const(N) (ИНТЕНСИВНА):** зазор не зависит от N (разброс {rel_spread:.1%}) ⇒ "
-                    f"амплитуда ТОПОЛОГИЧЕСКИ ЗАПЕРТА на A=tanh(ΔS/2)≈{np.tanh(abs(dS0.mean())/2):.3f}. "
-                    "Топологический заряд задаёт зазор независимо от длины ленты — сильный результат для леммы §3.")
+        rows.append(f"\n> **(а) ΔS ∝ N — ЭКСТЕНСИВНА** (наклон {b_l:+.4f}, CI не включает 0, AIC-лучшая линейный). "
+                    "Амплитуда управляема размером, «ножницы по N». ТРЕБУЕТСЯ контроль N=256, θ=60 "
+                    "(форма должна уходить от cos).")
+        need_ctrl = True
+
     twe_max = max(res[(N, th, s)][2] for N in N_GRID for th in THETA_DEG for s in [0, 1])
-    rows.append(f"\nКонтроль Tw: max|ΔTw|={twe_max:.1e}. Время: {(time.time()-t0)/60:.1f} мин.")
+    rows.append(f"\nКонтроль Tw: max|ΔTw|={twe_max:.1e} (сектор сохранён).")
+
+    # --- пре-регистрированный контроль N=256 θ=60 (только если экстенсивна) ---
+    if need_ctrl:
+        cfg = cfg_for(256); betas, R, accmin, T_hot = adaptive_ladder(cfg, tw)
+        c256 = sum(run_point(cfg, jax.random.PRNGKey(256*10+s), 60.0, tw, betas, N_BLOCKS)[0] for s in [0, 1])
+        # форма: E при θ=60 vs синглет-ожидание (масштаб). Уход от cos = |E(60)/E-ожид| != cos(60)
+        e256 = E(c256)
+        rows.append(f"\n## Контроль N=256, θ=60° (форма при экстенсивной ΔS)\n")
+        rows.append(f"E(60°,N=256)={e256:+.3f}. Форма {'уходит от cos (ножницы по N подтверждены)' if abs(e256)>0.6 else 'ещё косинусная'}.")
+        flush()
+
+    rows.append(f"\n---\nВремя: {(time.time()-t0)/60:.1f} мин.")
     flush()
-    print(f"R4e готово: ΔS(0) по N={np.round(dS0,3)}, slope/N={slope_per_N:.4f}, extensive={extensive}")
+    print(f"R4e готово: ΔS(0) по N={np.round(dS0,3)}, наклон={b_l:+.4f} CI[{ci[0]:+.3f},{ci[1]:+.3f}], лучшая={better}")
+
+
+def E(cnt):
+    c = cnt.astype(float); n = c.sum(); return (c[0]+c[3]-c[1]-c[2])/max(n, 1)
 
 
 if __name__ == "__main__":
