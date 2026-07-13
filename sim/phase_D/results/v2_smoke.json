@@ -1,0 +1,53 @@
+{
+  "tag": "smoke",
+  "N": 32,
+  "M": 24,
+  "T": 0.05,
+  "dts": [
+    0.001,
+    0.002,
+    0.005
+  ],
+  "init_neg_frac": 1.0,
+  "per_dt": {
+    "1e-03": {
+      "neg_frac": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rej_per_step": 0.0,
+      "min_neg_frac": 1.0
+    },
+    "2e-03": {
+      "neg_frac": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rej_per_step": 0.0,
+      "min_neg_frac": 1.0
+    },
+    "5e-03": {
+      "neg_frac": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rej_per_step": 0.0,
+      "min_neg_frac": 1.0
+    }
+  },
+  "mirror_min_neg_frac": 0.0,
+  "all_minus_one": false,
+  "rej_trend_down": false
+}
