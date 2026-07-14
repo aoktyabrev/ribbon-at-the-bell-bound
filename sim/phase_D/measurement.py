@@ -100,6 +100,14 @@ def apparatus_axes_theta(theta):
     return a, b
 
 
+def apparatus_axes_ab(alpha, gamma):
+    """Оси при ПРОИЗВОЛЬНЫХ углах обоих концов (аудит DS2 изотропии/CHSH):
+    a=(sin α,0,cos α), b=(sin γ,0,cos γ) в плоскости (x,z). Угол(a,b)=|α−γ|."""
+    a = jnp.array([jnp.sin(alpha), 0.0, jnp.cos(alpha)])
+    b = jnp.array([jnp.sin(gamma), 0.0, jnp.cos(gamma)])
+    return a, b
+
+
 def frame_for_axis(sign):
     """Репер конца u с осевым вектором n=sign·ê: identity (s=+) или 180° вокруг x̂ (s=−).
     rotmat(identity)·ê=ê; rotmat((0,1,0,0))·ê=−ê."""
