@@ -31,18 +31,23 @@ def axis(theta):
 
 
 def iso_corr(nA, nB, R, a, b):
-    """Изотропизованная ⟨s·t⟩: s=sign(R nA·a), t=sign(R nB·b), среднее по репликам.
-    DEGENERATE (|proj|<DEC) исключаются. Возврат E, σ, degen-доля."""
+    """Изотропизованная ⟨s·t⟩: s=sign(R nA·a), t=sign(R nB·b), среднее по ВСЕМ репликам.
+
+    БЕЗ пост-селекции по |proj| (АУДИТ DS3: setting-зависимое DEGENERATE-отсечение —
+    детекционный лупхол, фабриковал CHSH>2). Каждая реплика даёт ±1 (sign(0)→+1) ⇒
+    λ=(R,nA,nB), s=s(λ,a), t=t(λ,b) — корректный LHV, |S|≤2 гарантирован. degen-доля
+    (|proj|<DEC) возвращается лишь как ДИАГНОСТИКА, НЕ исключается."""
     RA = np.einsum("mij,mj->mi", R, nA)   # (M,3)
     RB = np.einsum("mij,mj->mi", R, nB)
     pa = RA @ a
     pb = RB @ b
-    keep = (np.abs(pa) >= DEC) & (np.abs(pb) >= DEC)
-    s = np.sign(pa[keep]); t = np.sign(pb[keep])
+    s = np.where(pa >= 0, 1, -1)
+    t = np.where(pb >= 0, 1, -1)
     st = s * t
-    E = float(np.mean(st)) if st.size else 0.0
-    sig = float(np.sqrt(max(1 - E*E, 1e-9) / max(st.size, 1)))
-    return E, sig, float(1 - keep.mean())
+    E = float(np.mean(st))
+    sig = float(np.sqrt(max(1 - E*E, 1e-9) / st.size))
+    degen = float(np.mean((np.abs(pa) < DEC) | (np.abs(pb) < DEC)))
+    return E, sig, degen
 
 
 def main():
@@ -90,6 +95,12 @@ def main():
         pq, _ = curve_fit(f, THG, E, p0=[E[0]], sigma=sg, absolute_sigma=True)
         p = abs(float(pq[0]))
         chi2 = float(np.sum(((E - f(THG,*pq))/sg)**2))
+        # ТРЕУГОЛЬНИК ρ·(1−2θ/π) — LHV-корреляция (ожидается при n_A≈n_B, изотропизация)
+        ftri = lambda x, rho: rho*(1 - 2*x/np.pi)
+        pr, _ = curve_fit(ftri, THG, E, p0=[E[0]], sigma=sg, absolute_sigma=True)
+        rho = abs(float(pr[0]))
+        chi2_tri = float(np.sum(((E - ftri(THG,*pr))/sg)**2))
+        shape = "cos" if chi2 < chi2_tri else "triangle(1−2θ/π)"
         # изотропность: повтор при повёрнутой лаб-паре (R0 фикс) на 3 θ
         R0 = Rotation.from_euler("xyz", [0.7, 1.1, 0.3]).as_matrix()
         iso_ok = True
@@ -99,9 +110,11 @@ def main():
             if abs(E1 - E2) > 2*np.sqrt(s1**2 + s2**2):
                 iso_ok = False
         out["iso"][f"kf{mult}"] = dict(theta=list(THG), E=list(map(float,E)), sigma=list(map(float,sg)),
-                                       degen=list(map(float,dg)), p=p, chi2=chi2, isotropy_ok=bool(iso_ok))
-        rel = {name: (p - v) for name, v in PILLARS.items()}
-        print(f"  k_f×{mult}: p={p:.4f}±{sg[0]:.3f}  изотропность={iso_ok}  χ²(cos)={chi2:.1f}")
+                                       degen_diag=list(map(float,dg)), p_cos=p, chi2_cos=chi2,
+                                       rho_triangle=rho, chi2_triangle=chi2_tri, best_shape=shape,
+                                       isotropy_ok=bool(iso_ok))
+        print(f"  k_f×{mult}: p_cos={p:.4f} (χ²={chi2:.0f})  ρ_triangle={rho:.4f} (χ²={chi2_tri:.0f}) "
+              f"→ форма: {shape}  изотропность={iso_ok}")
         print(f"    столбы: 1/3={1/3:.3f}(Δ{p-1/3:+.3f}) 2/π={2/np.pi:.3f}(Δ{p-2/np.pi:+.3f}) "
               f"1/K_G=0.66(Δ{p-0.66:+.3f})  in[0.60,0.69]:{0.60<=p<=0.69}")
 
@@ -138,8 +151,12 @@ def main():
     thf = np.linspace(0, np.pi, 100)
     for mult in d["meta"]["KF"]:
         r = out["iso"][f"kf{mult}"]
-        plt.errorbar(THG, r["E"], yerr=r["sigma"], fmt="o", capsize=2, label=f"k_f×{mult} (p={r['p']:.3f})")
-        plt.plot(thf, r["p"]*np.cos(thf), "-", alpha=0.7)
+        line, = plt.plot([], [])
+        col = line.get_color()
+        plt.errorbar(THG, r["E"], yerr=r["sigma"], fmt="o", color=col, capsize=2,
+                     label=f"k_f×{mult} (ρ_tri={r['rho_triangle']:.3f}, CHSH={2*r['rho_triangle']:.2f})")
+        plt.plot(thf, r["rho_triangle"]*(1 - 2*thf/np.pi), "-", color=col, alpha=0.8)  # треугольник
+        plt.plot(thf, r["p_cos"]*np.cos(thf), ":", color=col, alpha=0.4)  # косинус (плохой)
     for name, v in PILLARS.items():
         plt.axhline(v, ls=":", alpha=0.4)
         plt.text(0.05, v+0.01, name, fontsize=7)
