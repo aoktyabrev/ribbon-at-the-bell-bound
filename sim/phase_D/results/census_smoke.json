@@ -1,0 +1,170 @@
+{
+  "tag": "smoke",
+  "N": 16,
+  "nstarts": 12,
+  "steps": 3000,
+  "cells": {
+    "even|s+t+|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 12,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.9999485900449994,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 12
+    },
+    "even|s+t+|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 7,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.821282423979299,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 7
+    },
+    "even|s+t-|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 3,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.8196281023376284,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 3
+    },
+    "even|s+t-|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 12,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.99996309889666,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 12
+    },
+    "even|s-t+|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 3,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.8211861048004385,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 3
+    },
+    "even|s-t+|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 7,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.893816148016804,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 7
+    },
+    "even|s-t-|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 8,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.8957103230420973,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 8
+    },
+    "even|s-t-|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 7,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.820189340258661,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 7
+    },
+    "odd|s+t+|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 12,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.9481246197964244,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 12
+    },
+    "odd|s+t+|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 8,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.815451676208919,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 8
+    },
+    "odd|s+t-|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 5,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.818819687174887,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 5
+    },
+    "odd|s+t-|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 12,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.9491271017462606,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 12
+    },
+    "odd|s-t+|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 5,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.8179219206663833,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 5
+    },
+    "odd|s-t+|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 6,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.9099945654544985,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 6
+    },
+    "odd|s-t-|\u03b80": {
+      "verdict": "EXISTS",
+      "n_good": 9,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.896870023569069,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 9
+    },
+    "odd|s-t-|\u03b8\u03c0": {
+      "verdict": "EXISTS",
+      "n_good": 8,
+      "n_degen": 0,
+      "drag_ok": false,
+      "E_min": -3.816306667299582,
+      "rej_total": 0.0,
+      "branch_reached": 12,
+      "sector_ok": 8
+    }
+  },
+  "all_exists": true,
+  "dh3a": "NOT-CONFIRMED (EXISTS \u0432 \u0432\u044b\u0440\u043e\u0432\u043d\u0435\u043d\u043d\u044b\u0445 \u043d\u0435\u0447\u0451\u0442 \u03b8=0)"
+}
