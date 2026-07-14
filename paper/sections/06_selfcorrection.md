@@ -37,8 +37,8 @@ construction is manifestly local, Bell's theorem guarantees this is a bug;
 the trigger fired again. The audit located it in event selection: replicas
 with a weak axial projection (|proj| < 0.2) were being discarded as
 DEGENERATE — and the discard rate itself varied with the measurement
-setting, from 21% of events at the correlation extremes (θ = 0, π) to 37–38%
-at intermediate angles, including the CHSH angles. This setting-dependence is
+setting, from 21% of events at the correlation extremes (θ = 0, π) to a peak of
+37–38% at intermediate angles (36–37% at the CHSH angles π/4 and 3π/4). This setting-dependence is
 not incidental to the artifact; it is the artifact. Setting-dependent post-selection is precisely the
 detection loophole of Pearle (1970) — the class of local models that forced
 four decades of loophole-closing in experimental Bell tests. Our pipeline
