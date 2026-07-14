@@ -18,8 +18,8 @@ covering map is exactly the ℤ₂ we care about: two frame configurations
 differing only by the lift sign (q vs −q) produce identical axial fields
 everywhere, hence identical statistics for every axial observable. In
 phase B/C this appeared as an empirical wall — kinks without topological
-protection relaxed away, and thermal population of charged configurations
-was suppressed as exp(−E_kink/T) with E_kink ~ k_e·π². At that stage
+protection relaxed away, and charged configurations, with energies of order
+k_e·(π/2..π)², remained thermally unpopulated for T ≪ k_e. At that stage
 one could still hope that a cleverer local readout might see the charge.
 
 ## 4.2 The U(1) theorem: axis ≠ frame
@@ -32,8 +32,10 @@ lift-twin test builds pairs of configurations with identical axial fields
 n_i at every site (max |Δn| = 0) and opposite parity. Every candidate
 readout we constructed — coorientation of the frame against the slice
 normal, the sign of the nearest interior w-coordinate, windowed relative
-lift — either failed locality or returned identical statistics on the
-twins. We registered this in advance as a named wall ("blind slice"),
+lift — passed the locality test (stable at window k ≤ 8) and, without
+exception, returned identical statistics on the twins. The blindness was
+not the price of enforcing locality; every local slice datum we could build
+was blind. We registered this in advance as a named wall ("blind slice"),
 and it fired. The theorem-level statement: a ℤ₂ framing invariant of an
 embedded curve in R⁴ is invisible to any boundary observable that factors
 through the axis, because ℤ₂ ⊂ ker(S³ → SO(3)) — the invariant is stored
