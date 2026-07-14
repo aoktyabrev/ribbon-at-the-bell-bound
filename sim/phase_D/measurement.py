@@ -85,9 +85,18 @@ def classify_batch(u, a, b):
 # --------------------------------------------------------------------------- #
 
 def apparatus_axes(theta_is_pi):
-    """(a, b): a=(0,0,1); b=a при θ=0, b=−a при θ=π. Возврат 3-векторы."""
+    """(a, b): a=(0,0,1); b=a при θ=0, b=−a при θ=π. Возврат 3-векторы (D1)."""
     a = REF_AXIS
     b = jnp.where(theta_is_pi, -REF_AXIS, REF_AXIS)
+    return a, b
+
+
+def apparatus_axes_theta(theta):
+    """(a, b) при произвольном угле θ между осями (D2): a=(0,0,1),
+    b=(sinθ, 0, cosθ) — поворот a на θ в плоскости (x,z) норм. коорд.
+    θ=0 ⇒ b=a; θ=π ⇒ b=−a. Угол(a,b)=θ."""
+    a = REF_AXIS
+    b = jnp.array([jnp.sin(theta), 0.0, jnp.cos(theta)])
     return a, b
 
 
