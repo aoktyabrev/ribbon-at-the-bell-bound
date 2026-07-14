@@ -35,9 +35,11 @@ honest shared randomness, available to both ends through the geometry of the
 ribbon but not to the experimenter) produced |S| = 2.39. Since the
 construction is manifestly local, Bell's theorem guarantees this is a bug;
 the trigger fired again. The audit located it in event selection: replicas
-with a weak axial projection (|proj| < 0.2, roughly 36% of events) were
-being discarded as DEGENERATE, and the discard rate depended on the
-measurement setting. Setting-dependent post-selection is precisely the
+with a weak axial projection (|proj| < 0.2) were being discarded as
+DEGENERATE — and the discard rate itself varied with the measurement
+setting, from 21% of events at the correlation extremes (θ = 0, π) to 37–38%
+at intermediate angles, including the CHSH angles. This setting-dependence is
+not incidental to the artifact; it is the artifact. Setting-dependent post-selection is precisely the
 detection loophole of Pearle (1970) — the class of local models that forced
 four decades of loophole-closing in experimental Bell tests. Our pipeline
 reproduced the disease and, once the cut was removed (all events kept,
@@ -56,11 +58,14 @@ symmetry assumption, setting-dependent post-selection — are historically
 documented failure modes that took the community years to identify in
 experimental contexts. A standing kill-criterion, registered before the data
 existed and owned by no one at the table, identified both within a single
-analysis cycle each. Third, a note on provenance: an earlier theoretical
-entry in our canonical log (the "Bell trap", session 3) predicted that any
-shared-λ locally-deterministic readout of the ribbon must produce the
-triangular correlation function; the isotropization campaign, run months
-later, landed on exactly that triangle (Section 5). The program's negative
+analysis cycle each. Third, a note on provenance: a theoretical
+entry in our canonical log (the "Bell trap", §2.7 of the model note) derives
+that any shared-λ, locally deterministic readout of the ribbon must produce
+the triangular correlation function — a forced consequence, not a guess; the
+isotropization campaign landed on exactly that triangle (Section 5). We
+deliberately rest this point on the logical status of the prediction rather
+than on its calendar priority, which our commit history cannot independently
+establish. The program's negative
 predictions were confirmed by its own later data — which is, we would argue,
 the behavior one should demand of an honest hidden-variable program before
 trusting any of its positive claims.
