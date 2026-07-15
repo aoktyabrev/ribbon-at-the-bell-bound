@@ -61,8 +61,11 @@ rejection fraction does not fall with dt, the parity is an artifact of the filte
 (D0_prereg.md). Registering the failure condition in advance is what let a null result count
 as a result rather than as a disappointment to be explained away.
 
-The analysis order was strict: raw measurements were frozen and committed before any fit,
-flip, or comparison (each stage has a `*-raw` commit preceding its `*-analysis` commit). Every
+The analysis order was strict: every stage whose result required a fit, a flip, or a model
+comparison committed its raw measurements before any analysis touched them, as a `*-raw`
+commit preceding a `*-analysis` commit; the two infrastructure stages, D0 and D1, produced
+deterministic validations rather than fitted numbers and are single commits (the commit chain
+is listed in Section 8.1). Every
 campaign carried controls: an unbiased preparation sampler (boundary axes drawn uniformly on
 S², sector preparation without bias, so the branch is never chosen in advance and the basin
 decides; measurement.py), mirror pairs (a, b) ↔ (−a, −b), block convergence of the reported
