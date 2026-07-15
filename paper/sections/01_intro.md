@@ -9,8 +9,11 @@ three we see, its two ends being the two intersections with our slice —
 so that the perfect correlations of the singlet would need no
 communication, there being nothing to communicate between. The picture
 has an immediate structural payoff (Section 2): the embedding carries a
-ℤ₂ framing class, and from it the binary character of measurement
-outcomes and the 720° spinor property descend without postulates.
+ℤ₂ framing class — the framing topology supplies a natural ℤ₂-valued
+structural label and the homotopy underlying the 4π belt-trick return.
+A physical map from this label to measurement outcomes is an additional
+requirement — and Section 4 proves that for axial readout no such map
+exists.
 The bet this program made — its maximal stake — was that the classical
 dynamics of such an object, read by an honest basin measure, would
 produce the quantitative statistics of the singlet: the isotropic
@@ -31,16 +34,19 @@ anticorrelation of the right sign, a correlation amplitude that survives
 chain length unchanged (a kinetic plateau, measured to N = 96 and
 verified at two coupling stiffnesses), and a smooth cosine angular law —
 though only along one privileged axis. What it cannot realize, we
-can now name and number: exact outcome zeros are forbidden to it by a
-structural theorem (the topological invariant that could enforce them
-lives in precisely the fiber that axial measurement quotients out;
-Section 4); honest isotropy collapses the cosine to the triangular
+can now name and number: the topology does not enforce exact outcome
+zeros — the census found no topologically forbidden branch, and the
+framing invariant is inaccessible to axial readout (a structural theorem:
+the invariant that could enforce them lives in precisely the fiber that
+axial measurement quotients out; Section 4); honest isotropy collapses the
+cosine to the triangular
 correlation of Bell's shared-randomness local model (Section 5); and
 every apparent Bell violation the program produced — there were two —
 died in a pre-registered audit, one to a false symmetry assumption, one
 to a rediscovery of Pearle's detection loophole (Section 6). The
-stiffness family the model spans approaches the Bell bound from below
-and ends there: its limit point is CHSH = 2, not 2√2.
+measured family moves toward the Bell bound as stiffness grows
+(|S| = 1.62 at k_f×4); its deterministic axial limit is expected — not
+measured — to reach ρ → 1, S → 2, not 2√2.
 
 We consider the negative answer, so structured, to be the contribution.
 A classical ontology was driven to a boundary; the boundary was mapped
@@ -66,8 +72,10 @@ argument's form being Gisin's and its object ours — with the uniqueness of
 the quadratic exponent within the chord family this program's own
 extension; the post-selection artifact
 of our second audit is Pearle's 1970 detection loophole; and the
-impossibility of eliminating the Born postulate within the symmetric
-pair is the constructive face of Kochen–Specker. We differ from the
+impossibility of eliminating the Born postulate within the symmetric pair
+is our own methodological observation, standing in the historical line of
+Kochen–Specker's demonstration that an outcome measure exists rather than
+following from that theorem. We differ from the
 classical hidden-variable literature — de Broglie–Bohm's nonlocal
 dynamics, 't Hooft's cellular automata, Palmer's invariant-set theory —
 not in outrunning these theorems, which we do not, but in genre: a

@@ -30,25 +30,16 @@ and N = 96 cells under twelve fresh base keys, and the cross-seed scatter came o
 with the quoted binomial errors (r = 0.88 over eleven repeats of the core cell, r = 1.11 at
 N = 96; `seedaudit_report.md`, commit a26f76b).
 
-## 8.2 AI-assisted methodology
+## 8.2 Use of generative AI
 
-The program was run by three parties: an AI architect (Claude — design, pre-registration,
-review), an AI executor (Claude Code — implementation, runs, and verification of every drafted
-claim against its cited source), and a human owner (decisions and veto). The controls of
-Section 3.2 are controls over both AI roles, not over the code alone: pre-registration with
-kill-criteria and the raw-before-analysis order bind design and execution to commitments made
-before the data existed, which is precisely where a shared preference for a positive result
-would otherwise enter. Layered on top, each side checks the other against primary sources —
-errors were caught in both directions, and the direction of capture is documented in the
-commit history. In the architect's direction: a misattributed number in a discussion draft — a
-value belonging to an analytical construction, quoted as though measured — was caught by the
-executor's check against the canonical record and never entered the text. In the executor's
-direction: a fabricated test count was caught by the executor's own check against the test
-runner, and a reproducibility alarm the executor raised on three points was refuted by the
-executor's own pre-registered eleven-point audit, which found the quoted errors honest
-(Section 5.1). Neither role is reliable unaudited, and neither audits itself by inspection;
-what makes the arrangement work is that the commitments are written down first and the checks
-run against sources rather than against memory.
+Generative AI tools (Anthropic Claude) were used for research planning and experimental
+design, software implementation, code review, source checking, and manuscript drafting. The
+author made all scientific decisions, verified the reported results, and accepts full
+responsibility for the manuscript.
+
+The detailed working arrangement — the three-party division of roles, the pre-registration and
+raw-before-analysis order as controls over both AI roles, and the record of errors caught in
+both directions — is given in `SI_methodology.md`.
 
 ## 8.3 Tooling
 

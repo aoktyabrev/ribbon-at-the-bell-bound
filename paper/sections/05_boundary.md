@@ -5,16 +5,17 @@
 ## 5.1 The plateau
 
 The one quantity the ribbon carries that does not dilute with length is the axial readout
-amplitude of the odd sector. Fit against three models — a constant A∞, a power law A·N^−γ,
-and a saturating A∞ + c·N^−γ — the constant wins decisively: A∞ = 0.363 ± 0.012, with the
-power law disfavoured by ΔAICc = 6.36 and its exponent fitted negative (no decay) (D2-ext;
-commit 2784edf). The plateau holds at a second stiffness: cross-scanning N ∈ {16, 32, 64, 96}
+amplitude of the odd sector. Fit against three models — a constant A_plateau, a power law A·N^−γ,
+and a saturating A_plateau + c·N^−γ — the constant is substantially preferred among the three
+tested models (ΔAICc = 6.36): A_plateau = 0.363 ± 0.012, with the power law's exponent fitted
+negative (no decay) (D2-ext; commit 2784edf). We write A_plateau, and avoid A∞: the limit
+N → ∞ is not measured; what is measured is no statistically resolved decay over 16 ≤ N ≤ 96. The plateau holds at a second stiffness: cross-scanning N ∈ {16, 32, 64, 96}
 at k_f×1 and k_f×4, the amplitude change from N = 16 to N = 96 is +0.010 ± 0.038 and
 +0.002 ± 0.023 respectively — flat within error at both couplings (DS2; commit f928dd4). The evidence is
 bounded: N ∈ [16, 96], k_f ∈ {×1, ×4}. Within that window the plateau is kinetic, not
-thermodynamic — the amplitude is flat in temperature (A(T) = 0.368 / 0.397 / 0.353 at
-T = 0.025 / 0.05 / 0.10, unchanged within σ ≈ 0.027) (S1-runs; commit a9cef7b) — so it is a
-property of the basin structure, not of thermal fluctuation. The quoted errors are binomial,
+thermodynamic — there is no statistically resolved temperature dependence over
+T ∈ {0.025, 0.05, 0.10} (A(T) = 0.368 / 0.397 / 0.353, within σ ≈ 0.027) (S1-runs;
+commit a9cef7b) — so it is a property of the basin structure, not of thermal fluctuation. The quoted errors are binomial,
 and a dedicated seed audit confirms they are honest as a measure of reproducibility: eleven
 independent repeats of the N = 32 cell scatter with s_seed = 0.024 against a binomial
 σ = 0.027, a ratio r = 0.88 (χ² = 7.7 / 10, p = 0.66), and the ratio does not grow with chain
@@ -25,9 +26,9 @@ length (r = 1.11 at N = 96) (seed audit; commit a26f76b).
 ![Fig. 1b: DS2 cross-scan at two stiffnesses](../../sim/phase_D/fig/ds2_cross.png)
 
 *Fig. 1. The plateau. (a) D2-ext: A_N = |E(0)| against chain length N ∈ {16, 32, 48, 64, 96}
-at M = 1200 replicas, with the three fitted models — constant M0 (A∞ = 0.363, dotted), power
+at M = 1200 replicas, with the three fitted models — constant M0 (A_plateau = 0.363, dotted), power
 law M1 (γ = −0.03, i.e. fitted growth rather than decay, dashed), and saturating M2 (solid).
-M0 wins by ΔAICc = 6.36 (commit 2784edf). (b) DS2 cross-scan: A(N) at k_f×1 and k_f×4, flat
+M0 is substantially preferred by ΔAICc = 6.36 (commit 2784edf). (b) DS2 cross-scan: A(N) at k_f×1 and k_f×4, flat
 within error at both stiffnesses (commit f928dd4).*
 
 ## 5.2 Origin of the amplitude
@@ -35,7 +36,7 @@ within error at both stiffnesses (commit f928dd4).*
 The amplitude is stiffness-controlled. Sweeping the twist coupling gives
 A(k_f) = 0.27 / 0.42 / 0.56 / 0.84 for k_f × {0.5, 1, 2, 4} — a strong
 monotone dependence that refutes any fixed geometric-measure origin
-(S1-runs R1; commit a9cef7b). The plateau value A∞ = 0.363 ± 0.012 belongs
+(S1-runs R1; commit a9cef7b). The plateau value A_plateau = 0.363 ± 0.012 belongs
 to the D2-ext campaign (N ∈ [16, 96] at its baseline setup); the stiffness
 sweep, run at N = 32, gives 0.418 ± 0.026 at nominal k_f×1 — consistent in
 scale, not identical — the gap reflects seed-to-seed sampling scatter,
@@ -50,7 +51,7 @@ temperature (Section 5.1), while any Boltzmann reading of the landscape
 would move with T: the census finds the four branch minima spread over
 0.22 in energy (branch means −3.78 for both branches, Δ ≈ 0.006), and no
 assignment of Boltzmann weights to these energies reproduces a
-temperature-independent 68/32 split (D1 census; D_synthesis_S1 §2).
+68/32 split with no resolved temperature dependence (D1 census; D_synthesis_S1 §2).
 Second, it is flat in chain length from N = 16 to N = 96 at both measured
 stiffnesses (Section 5.1), while an equilibrium chain correlation with a
 finite correlation length would decay. What remains is relaxation itself:
@@ -60,11 +61,11 @@ is the reading fixed in the canonical record after the cross-scan (commit
 311d3ae): the amplitude is a stiffness-controlled kinetic correlation,
 athermal and sector-blind (Section 4.3).
 
-![Fig. 2: A∞(k_f) — stiffness memory](../../sim/phase_D/fig/s1runs_kf.png)
+![Fig. 2: A_plateau(k_f) — stiffness memory](../../sim/phase_D/fig/s1runs_kf.png)
 
-*Fig. 2. A∞(k_f) — stiffness memory. Four points with 1σ error bars from the frozen
+*Fig. 2. A_plateau(k_f) — stiffness memory. Four points with 1σ error bars from the frozen
 S1-runs R1 raw data (N = 32, M = 1200, T = 0.05; commit a9cef7b). Dotted line: the
-D2-ext plateau A∞ = 0.363 of Section 5.1, measured over N ∈ [16, 96].*
+D2-ext plateau A_plateau = 0.363 of Section 5.1, measured over N ∈ [16, 96].*
 
 ## 5.3 Anisotropy map
 
@@ -95,9 +96,9 @@ signature, and its CHSH value is exactly S = 2ρ, with ρ the source-alignment a
 ρ = 0.374 / 0.810 gives |S| = 0.75 / 1.62 at k_f × {1, 4}. Three properties therefore trade
 off and cannot be held together: a cosine form exists only anisotropically (5.3); honest
 isotropy forces the triangle (this subsection); and the amplitude ρ is bought with stiffness
-(5.2). The family, swept in k_f, approaches the Bell bound from below — |S| = 1.62 at k_f×4
-sits a measured distance 2 − 1.62 = 0.38 short of it — with the deterministic axial limit
-(ρ → 1, |S| → 2) as its endpoint.
+(5.2). The measured family moves toward the Bell bound as stiffness grows: |S| = 1.62 at
+k_f×4 sits a measured distance 2 − 1.62 = 0.38 short of it. Its deterministic axial limit is
+expected — not measured — to reach ρ → 1, |S| → 2.
 
 ![Fig. 4: DS3 isotropized correlation — triangle vs cosine](../../sim/phase_D/fig/ds3_iso.png)
 
@@ -109,8 +110,9 @@ a triangular one (DS3 §4; commit 0fb5452).*
 
 ## 5.5 Synthesis
 
-The k_f family is a classical frontier: a one-parameter sweep of local models whose limit
-point is the Bell bound (CHSH → 2), reached from inside the classical region. The quantum
+The k_f family is a classical frontier: a one-parameter sweep of local models measured from
+inside the classical region, moving toward the Bell bound as stiffness grows and expected —
+not measured — to reach CHSH → 2 in its deterministic axial limit. The quantum
 target — an isotropic cosine with unit amplitude and CHSH = 2√2 — lies outside the family on
 three independent axes at once: amplitude (bounded by ρ < 1), form (isotropy forces a triangle,
 not a cosine), and isotropy itself (the cosine survives only along the privileged axis). No

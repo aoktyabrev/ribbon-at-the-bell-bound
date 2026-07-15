@@ -36,8 +36,11 @@ setting-dependent post-selection artifact of DS3 is Pearle's (1970)
 detection loophole, reproduced and repaired in one audit cycle; and the
 relocation of the Born postulate between rule, measure, and branch
 weights — with no elimination available within the symmetric pair itself,
-only by the external principle of causality (Section 2) — is the
-constructive face of Kochen–Specker (1967). The number makes the wall
+only by the external principle of causality (Section 2) — is our own
+methodological observation within the tested model family, standing in
+the historical line of Kochen–Specker's (1967) demonstration that an
+outcome measure exists, but not derived from that theorem. The number
+makes the wall
 tangible twice over: even the family's deterministic limit point (ρ → 1)
 yields the triangular E(45°) = −0.500 — the value the session-3 analytical
 construction already produced (−0.502, canon §2.7) — against the quantum
@@ -78,15 +81,18 @@ binarity and spinority descending from its framing topology — is not
 refuted by anything in this paper. What is refuted, by construction and
 at scale, is the proposition that the *classical dynamics* of such an
 object reproduces singlet statistics. We state our position beyond the
-minimal one: we regard the classical route for this ontology as
-exhausted. The U(1) theorem shows that the topological invariant carrying
+minimal one: we regard the classical route as exhausted within the
+explored model class — framed-curve discretizations with axial readout,
+over the measured parameter range — and expect further classical
+modifications inside this class to rediscover the named walls; outside it,
+Section 7.5 lists what was not tested. The U(1) theorem shows that the topological invariant carrying
 the ontology's explanatory power is structurally unreadable by axial
 measurement; the trilemma shows that amplitude, angular form, and
 isotropy cannot be purchased together anywhere in the accessible family;
-and the family's limit point is the Bell bound, approached from below.
-Further classical modifications of this model, other than a solution to
-the open problem E, would in our judgment rediscover these walls under
-new names. If the ribbon picture has a future, it lies in a quantum
+and the measured family moves toward the Bell bound as stiffness grows (|S| = 1.62 at
+k_f×4), its deterministic axial limit expected — not measured — to reach S → 2.
+A solution to the open problem E remains the one exit we have not been
+able to close. If the ribbon picture has a future, it lies in a quantum
 dynamics of the extended object — a question this paper does not open.
 
 ## 7.5 Limitations

@@ -66,8 +66,11 @@ minimization from ≥20 diverse starts per cell) and by an explicit
 homotopy argument — the residual U(1) layer of 4.2 absorbs the framing
 constraint, so a 2π twist of the fiber connects nominally forbidden
 configurations to allowed ones. The kill-criterion fired as
-registered: there is no measure-zero prohibition in this geometry.
+registered: there is no topological empty-support prohibition in this
+geometry (non-empty support established by explicit representatives;
+measure statements are a separate, dynamical question).
 Combined with 4.2, the two results close both readings of the phase-D
 bet: topology cannot be read locally, and it forbids nothing globally.
-What survives of it is one number — the scale-invariant amplitude of
+What survives of it is one number — the length-stable amplitude (no resolved decay over the
+measured range) of
 Section 5 — and the structural explanation of binarity itself.

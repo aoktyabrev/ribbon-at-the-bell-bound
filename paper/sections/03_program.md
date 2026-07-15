@@ -40,8 +40,8 @@ estimator we later withdrew; see Section 6.)
 Phase D embedded the framed ribbon in R⁴ ≡ ℍ, turning the integer twist (ℤ) into a ℤ₂ framing
 class (π₁(SO(3)) = ℤ₂). Across the D0–DS3 sequence — infrastructure and invariant (D0), the
 readout operator and empty-sector test (D1), scaling (D2/D2-ext), amplitude origin (S1),
-cross-scan and CHSH audits (DS2/DS3) — the single number that survived is the scale-invariant
-readout amplitude A∞ = 0.363 ± 0.012 (D2-ext; commit 2784edf), whose meaning and limits are
+cross-scan and CHSH audits (DS2/DS3) — the single number that survived is the length-stable
+readout amplitude (no resolved decay over the measured range) A_plateau = 0.363 ± 0.012 (D2-ext; commit 2784edf), whose meaning and limits are
 the subject of Section 5.
 
 ## 3.2 Methodology  [STAYS]
