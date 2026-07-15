@@ -7,10 +7,12 @@
 """
 import os
 import re
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SECT = os.path.join(HERE, "sections")
-OUT = os.path.join(HERE, "DRAFT_v1.md")
+VERSION = sys.argv[1] if len(sys.argv) > 1 else "v2"
+OUT = os.path.join(HERE, f"DRAFT_{VERSION}.md")
 
 ORDER = [
     "00_frontmatter.md",
@@ -24,12 +26,13 @@ ORDER = [
     "90_availability.md",
 ]
 
-HEADER = """<!-- СГЕНЕРИРОВАНО paper/build_draft.py — НЕ РЕДАКТИРОВАТЬ. Правки — в sections/*.md -->
+HEADER = f"""<!-- СГЕНЕРИРОВАНО paper/build_draft.py — НЕ РЕДАКТИРОВАТЬ. Правки — в sections/*.md -->
 
-# Full draft v1
+# Full draft {VERSION}
 
 Full draft for author review. Read from the repository file, not from any chat transcript.
-Veto points marked: §2.1 [deferred-veto], §7.4 [author's position B], §7.6 [credo].
+Veto points marked in the text: §2.1 [deferred-veto], §7.4 [author veto point: the
+"classical route exhausted" position], §7.6 [author veto point: closing credo].
 
 ---
 """
@@ -68,6 +71,8 @@ def main():
     for name in ORDER:
         with open(os.path.join(SECT, name), encoding="utf-8") as f:
             body = f.read().rstrip() + "\n"
+        # пути картинок в секциях относительны sections/; черновик лежит на уровень выше
+        body = body.replace("](../../sim/", "](../sim/")
         parts.append(body)
         parts.append("\n---\n\n")
         counts.append((name, words(body)))
@@ -91,11 +96,16 @@ def main():
         "STUB": len(re.findall(r"\[STUB\]", text)),
         "TODO": len(re.findall(r"TODO", text)),
         "pending": len(re.findall(r"pending", text, flags=re.I)),
-        "deferred-veto": len(re.findall(r"deferred-veto", text)),
     }
     print("\nМаркеры в собранном корпусе:")
     for k, v in flags.items():
         print(f"  {k:<42} {v}")
+
+    # точки вето: считаем по телу (шапка не в счёт) — §2.1 deferred-veto + §7.4/§7.6
+    body = text.split("---\n", 1)[1] if "---\n" in text else text
+    veto = (len(re.findall(r"deferred-veto: author", body))
+            + len(re.findall(r"\[author veto point", body)))
+    print(f"\n  точек вето в теле (ожидается 3: §2.1, §7.4, §7.6): {veto}")
 
 
 if __name__ == "__main__":
