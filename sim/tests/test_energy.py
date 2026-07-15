@@ -171,8 +171,9 @@ def test_cosserat_chordal_grad_unbiased():
     assert abs(float(np.mean(diff))) < 1e-9
 
 
-@pytest.mark.xfail(reason="atan2-Cosserat float32-неэквивариантность градиента — "
-                          "документированный дефект (decisions.md R3); рабочий режим cosserat_chordal")
+@pytest.mark.xfail(reason="дефект формулировки log_map/atan2 — точностно-независимый "
+                          "(22.63σ в fp32 и fp64), диагноз float32 опровергнут "
+                          "(decisions.md R3); рабочий режим cosserat_geo (R3-geo, 4223e20)")
 def test_atan2_cosserat_grad_bitwise_equivariant():
     q = haar_quaternions(jax.random.PRNGKey(60), (10,))
     g = _grad_elastic("cosserat", q)
