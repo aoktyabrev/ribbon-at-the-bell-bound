@@ -1,24 +1,24 @@
-# 7. Discussion
+# 8. Discussion
 
 **Section owner:** Architect
 
-## 7.1 The final lemma
+## 8.1 The final lemma
 
 Phase D leaves the program with a lemma sharper than the one it started
 with. The classical ribbon realizes, from geometry alone: a natural ℤ₂
 structural label with the 4π belt-trick homotopy (the candidate origin of
-outcome binarity and spinor structure — a candidacy Section 4 shows axial
+outcome binarity and spinor structure — a candidacy Section 5 shows axial
 readout cannot redeem), anticorrelation (the singlet sign), a correlation amplitude
 that does not dilute with chain length (kinetic plateau, two stiffnesses,
 N ≤ 96), and a smooth cosine angular law — but only along a privileged
 axis. It does not realize: exact zeros (no outcome is forbidden by
 measure, and the invariant that could forbid one is unreadable by axial
-measurement — Sections 4.4 and 4.2), an isotropic cosine (honest orientation averaging
-forces the triangular law; Section 5.4), or any Bell violation (every
-S > 2 died in audit; Section 6). The boundary between the two lists is
+measurement — Sections 5.4 and 5.2), an isotropic cosine (honest orientation averaging
+forces the triangular law; Section 6.4), or any Bell violation (every
+S > 2 died in audit; Section 7). The boundary between the two lists is
 not a fog but a set of named, quantified walls.
 
-## 7.2 Relation to the classical theorems
+## 8.2 Relation to the classical theorems
 
 The program repeatedly rediscovered, from the inside and with its own
 numbers, results that mark the classical-quantum boundary. Our causal
@@ -37,7 +37,7 @@ setting-dependent post-selection artifact of DS3 is Pearle's (1970)
 detection loophole, reproduced and repaired in one audit cycle; and the
 relocation of the Born postulate between rule, measure, and branch
 weights — with no elimination available within the symmetric pair itself,
-only by the external principle of causality (Section 2) — is our own
+only by the external principle of causality (Section 3) — is our own
 methodological observation within the tested model family, standing in
 the historical line of Kochen–Specker's (1967) demonstration that an
 outcome measure exists, but not derived from that theorem. The number
@@ -51,13 +51,13 @@ honestly explores a classical ontology does not wander freely — it is
 funneled onto the same walls the theorems describe, and arrives at them
 with measured coordinates.
 
-## 7.3 The open problem
+## 8.3 The open problem
 
 One exit remains formally open, registered in the canonical record as the
 open problem E: whether a physical fiber-breaking invariant of the R⁴
 embedding (a second-fundamental-form datum, or a preferred slice normal)
 can produce an empty aligned-branch basin together with a smooth isotropic
-cosine — that is, an escape from the trilemma of Section 5.5. We
+cosine — that is, an escape from the trilemma of Section 6.5. We
 record the obstacles as honestly as the opening — both are our judgment
 from the phase-D results, not established results themselves: any energetic anchoring
 of the frame is another stiffness dial, moving the model along the
@@ -72,7 +72,7 @@ naming the minimal missing structure; it is unsolved, not untested
 folklore [conjecture]. We consider these open in the technical sense, not
 the hopeful one.
 
-## 7.4 The status of the ontology, and of the classical route
+## 8.4 The status of the ontology, and of the classical route
 
 [author veto point: the position "classical route exhausted" is the author's, chosen over
 the minimal alternative]
@@ -86,7 +86,7 @@ minimal one: we regard the classical route as exhausted within the
 explored model class — framed-curve discretizations with axial readout,
 over the measured parameter range — and expect further classical
 modifications inside this class to rediscover the named walls; outside it,
-Section 7.5 lists what was not tested. The U(1) theorem shows that the topological invariant carrying
+Section 8.5 lists what was not tested. The U(1) theorem shows that the topological invariant carrying
 the ontology's explanatory power is structurally unreadable by axial
 measurement; the trilemma shows that amplitude, angular form, and
 isotropy cannot be purchased together anywhere in the accessible family;
@@ -96,7 +96,7 @@ A solution to the open problem E remains the one exit we have not been
 able to close. If the ribbon picture has a future, it lies in a quantum
 dynamics of the extended object — a question this paper does not open.
 
-## 7.5 Limitations
+## 8.5 Limitations
 
 The scope of the evidence is narrower than the scope of the claims a
 reader might extrapolate, and we state it exactly. The dynamics tested is
@@ -110,7 +110,7 @@ results are bounded: N ∈ [16, 96], k_f ∈ {×1, ×4}, one temperature regime
 verified flat. Within these bounds the walls are measured; beyond them
 they are extrapolated.
 
-## 7.6 What we take to be the product
+## 8.6 What we take to be the product
 
 [author veto point: closing credo]
 
@@ -119,7 +119,7 @@ right: an ontology driven to its named limit by pre-registration,
 kill-criteria owned by no one at the table, raw-before-analysis commit
 discipline, and a standing audit that fires on results that are too good.
 This machinery caught two textbook artifacts within one analysis cycle
-each (Section 6) and forced every retreat to be documented rather than
+each (Section 7) and forced every retreat to be documented rather than
 forgotten. The program's answer to its opening bet is negative, exact,
 and reusable — and the same machinery is now free to be pointed at the
 next idea. Everything should be tested; that is how one either learns

@@ -1,8 +1,8 @@
-# 2. Theory
+# 3. Analytical layer
 
 **Section owner:** Joint (Architect + Author)
 
-## 2.1 The ontological picture  [approved: architect, deferred-veto: author]
+## 3.1 The ontological picture  [approved: architect, deferred-veto: author]
 
 The ontological picture under test is this: an entangled pair is not two
 particles bound by a mysterious connection, but a single extended object —
@@ -20,14 +20,14 @@ replaces the original claim that binarity and spinority "descend for
 free".]* The framing topology supplies a natural ℤ₂-valued structural
 label and the homotopy underlying the 4π belt-trick return. A physical map
 from this label to measurement outcomes is an additional requirement —
-and Section 4 proves that for axial readout no such map exists.
+and Section 5 proves that for axial readout no such map exists.
 
 What this paper tests, to its limit, is whether the classical dynamics of
 such an object can also produce the quantitative statistics of the singlet
 state. It cannot — and the ways in which it cannot turn out to be sharply
 nameable.
 
-## 2.2 The chord law and the causal derivation of the exponent
+## 3.2 The chord law and the causal derivation of the exponent
 
 The quadratic chord law is a geometric transcription of the quantum
 target, not a derivation of it: P(s,t | a,b) = |s·a − t·b|²/8 =
@@ -54,7 +54,7 @@ does — the argument's form is Gisin's, its object is ours. Gisin refutes a
 nonlinear dynamics; we derive a rule. The two-sided uniqueness of p = 2
 within the chord family is this program's extension of it.
 
-## 2.3 The conservation law of the postulate
+## 3.3 The conservation law of the postulate
 
 What causality can do, internal consistency cannot. A symmetric-pair
 consistency battery — no-signaling, order-independence, probabilities
@@ -66,7 +66,7 @@ relaxation reproduces the honest cos²(θ/2) at a single end. But the
 postulate has then moved from the probability rule into the measure — it
 relocates between rule, measure, and branch weights, and within the
 symmetric pair it never annihilates. Only the external principle of
-causality (2.2) eliminates alternatives.
+causality (3.2) eliminates alternatives.
 
 We call this relocation the conservation of the postulate — a
 methodological observation within the tested model family, not a
@@ -79,21 +79,21 @@ observation. The observation shaped every later phase: any mechanism that
 seemed to derive the Born weights was audited for where it had hidden
 them instead.
 
-## 2.4 From analytical layer to dynamical program
+## 3.4 From analytical layer to dynamical program
 
 Two analytical results sharpened into simulation targets. First, the
 sawtooth: a uniform microphase measure with conical outcome basins —
 the natural first reading of the ribbon — gives the exact triangular law
 E = 2θ/π − 1 — the textbook local-realistic correlation at full
-amplitude; the dynamical model of Section 5 later reached exactly this
+amplitude; the dynamical model of Section 6 later reached exactly this
 form, but with amplitude ρ < 1 set by source alignment, the analytical
 layer supplying the limiting shape and the dynamics its measured
 deficit. This was recorded as an analytical counterexample in the
 canonical log, and the arrival of the isotropized dynamics at the same
-form (Section 5.4) was not anticipated. Second, basin measure
+form (Section 6.4) was not anticipated. Second, basin measure
 scaling as |chord|¹ gives the sawtooth while |chord|² gives Born — so
 the question "where does the second power come from?" acquired a
-geometric face and is posed, formalized but unsolved, in Section 7.3.
+geometric face and is posed, formalized but unsolved, in Section 8.3.
 The simulation program of Sections 3–5 is the systematic attempt to make
 an elastic, thermal, topologically framed ribbon produce dynamically what
 the analytical layer showed it must produce structurally — and the

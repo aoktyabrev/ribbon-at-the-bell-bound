@@ -8,11 +8,11 @@ sharing a state, but a single ribbon embedded in a dimension above the
 three we see, its two ends being the two intersections with our slice —
 so that the perfect correlations of the singlet would need no
 communication, there being nothing to communicate between. The picture
-has an immediate structural payoff (Section 2): the embedding carries a
+has an immediate structural payoff (Section 3): the embedding carries a
 ℤ₂ framing class — the framing topology supplies a natural ℤ₂-valued
 structural label and the homotopy underlying the 4π belt-trick return.
 A physical map from this label to measurement outcomes is an additional
-requirement — and Section 4 proves that for axial readout no such map
+requirement — and Section 5 proves that for axial readout no such map
 exists.
 The bet this program made — its maximal stake — was that the classical
 dynamics of such an object, read by an honest basin measure, would
@@ -38,12 +38,12 @@ can now name and number: the topology does not enforce exact outcome
 zeros — the census found no topologically forbidden branch, and the
 framing invariant is inaccessible to axial readout (a structural theorem:
 the invariant that could enforce them lives in precisely the fiber that
-axial measurement quotients out; Section 4); honest isotropy collapses the
+axial measurement quotients out; Section 5); honest isotropy collapses the
 cosine to the triangular
-correlation of Bell's shared-randomness local model (Section 5); and
+correlation of Bell's shared-randomness local model (Section 6); and
 every apparent Bell violation the program produced — there were two —
 died in a pre-registered audit, one to a false symmetry assumption, one
-to a rediscovery of Pearle's detection loophole (Section 6). The
+to a rediscovery of Pearle's detection loophole (Section 7). The
 measured family moves toward the Bell bound as stiffness grows
 (|S| = 1.62 at k_f×4); its deterministic axial limit is expected — not
 measured — to reach ρ → 1, S → 2, not 2√2.
@@ -57,7 +57,7 @@ kill-criteria committed before runs, raw data committed before analysis,
 mirror controls, and a standing audit that treats any too-good result as
 a defect until proven otherwise. That machinery caught not only the
 physics artifacts above but the authors' own errors, in both directions
-of the human–AI collaboration that executed the program (Section 8).
+of the human–AI collaboration that executed the program (Section 9).
 
 ## 1.1 Related work and positioning
 
@@ -85,7 +85,7 @@ rediscovery made after that record began, dated by commit.
 To our knowledge the combination — an independently conceived geometric
 ontology, a falsification-first simulation program, and a fully
 version-controlled provenance trail — has not been reported in this
-form. The reader who wants the theory is directed to Section 2; the
-reader who wants the boundary, to Section 5; the reader who suspects
+form. The reader who wants the theory is directed to Section 3; the
+reader who wants the boundary, to Section 6; the reader who suspects
 that classical models producing S > 2 must be hiding an error somewhere
-will find two such errors, found and dissected, in Section 6.
+will find two such errors, found and dissected, in Section 7.

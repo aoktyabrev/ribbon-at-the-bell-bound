@@ -16,14 +16,23 @@ OUT = os.path.join(HERE, f"DRAFT_{VERSION}.md")
 
 ORDER = [
     "00_frontmatter.md",
+    "00a_abstract.md",
     "01_intro.md",
-    "02_theory.md",
-    "03_program.md",
-    "04_nogo.md",
-    "05_boundary.md",
-    "06_selfcorrection.md",
-    "07_discussion.md",
+    "02_model.md",
+    "03_analytical.md",
+    "04_methods.md",
+    "05_nogo.md",
+    "06_results.md",
+    "07_selfcorrection.md",
+    "08_discussion.md",
     "90_availability.md",
+    "99_references.md",
+]
+
+# Supplementary — собирается отдельным файлом, в основной корпус не входит
+SI_ORDER = [
+    "SI_program_history.md",
+    "SI_methodology.md",
 ]
 
 HEADER = f"""<!-- СГЕНЕРИРОВАНО paper/build_draft.py — НЕ РЕДАКТИРОВАТЬ. Правки — в sections/*.md -->
@@ -31,8 +40,8 @@ HEADER = f"""<!-- СГЕНЕРИРОВАНО paper/build_draft.py — НЕ РЕ�
 # Full draft {VERSION}
 
 Full draft for author review. Read from the repository file, not from any chat transcript.
-Veto points marked in the text: §2.1 [deferred-veto], §7.4 [author veto point: the
-"classical route exhausted" position], §7.6 [author veto point: closing credo].
+Veto points marked in the text: §3.1 [deferred-veto], §8.4 [author veto point: the
+"classical route exhausted" position], §8.6 [author veto point: closing credo].
 
 ---
 """
@@ -43,15 +52,15 @@ FIGURES = """
 ## Figure and table list
 
 All figures are produced by committed scripts from committed raw data; each can be
-regenerated from a named commit (Section 8.1).
+regenerated from a named commit (Section 9.1).
 
 | # | subject | file | script | section |
 |---|---|---|---|---|
-| Fig. 1 | plateau A(N) | `d2ext_scaling.png`, `ds2_cross.png` | `analysis_ext.py`, `analysis_ds2.py` | 5.1 |
-| Fig. 2 | A∞(k_f), stiffness memory | `s1runs_kf.png` | `plot_s1runs_kf.py` | 5.2 |
-| Fig. 3 | anisotropy map A(α) | `ds3_aniso.png` | `analysis_ds3.py` | 5.3 |
-| Fig. 4 | triangle vs cosine (isotropized) | `ds3_iso.png` | `analysis_ds3.py` | 5.4 |
-| Table 1 | CHSH revision: withdrawn vs valid | inline | — | 6.2 |
+| Fig. 1 | plateau A(N) | `d2ext_scaling.png`, `ds2_cross.png` | `analysis_ext.py`, `analysis_ds2.py` | 6.1 |
+| Fig. 2 | A_plateau(k_f), stiffness memory | `s1runs_kf.png` | `plot_s1runs_kf.py` | 6.2 |
+| Fig. 3 | anisotropy map A(α) | `ds3_aniso.png` | `analysis_ds3.py` | 6.3 |
+| Fig. 4 | triangle vs cosine (isotropized) | `ds3_iso.png` | `analysis_ds3.py` | 6.4 |
+| Table 1 | CHSH revision: withdrawn vs valid | inline | — | 7.2 |
 
 Figure files live in `sim/phase_D/fig/`.
 """
@@ -96,6 +105,7 @@ def main():
         "STUB": len(re.findall(r"\[STUB\]", text)),
         "TODO": len(re.findall(r"TODO", text)),
         "pending": len(re.findall(r"pending", text, flags=re.I)),
+        "[UNVERIFIED] (references)": len(re.findall(r"\[UNVERIFIED", text)),
     }
     print("\nМаркеры в собранном корпусе:")
     for k, v in flags.items():
@@ -105,7 +115,16 @@ def main():
     body = text.split("---\n", 1)[1] if "---\n" in text else text
     veto = (len(re.findall(r"deferred-veto: author", body))
             + len(re.findall(r"\[author veto point", body)))
-    print(f"\n  точек вето в теле (ожидается 3: §2.1, §7.4, §7.6): {veto}")
+    si_parts = []
+    for name in SI_ORDER:
+        with open(os.path.join(HERE, "SI", name), encoding="utf-8") as f:
+            si_parts.append(f.read().rstrip() + "\n\n---\n\n")
+    si_out = os.path.join(HERE, f"SI_{VERSION}.md")
+    with open(si_out, "w", encoding="utf-8") as f:
+        f.write("".join(si_parts))
+    print(f"→ {si_out}")
+
+    print(f"\n  точек вето в теле (ожидается 3: §3.1, §8.4, §8.6): {veto}")
 
 
 if __name__ == "__main__":

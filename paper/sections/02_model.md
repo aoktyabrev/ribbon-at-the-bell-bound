@@ -1,8 +1,8 @@
-# Model
+# 2. Model
 
 **Section owner:** Architect
 
-## M.1 Configuration space
+## 2.1 Configuration space
 
 The object is a framed discrete curve in R⁴: nodes x_i ∈ R⁴, i = 0..N−1,
 with unit tangents t_i = (x_{i+1} − x_i)/|x_{i+1} − x_i| and the boundary
@@ -17,7 +17,7 @@ sign of the accumulated lift. A single normal (an S² of directions) or a
 literal two-sided band (an SO(2) fiber) would carry no ℤ₂ invariant;
 "ribbon" names the picture, "framed curve" names the object.
 
-## M.2 Energy
+## 2.2 Energy
 
 H = H_stretch + H_bend + H_frame + H_clamp, with
 H_stretch = k_s Σ (|x_{i+1} − x_i| − ℓ)²,
@@ -35,9 +35,9 @@ axis obtained from u_end under SU(2) → SO(3), pins an axis only — the
 residual U(1) about it stays free — and is the clamp behind every
 scientific number in this paper (D1 through the seed audit). The
 axis–frame distinction is not a technicality: the U(1) theorem of
-Section [no-go] lives in exactly the fiber the axial clamp leaves free.
+Section 5 lives in exactly the fiber the axial clamp leaves free.
 
-## M.3 Dynamics
+## 2.3 Dynamics
 
 Relaxation is a projected Euler–Maruyama scheme, stated as implemented:
 per step, gradients g_x, g_u of H; noise ν ~ N(0,1)·√(2·lr·T) added in
@@ -48,7 +48,7 @@ step; no metric correction, Itô–Stratonovich term, or retraction
 Jacobian is applied; consequently we do not claim that the scheme
 samples a Gibbs measure at temperature T, and no stationary measure is
 derived — T is an algorithmic noise scale whose observed effect on the
-reported amplitude is flat (Section [results]). Steps are rejected for
+reported amplitude is flat (Section 6). Steps are rejected for
 the whole chain on any of three criteria: a temporal lift jump
 (⟨u_new, u_old⟩ < 1 − δ_sing), a tangent reversal
 (t_i · t_{i+1} < −1 + δ_tan), or a spatial lift wall — a sign change of
@@ -60,7 +60,7 @@ Lift continuity between accepted steps (the sign of u
 chosen nearest the previous step) is what makes the parity bookkeeping
 well-defined.
 
-## M.4 Preparation and topological invariant
+## 2.4 Preparation and topological invariant
 
 The even sector is prepared as u ≡ const followed by relaxation; the odd
 sector by a linear twist ramp distributing 2π along the chain, followed by
@@ -78,7 +78,7 @@ defined on trajectories free of rejected singular steps, is exactly
 conserved on accepted trajectories, and is not spontaneously populated
 thermally — charged configurations exist only by preparation.
 
-## M.5 Measurement and estimator
+## 2.5 Measurement and estimator
 
 Outcomes are read locally at the boundaries: s = sign(n_0 · a),
 t = sign(n_{N−1} · b), each a function of one end's frame and that end's
@@ -86,7 +86,7 @@ setting only. Configurations with |n · a| below a fixed threshold
 (0.2, a convention) were classed DEGENERATE and reported as a separate
 column in the campaigns; for CHSH estimation this class must not be
 discarded — setting-dependent discard is precisely the detection
-loophole documented in Section [audit], and the corrected estimator
+loophole documented in Section 7, and the corrected estimator
 keeps all events with sign(0) → +1 by convention. The correlation
 estimator is E(a,b) = (1/n_valid) Σ_{j: valid} s_j t_j with binomial
 standard error √(max(1−E², ·)/n_valid), where valid excludes the
@@ -97,7 +97,7 @@ that binomial error at r = 0.88 (11 repeats, N = 32 core cell) and
 r = 1.11 (5 points, N = 96), so the quoted errors are honest as
 reproducibility measures.
 
-## M.6 Locality status
+## 2.6 Locality status
 
 Three statements at three strengths, kept separate deliberately.
 (i) Readout locality holds by construction: s depends on (u_0, a) only,

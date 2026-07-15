@@ -1,4 +1,4 @@
-# 6. Case studies in self-correction
+# 7. Case studies in self-correction
 
 **Section owner:** Joint (Code audits + Architect methodology)
 
@@ -13,7 +13,7 @@ out to be textbook failure modes with decades of history in the Bell-test
 literature. We report them in detail because we believe the mechanism of
 their capture is a result in its own right.
 
-## 6.1 Audit 1: the false-isotropy artifact (DS2)
+## 7.1 Audit 1: the false-isotropy artifact (DS2)
 
 Applying the standard isotropic CHSH estimator to our stiff-coupling data
 (k_f×4) yielded |S| = 2.58, comfortably above the classical bound. The
@@ -28,7 +28,7 @@ computed with the same invalid estimator and are withdrawn. They remain in
 the canonical record, struck through, with the revision documented (commit
 311d3ae).
 
-## 6.2 Audit 2: the detection loophole, rediscovered from the inside (DS3)
+## 7.2 Audit 2: the detection loophole, rediscovered from the inside (DS3)
 
 The isotropization protocol (a source axis drawn Haar-uniformly per replica —
 honest shared randomness, available to both ends through the geometry of the
@@ -48,26 +48,26 @@ sub-classical.
 
 *Table 1. Every CHSH value the program produced, and its fate. The isotropic estimator
 S = 3E(π/4) − E(3π/4) assumes E(a, b) = E(|a − b|); the ribbon is strongly anisotropic
-(Section 5.3), so every value computed with it is withdrawn. Withdrawn values are struck
+(Section 6.3), so every value computed with it is withdrawn. Withdrawn values are struck
 through, not deleted (canon "Ревизия CHSH"; commit 311d3ae).*
 
 | value | campaign | method | status | where corrected |
 |---|---|---|---|---|
-| ~~≈ 1.48~~ | phase C | isotropic estimator | withdrawn: invalid isotropic estimator | superseded by DS2 direct (§6.1) |
-| ~~0.73–1.25~~ | D2 | isotropic estimator | withdrawn: invalid isotropic estimator | superseded by DS2 direct (§6.1) |
-| ~~2.39~~ | DS3 (primary) | direct, but with setting-dependent DEGENERATE post-selection (\|proj\| < 0.2, ~36% of replicas) | withdrawn: setting-dependent post-selection — the detection loophole (canon also charges the isotropic estimator: double artifact) | `analysis_ds3`, post-selection removed → 1.62 (§6.2; commit 0fb5452) |
+| ~~≈ 1.48~~ | phase C | isotropic estimator | withdrawn: invalid isotropic estimator | superseded by DS2 direct (§7.1) |
+| ~~0.73–1.25~~ | D2 | isotropic estimator | withdrawn: invalid isotropic estimator | superseded by DS2 direct (§7.1) |
+| ~~2.39~~ | DS3 (primary) | direct, but with setting-dependent DEGENERATE post-selection (\|proj\| < 0.2, ~36% of replicas) | withdrawn: setting-dependent post-selection — the detection loophole (canon also charges the isotropic estimator: double artifact) | `analysis_ds3`, post-selection removed → 1.62 (§7.2; commit 0fb5452) |
 | **1.21** | DS2 | direct, both ends rotated, no post-selection | valid: direct | — |
 | **0.75 / 1.62** | DS3 | isotropized shared randomness λ = (R, n_A, n_B); CHSH = 2ρ at k_f × {1, 4} | valid: direct | — |
 
 No value survives audit above 2; the ribbon is always sub-classical.
 
-## 6.3 What the two audits establish
+## 7.3 What the two audits establish
 
 First, a negative result of unusual strength: across the entire program, no
 Bell violation survived an audit. Every S > 2 traced to an identifiable
 protocol error, and the corrected values sit strictly inside the classical
 region — converging, in the stiff-coupling limit, toward the Bell bound from
-below (Section 5). Second, a methodological claim: the pre-registered
+below (Section 6). Second, a methodological claim: the pre-registered
 "too-good-to-be-true" trigger is not decoration. Both artifacts — invalid
 symmetry assumption, setting-dependent post-selection — are historically
 documented failure modes that took the community years to identify in
@@ -77,7 +77,7 @@ analysis cycle each. Third, a note on provenance: a theoretical
 entry in our canonical log (the "Bell trap", §2.7 of the model note) derives
 that any shared-λ, locally deterministic readout of the ribbon must produce
 the triangular correlation function — a forced consequence, not a guess; the
-isotropization campaign landed on exactly that triangle (Section 5). We
+isotropization campaign landed on exactly that triangle (Section 6). We
 deliberately rest this point on the logical status of the prediction rather
 than on its calendar priority, which our commit history cannot independently
 establish. The program's negative
