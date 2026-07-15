@@ -69,7 +69,8 @@ classical hidden-variable literature — de Broglie–Bohm's nonlocal
 dynamics, 't Hooft's cellular automata, Palmer's invariant-set theory —
 not in outrunning these theorems, which we do not, but in genre: a
 single ontology, pursued to its named limit, under pre-registration,
-with every retreat documented and every rediscovery dated by commit.
+with every retreat documented in a version-controlled record — and every
+rediscovery made after that record began, dated by commit.
 To our knowledge the combination — an independently conceived geometric
 ontology, a falsification-first simulation program, and a fully
 version-controlled provenance trail — has not been reported in this

@@ -67,6 +67,9 @@ the hopeful one.
 
 ## 7.4 The status of the ontology, and of the classical route
 
+[author veto point: the position "classical route exhausted" is the author's, chosen over
+the minimal alternative]
+
 The ontological picture itself — the pair as one extended object, with
 binarity and spinority descending from its framing topology — is not
 refuted by anything in this paper. What is refuted, by construction and
@@ -98,6 +101,8 @@ verified flat. Within these bounds the walls are measured; beyond them
 they are extrapolated.
 
 ## 7.6 What we take to be the product
+
+[author veto point: closing credo]
 
 Beyond the specific results, we submit the method as a product in its own
 right: an ontology driven to its named limit by pre-registration,

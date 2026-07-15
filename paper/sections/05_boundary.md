@@ -20,7 +20,15 @@ independent repeats of the N = 32 cell scatter with s_seed = 0.024 against a bin
 σ = 0.027, a ratio r = 0.88 (χ² = 7.7 / 10, p = 0.66), and the ratio does not grow with chain
 length (r = 1.11 at N = 96) (seed audit; commit a26f76b).
 
-[Fig. 1: plateau — d2ext_scaling.png + ds2_cross.png]
+![Fig. 1a: D2-ext scaling A_N vs N](../../sim/phase_D/fig/d2ext_scaling.png)
+
+![Fig. 1b: DS2 cross-scan at two stiffnesses](../../sim/phase_D/fig/ds2_cross.png)
+
+*Fig. 1. The plateau. (a) D2-ext: A_N = |E(0)| against chain length N ∈ {16, 32, 48, 64, 96}
+at M = 1200 replicas, with the three fitted models — constant M0 (A∞ = 0.363, dotted), power
+law M1 (γ = −0.03, i.e. fitted growth rather than decay, dashed), and saturating M2 (solid).
+M0 wins by ΔAICc = 6.36 (commit 2784edf). (b) DS2 cross-scan: A(N) at k_f×1 and k_f×4, flat
+within error at both stiffnesses (commit f928dd4).*
 
 ## 5.2 Origin of the amplitude
 
@@ -68,7 +76,12 @@ exponential fitting equally well) at k_f×4. The axis ê — simultaneously the 
 readout axis — is strongly privileged; the cosine dependence exists only along it, which is
 exactly why the isotropic CHSH estimator of Section 6 was invalid.
 
-[Fig. 3: anisotropy map — ds3_aniso.png]
+![Fig. 3: DS3 anisotropy map](../../sim/phase_D/fig/ds3_aniso.png)
+
+*Fig. 3. Anisotropy map. A(α) = |E_anti| as the clamp axis a is tilted by α from the
+privileged axis ê, at k_f×1 (best fit cos α) and k_f×4 (best fit exp ≈ cos²α); dashed curves
+are cos²α. The signal decays to zero at α = π/2 at both stiffnesses: the cosine law exists
+only along ê (commit 0fb5452).*
 
 ## 5.4 The trilemma and the triangle
 
@@ -86,7 +99,13 @@ isotropy forces the triangle (this subsection); and the amplitude ρ is bought w
 sits a measured distance 2 − 1.62 = 0.38 short of it — with the deterministic axial limit
 (ρ → 1, |S| → 2) as its endpoint.
 
-[Fig. 4: triangle vs cosine — ds3_iso.png]
+![Fig. 4: DS3 isotropized correlation — triangle vs cosine](../../sim/phase_D/fig/ds3_iso.png)
+
+*Fig. 4. Triangle versus cosine. The honestly isotropized E(θ) at k_f×1 and k_f×4: the data
+lie on the straight triangular law −ρ(1 − 2θ/π) (solid, ρ = 0.374 / 0.810, CHSH = 2ρ =
+0.75 / 1.62), not on the cosine (dotted). Horizontal reference lines mark the literature
+values 1/3, 2/π, 1/K_G, which were formulated for a cosine LHV and are not direct bounds on
+a triangular one (DS3 §4; commit 0fb5452).*
 
 ## 5.5 Synthesis
 
