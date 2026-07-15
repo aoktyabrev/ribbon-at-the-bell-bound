@@ -95,7 +95,7 @@ form (Section 6.4) was not anticipated. Second, basin measure
 scaling as |chord|¹ gives the sawtooth while |chord|² gives Born — so
 the question "where does the second power come from?" acquired a
 geometric face and is posed, formalized but unsolved, in Section 8.3.
-The simulation program of Sections 3–5 is the systematic attempt to make
+The simulation program of Sections 4–7 is the systematic attempt to make
 an elastic, thermal, topologically framed ribbon produce dynamically what
 the analytical layer showed it must produce structurally — and the
 measured ways in which it does not.

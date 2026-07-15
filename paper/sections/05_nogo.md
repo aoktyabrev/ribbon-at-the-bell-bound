@@ -48,7 +48,7 @@ sharpest single lesson of the program.
 
 ## 5.3 Sector blindness of the axial signal
 
-The complement of 4.2, measured directly: at matched preparation, the axial
+The complement of 5.2, measured directly: at matched preparation, the axial
 correlation amplitude is statistically identical in the even and odd
 topological sectors (ΔA = −0.040 ± 0.038 at N = 32, M = 1200). The
 correlation carried by axial readout is generic chain correlation,
@@ -64,13 +64,13 @@ that would have supplied the exact zeros the Born rule requires. The
 census refuted it: all 16 cells of {sector} × {branch} × {θ ∈ {0, π}}
 contain non-singular representatives, found both numerically (constrained
 minimization from ≥20 diverse starts per cell) and by an explicit
-homotopy argument — the residual U(1) layer of 4.2 absorbs the framing
+homotopy argument — the residual U(1) layer of 5.2 absorbs the framing
 constraint, so a 2π twist of the fiber connects nominally forbidden
 configurations to allowed ones. The kill-criterion fired as
 registered: there is no topological empty-support prohibition in this
 geometry (non-empty support established by explicit representatives;
 measure statements are a separate, dynamical question).
-Combined with 4.2, the two results close both readings of the phase-D
+Combined with 5.2, the two results close both readings of the phase-D
 bet: topology cannot be read locally, and it forbids nothing globally.
 What survives of it is one number — the length-stable amplitude (no resolved decay over the
 measured range) of

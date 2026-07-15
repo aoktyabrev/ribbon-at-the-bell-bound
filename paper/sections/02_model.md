@@ -74,7 +74,7 @@ branch is never chosen in advance, and the basin decides
 (prep_dynamics, measurement.py). Measurement settings a, b are inputs of
 the protocol, fixed per run or drawn by the campaign design — never from
 the preparation randomness; their independence from λ is a designed
-property, used in M.6(iii). The ℤ₂ parity of a
+property, used in 2.6(iii). The ℤ₂ parity of a
 configuration is the sign of the lift accumulated along the chain with
 continuous sign choice, compared against the boundary frames; it is
 defined on trajectories free of rejected singular steps, is exactly
