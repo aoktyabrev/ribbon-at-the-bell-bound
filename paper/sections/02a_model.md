@@ -6,34 +6,34 @@
 
 The object is a framed discrete curve in R⁴: nodes x_i ∈ R⁴, i = 0..N−1,
 with unit tangents t_i = (x_{i+1} − x_i)/|x_{i+1} − x_i| and the boundary
-convention t_{N−1} := t_{N−2}. [*] Each node carries a unit quaternion
+convention t_{N−1} := t_{N−2}. Each node carries a unit quaternion
 u_i ∈ S³ ⊂ H, the lift of the node's normal frame relative to Bishop
 (minimal-rotation) transport along the curve; the transport R_i ∈ SO(4)
 maps t_i to t_{i+1} and acts as identity on the orthogonal complement of
-their span. [*] The full normal frame — not a single normal vector — is
+their span. The full normal frame — not a single normal vector — is
 what carries the topology: the normal space of a curve in R⁴ is
 three-dimensional, π₁(SO(3)) = ℤ₂, and the ℤ₂ framing class lives in the
 sign of the accumulated lift. A single normal (an S² of directions) or a
 literal two-sided band (an SO(2) fiber) would carry no ℤ₂ invariant;
-"ribbon" names the picture, "framed curve" names the object. [*]
+"ribbon" names the picture, "framed curve" names the object.
 
 ## M.2 Energy
 
 H = H_stretch + H_bend + H_frame + H_clamp, with
-H_stretch = k_s Σ (|x_{i+1} − x_i| − ℓ)², [*]
-H_bend    = k_b Σ (1 − t_i · t_{i+1})  (harmonic only near alignment), [*]
+H_stretch = k_s Σ (|x_{i+1} − x_i| − ℓ)²,
+H_bend    = k_b Σ (1 − t_i · t_{i+1})  (harmonic only near alignment),
 H_frame   = k_f Σ d²(u_i, ū_{i+1}) where ū_{i+1} is u_{i+1} parallel-
 transported back along the Bishop frame and d is the geodesic distance
 on S³; the twist datum enters through arccos|⟨·,·⟩| and is therefore
 blind to the lift sign by construction — a modeling choice, not a
-consequence. [*]
+consequence.
 Two distinct clamp terms were used and must not be conflated. The frame
 clamp, H_clamp = k_c · arccos²(|⟨u_end, U_target⟩|), pins the full
-boundary frame and appears only in the D0 invariant-validation runs. [*]
+boundary frame and appears only in the D0 invariant-validation runs.
 The axial clamp, H_clamp = −k_c (n_end · a)² with n_end the boundary
 axis obtained from u_end under SU(2) → SO(3), pins an axis only — the
 residual U(1) about it stays free — and is the clamp behind every
-scientific number in this paper (D1 through the seed audit). [*] The
+scientific number in this paper (D1 through the seed audit). The
 axis–frame distinction is not a technicality: the U(1) theorem of
 Section [no-go] lives in exactly the fiber the axial clamp leaves free.
 
@@ -43,7 +43,7 @@ Relaxation is a projected Euler–Maruyama scheme, stated as implemented:
 per step, gradients g_x, g_u of H; noise ν ~ N(0,1)·√(2·lr·T) added in
 the ambient space; for the frame variables the update du = −lr·g_u + ν
 is projected onto the tangent space at u_i (du ← du − ⟨du,u⟩u) and
-retracted by normalization. [*] The step size lr doubles as the time
+retracted by normalization. The step size lr doubles as the time
 step; no metric correction, Itô–Stratonovich term, or retraction
 Jacobian is applied; consequently we do not claim that the scheme
 samples a Gibbs measure at temperature T, and no stationary measure is
@@ -58,7 +58,7 @@ what protects the parity bookkeeping: it is the "leaky lift" detector,
 and the rejection fraction falls with lr in the validated regime.
 Lift continuity between accepted steps (the sign of u
 chosen nearest the previous step) is what makes the parity bookkeeping
-well-defined. [*]
+well-defined.
 
 ## M.4 Preparation and topological invariant
 
@@ -76,13 +76,13 @@ configuration is the sign of the lift accumulated along the chain with
 continuous sign choice, compared against the boundary frames; it is
 defined on trajectories free of rejected singular steps, is exactly
 conserved on accepted trajectories, and is not spontaneously populated
-thermally — charged configurations exist only by preparation. [*]
+thermally — charged configurations exist only by preparation.
 
 ## M.5 Measurement and estimator
 
 Outcomes are read locally at the boundaries: s = sign(n_0 · a),
 t = sign(n_{N−1} · b), each a function of one end's frame and that end's
-setting only. [*] Configurations with |n · a| below a fixed threshold
+setting only. Configurations with |n · a| below a fixed threshold
 (0.2, a convention) were classed DEGENERATE and reported as a separate
 column in the campaigns; for CHSH estimation this class must not be
 discarded — setting-dependent discard is precisely the detection
@@ -101,7 +101,7 @@ reproducibility measures.
 
 Three statements at three strengths, kept separate deliberately.
 (i) Readout locality holds by construction: s depends on (u_0, a) only,
-t on (u_{N−1}, b) only. [*] (ii) Dynamical locality is not claimed: both
+t on (u_{N−1}, b) only. (ii) Dynamical locality is not claimed: both
 clamps enter one global relaxation functional, so the final
 configuration near one end may in general depend on the remote setting;
 proving factorization P(s,t|a,b,λ) = P(s|a,λ)·P(t|b,λ) over the
