@@ -132,10 +132,10 @@ def main():
     plt.figure(figsize=(7, 5))
     plt.errorbar(NS, A, yerr=sA, fmt="o", capsize=3, label="A_N=|E(0)| (данные)", color="C0", zorder=5)
     Nf = np.linspace(NS.min(), NS.max(), 100)
-    plt.axhline(A0, ls=":", color="C1", label=f"M0 const A∞={A0:.3f}")
+    plt.axhline(A0, ls=":", color="C1", label=f"M0 const A_plateau={A0:.3f}")
     plt.plot(Nf, m1(Nf, *p1), "--", color="C2", label=f"M1 A·N^−γ (γ={p1[1]:.2f})")
     if p2 is not None:
-        plt.plot(Nf, m2(Nf, *p2), "-", color="C3", label=f"M2 A∞+cN^−γ (A∞={p2[0]:.3f})")
+        plt.plot(Nf, m2(Nf, *p2), "-", color="C3", label=f"M2 A_plateau+cN^−γ (A_plateau={p2[0]:.3f})")
     plt.xlabel("N"); plt.ylabel("A_N"); plt.ylim(0, max(A)*1.3)
     plt.title(f"D2-ext скейлинг: лучшая {best} (M=1200)")
     plt.legend(fontsize=8); plt.grid(alpha=0.3); plt.tight_layout()
