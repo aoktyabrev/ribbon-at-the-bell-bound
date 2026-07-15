@@ -34,10 +34,13 @@ symmetric deformation — produces a superluminal telegraph on a partially
 entangled link: the marginal at one end shifts with the remote setting
 by Δ = 0.146 at p = 1, 0.081 at p = 3, 0.072 at ε = 0.2 (at q = 0.85,
 Δ = ε·|(1−2q)³−(1−2q)| for the deformation family). Causality pins
-the Born exponent from both sides. As we later found, the core of this
-argument — cosθ-linearity of the qubit correlation as an equivalent of
-no-signaling — reproduces Gisin (1990); the two-sided uniqueness of
-p = 2 within the chord family is this program's extension of it.
+the Born exponent from both sides. As we later found, this argument is the
+measurement-rule analogue of Gisin's no-go for nonlinear quantum dynamics
+(Gisin 1989; 1990): there, nonlinearity of the evolution enables
+superluminal signaling; here, nonlinearity of the outcome rule in cos θ
+does — the argument's form is Gisin's, its object is ours. Gisin refutes a
+nonlinear dynamics; we derive a rule. The two-sided uniqueness of p = 2
+within the chord family is this program's extension of it.
 
 ## 2.3 The conservation law of the postulate
 

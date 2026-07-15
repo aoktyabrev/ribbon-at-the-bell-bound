@@ -20,11 +20,14 @@ not a fog but a set of named, quantified walls.
 ## 7.2 Relation to the classical theorems
 
 The program repeatedly rediscovered, from the inside and with its own
-numbers, results that mark the classical-quantum boundary. The equivalence
-of cosθ-linearity (the qubit Born rule) with the no-signaling constraint
-reproduces Gisin (1990); the uniqueness of the Born exponent p = 2 within
-the chord family is this program's own extension of the same causal
-argument; the triangular correlation of the isotropized ribbon is Bell's
+numbers, results that mark the classical-quantum boundary. Our causal
+argument for cosθ-linearity (the qubit Born rule) is the measurement-rule
+analogue of Gisin's no-go for nonlinear quantum dynamics (Gisin 1989;
+1990): there, nonlinearity of the evolution enables superluminal
+signaling; here, nonlinearity of the outcome rule in cos θ does — the
+argument's form is Gisin's, its object is ours. The uniqueness of the Born
+exponent p = 2 within the chord family is this program's own extension of
+the same causal argument; the triangular correlation of the isotropized ribbon is Bell's
 shared-λ local model, a textbook construction that the program first met
 as an analytical counterexample (the "saw", session 3) and then found
 realized dynamically by its own elastic ribbon — the analytical

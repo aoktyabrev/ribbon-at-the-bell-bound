@@ -57,11 +57,14 @@ of the human–AI collaboration that executed the program (Section 8).
 
 The walls this program hit are, of course, known walls. Bell's theorem
 bounds every local hidden-variable account, and our isotropized
-correlation is his shared-λ model met dynamically; the equivalence of
-cosθ-linearity with no-signaling reproduces, as we found after the fact,
-Gisin's 1990 argument — the uniqueness of the quadratic exponent within
-the chord family being this program's own extension of it; the
-post-selection artifact
+correlation is his shared-λ model met dynamically; our causal argument for
+cosθ-linearity is, as we found after the fact, the measurement-rule
+analogue of Gisin's no-go for nonlinear quantum dynamics (Gisin 1989;
+1990) — there, nonlinearity of the evolution enables superluminal
+signaling; here, nonlinearity of the outcome rule in cos θ does, the
+argument's form being Gisin's and its object ours — with the uniqueness of
+the quadratic exponent within the chord family this program's own
+extension; the post-selection artifact
 of our second audit is Pearle's 1970 detection loophole; and the
 impossibility of eliminating the Born postulate within the symmetric
 pair is the constructive face of Kochen–Specker. We differ from the
