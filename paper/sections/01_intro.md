@@ -1,20 +1,70 @@
-# 1. Introduction  [STUB]
+# 1. Introduction
 
 **Section owner:** Architect
 
-## Theses (from outline §1 + §1a Related work)
-- Ontology: particles = boundaries of an extended object (ribbon) embedded in a higher
-  dimension; binary + spinorial outcomes from geometry, not postulate.
-- Maximalist bet: derive Born rule (isotropic cosine, A=1, CHSH=2√2) from a classical
-  elastic ribbon with an honest basin measure.
-- Honest framing: pre-registration of hypotheses + kill-criteria before runs.
-- Headline: bet NOT won; we map the ribbon's POSITION WITHIN THE CLASSICAL REGION —
-  family limit = Bell bound (CHSH→2), not quantum (2√2) — and name the structural locks.
-- Related work: Bell/CHSH; Gisin 1990 (independent rediscovery); Pearle 1970 (loophole,
-  audit #2); contrast dBB / 't Hooft CA / Palmer IST — our genre: systematic mapping of a
-  single ontology under pre-registration.
+Take seriously, for the length of one research program, the following
+picture: an entangled pair is one extended object. Not two particles
+sharing a state, but a single ribbon embedded in a dimension above the
+three we see, its two ends being the two intersections with our slice —
+so that the perfect correlations of the singlet would need no
+communication, there being nothing to communicate between. The picture
+has an immediate structural payoff (Section 2): the embedding carries a
+ℤ₂ framing class, and from it the binary character of measurement
+outcomes and the 720° spinor property descend without postulates. [*]
+The bet this program made — and adopted as its maximal stake at the
+outset — was that the classical dynamics of such an object, read by an
+honest basin measure, would also produce the quantitative statistics of
+the singlet: the isotropic −cos θ correlation at unit amplitude, the
+Born weights, and a CHSH value of 2√2. [*]
 
-## Sources
-- ribbon_model_note.md §"origin of spinority from embedding", §"Phase D final lemma".
-- Commits: born.py/born2.py (session 3, Gisin Δ numbers).
-- Reports: D0–DS3 (methodology + results referenced downstream).
+The bet was lost. This paper reports how it was lost — exactly,
+quantitatively, and, we will argue, usefully. The classical ribbon
+realizes more of the singlet than we find commonly appreciated:
+anticorrelation of the right sign, a correlation amplitude that survives
+chain length unchanged (a kinetic plateau, measured to N = 96 and
+verified at two coupling stiffnesses), and a smooth cosine angular law —
+though only along one privileged axis. [*] What it cannot realize, we
+can now name and number: exact outcome zeros are forbidden to it by a
+structural theorem (the topological invariant that could enforce them
+lives in precisely the fiber that axial measurement quotients out;
+Section 4); honest isotropy collapses the cosine to the triangular
+correlation of Bell's shared-randomness local model (Section 5); and
+every apparent Bell violation the program produced — there were two —
+died in a pre-registered audit, one to a false symmetry assumption, one
+to a rediscovery of Pearle's detection loophole (Section 6). [*] The
+stiffness family the model spans approaches the Bell bound from below
+and ends there: its limit point is CHSH = 2, not 2√2. [*]
+
+We consider the negative answer, so structured, to be the contribution.
+A classical ontology was driven to a boundary; the boundary was mapped
+rather than lamented; and the walls were named while the program was
+still running — several of them named in advance in the pre-registration
+record. The method that made this possible is plain: hypotheses with
+kill-criteria committed before runs, raw data committed before analysis,
+mirror controls, and a standing audit that treats any too-good result as
+a defect until proven otherwise. That machinery caught not only the
+physics artifacts above but the authors' own errors, in both directions
+of the human–AI collaboration that executed the program (Section 8).
+
+## 1.1 Related work and positioning
+
+The walls this program hit are, of course, known walls. Bell's theorem
+bounds every local hidden-variable account, and our isotropized
+correlation is his shared-λ model met dynamically [*]; the uniqueness of
+the quadratic Born exponent under no-signaling reproduces, as we found
+after the fact, Gisin's 1990 argument [*]; the post-selection artifact
+of our second audit is Pearle's 1970 detection loophole [*]; and the
+impossibility of eliminating the Born postulate within the symmetric
+pair is the constructive face of Kochen–Specker. [*] We differ from the
+classical hidden-variable literature — de Broglie–Bohm's nonlocal
+dynamics, 't Hooft's cellular automata, Palmer's invariant-set theory —
+not in outrunning these theorems, which we do not, but in genre: a
+single ontology, pursued to its named limit, under pre-registration,
+with every retreat documented and every rediscovery dated by commit.
+To our knowledge the combination — an independently conceived geometric
+ontology, a falsification-first simulation program, and a fully
+version-controlled provenance trail — has not been reported in this
+form. The reader who wants the theory is directed to Section 2; the
+reader who wants the boundary, to Section 5; the reader who suspects
+that classical models producing S > 2 must be hiding an error somewhere
+will find two such errors, found and dissected, in Section 6.
