@@ -11,3 +11,8 @@ sim/results/**/*.npz
 # Windows ADS-мусор от скачанных файлов
 *:Zone.Identifier
 sim/results/*.log
+
+# PDF-сборки — генерируются paper/build_pdf.sh
+paper/pdf/*.log
+paper/pdf/*.aux
+paper/pdf/*.tex

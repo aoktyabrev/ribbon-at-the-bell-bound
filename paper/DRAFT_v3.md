@@ -7,6 +7,7 @@ Veto points marked in the text: §3.1 [deferred-veto], §8.4 [author veto point:
 "classical route exhausted" position], §8.6 [author veto point: closing credo].
 
 ---
+
 # Frontmatter
 
 **Title:** The Ribbon at the Bell Bound: Mapping the Classical Boundary of a Geometric
