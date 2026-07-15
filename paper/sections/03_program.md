@@ -2,7 +2,10 @@
 
 **Section owner:** Code
 
-## 3.1 Four phases
+## 3.1 Four phases  [TO-SI]
+
+*Marked for migration to Supplementary after the Model section lands: this subsection is
+phase chronology (A–D) and commit detail, not method.*
 
 Phase A built the computational scaffold — pure JAX (jit, vmap, lax.scan; no Python loops
 over steps or batch), float32 state as explicit pytrees — and passed the R0 null
@@ -41,7 +44,7 @@ cross-scan and CHSH audits (DS2/DS3) — the single number that survived is the 
 readout amplitude A∞ = 0.363 ± 0.012 (D2-ext; commit 2784edf), whose meaning and limits are
 the subject of Section 5.
 
-## 3.2 Methodology
+## 3.2 Methodology  [STAYS]
 
 Every campaign carries a pre-registration file fixing hypotheses, quantitative expectations,
 and kill-criteria. The commit record proves three properties at three strengths: no
@@ -77,7 +80,7 @@ and the raw-before-analysis order are controls over both AI roles: they bind the
 the execution to commitments made before the data existed, which is precisely the point at
 which the shared hope for a positive result would otherwise leak into the pipeline.
 
-## 3.3 Infrastructure
+## 3.3 Infrastructure  [TO-SI, except the repeatability/reproducibility paragraph marked STAYS]
 
 Phase D reused the phase A–C toolkit directly: the quaternion frame algebra, energy, and
 Langevin dynamics carried over into the R⁴ model (band4d.py, measurement.py). Tests were
@@ -94,7 +97,7 @@ conservation test (T-inv-3), wanted precision headroom we did not want to argue 
 runs are CPU-only because fp64 on the available GPU is ~1/64 speed, and cells this size do
 not need it.
 
-Two distinct properties are worth separating. Repeatability is exact: every stage fixes a
+[STAYS] Two distinct properties are worth separating. Repeatability is exact: every stage fixes a
 PRNGKey seed protocol and commits its raw data, so the same seed returns the same number and
 any figure can be regenerated from a named commit. Reproducibility — whether a result
 survives a change of seed — is a separate question, and we measured it rather than assumed
