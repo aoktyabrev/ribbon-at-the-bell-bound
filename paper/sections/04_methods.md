@@ -35,8 +35,10 @@ interpretation; it fired twice, and both times caught a method artifact rather t
 (Section 7).
 
 This machinery was not incidental to the working arrangement but demanded by it. The program
-was run by an AI architect (design and pre-registration), an AI executor (implementation and
-runs), and a human owner (decisions and veto) (Section 9). Pre-registration, kill-criteria,
+was run under an explicit division of roles between generative-AI tooling — design and
+pre-registration on one side, implementation, runs, and verification on the other — and the
+human author, who made all decisions and held veto (Section 9.2 and the Supplementary
+methodological note). Pre-registration, kill-criteria,
 and the raw-before-analysis order are controls over both AI roles: they bind the design and
 the execution to commitments made before the data existed, which is precisely the point at
 which the shared hope for a positive result would otherwise leak into the pipeline.
