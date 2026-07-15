@@ -5,7 +5,7 @@
 A hidden-variable research program faces a specific epistemic hazard: the
 researcher wants the model to violate a Bell inequality, and the pipeline is
 built by the same people who hold that hope. We therefore pre-registered,
-before any CHSH campaign, a standing kill-criterion: any result S > 2 in a
+before any CHSH [CHSH1969] campaign, a standing kill-criterion: any result S > 2 in a
 manifestly local model is treated as evidence of a protocol error, triggering
 a full audit before any interpretation. This criterion fired twice. Both
 times it caught an artifact of method, not physics — and both artifacts turn
@@ -33,14 +33,14 @@ the canonical record, struck through, with the revision documented (commit
 The isotropization protocol (a source axis drawn Haar-uniformly per replica —
 honest shared randomness, available to both ends through the geometry of the
 ribbon but not to the experimenter) produced |S| = 2.39. Since the
-construction is manifestly local, Bell's theorem guarantees this is a bug;
+construction is manifestly local, Bell's theorem [Bell1964] guarantees this is a bug;
 the trigger fired again. The audit located it in event selection: replicas
 with a weak axial projection (|proj| < 0.2) were being discarded as
 DEGENERATE — and the discard rate itself varied with the measurement
 setting, from 21% of events at the correlation extremes (θ = 0, π) to a peak of
 37–38% at intermediate angles (36–37% at the CHSH angles π/4 and 3π/4). This setting-dependence is
 not incidental to the artifact; it is the artifact. Setting-dependent post-selection is precisely the
-detection loophole of Pearle (1970) — the class of local models that forced
+detection loophole of Pearle [Pearle1970] — the class of local models that forced
 four decades of loophole-closing in experimental Bell tests. Our pipeline
 reproduced the disease and, once the cut was removed (all events kept,
 sign(0) → +1 by convention), the cure: |S| = 1.62 at k_f×4, again

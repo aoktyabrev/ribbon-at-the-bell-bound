@@ -23,24 +23,24 @@ not a fog but a set of named, quantified walls.
 The program repeatedly rediscovered, from the inside and with its own
 numbers, results that mark the classical-quantum boundary. Our causal
 argument for cosθ-linearity (the qubit Born rule) is the measurement-rule
-analogue of Gisin's no-go for nonlinear quantum dynamics (Gisin 1989;
-1990): there, nonlinearity of the evolution enables superluminal
+analogue of Gisin's no-go for nonlinear quantum dynamics [Gisin1989;
+Gisin1990]: there, nonlinearity of the evolution enables superluminal
 signaling; here, nonlinearity of the outcome rule in cos θ does — the
 argument's form is Gisin's, its object is ours. The uniqueness of the Born
 exponent p = 2 within the chord family is this program's own extension of
 the same causal argument; the triangular correlation of the isotropized ribbon is Bell's
-shared-λ local model, a textbook construction that the program first met
+shared-λ local model [Bell1964], a textbook construction that the program first met
 as an analytical counterexample (the "saw", session 3) and then found
 realized dynamically by its own elastic ribbon — the analytical
 counterexample and the dynamical outcome bracketing the program; the
-setting-dependent post-selection artifact of DS3 is Pearle's (1970)
-detection loophole, reproduced and repaired in one audit cycle; and the
+setting-dependent post-selection artifact of DS3 is Pearle's
+detection loophole [Pearle1970], reproduced and repaired in one audit cycle; and the
 relocation of the Born postulate between rule, measure, and branch
 weights — with no elimination available within the symmetric pair itself,
 only by the external principle of causality (Section 3) — is our own
 methodological observation within the tested model family, standing in
-the historical line of Kochen–Specker's (1967) demonstration that an
-outcome measure exists, but not derived from that theorem. The number
+the historical line of Kochen–Specker's demonstration that an
+outcome measure exists [KS1967], but not derived from that theorem. The number
 makes the wall
 tangible twice over: even the family's deterministic limit point (ρ → 1)
 yields the triangular E(45°) = −0.500 — the value the session-3 analytical

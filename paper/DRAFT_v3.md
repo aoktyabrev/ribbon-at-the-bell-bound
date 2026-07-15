@@ -106,22 +106,23 @@ of the human–AI collaboration that executed the program (Section 9).
 ## 1.1 Related work and positioning
 
 The walls this program hit are, of course, known walls. Bell's theorem
-bounds every local hidden-variable account, and our isotropized
+[Bell1964] bounds every local hidden-variable account, and our isotropized
 correlation is his shared-λ model met dynamically; our causal argument for
 cosθ-linearity is, as we found after the fact, the measurement-rule
-analogue of Gisin's no-go for nonlinear quantum dynamics (Gisin 1989;
-1990) — there, nonlinearity of the evolution enables superluminal
+analogue of Gisin's no-go for nonlinear quantum dynamics [Gisin1989;
+Gisin1990] — there, nonlinearity of the evolution enables superluminal
 signaling; here, nonlinearity of the outcome rule in cos θ does, the
 argument's form being Gisin's and its object ours — with the uniqueness of
 the quadratic exponent within the chord family this program's own
 extension; the post-selection artifact
-of our second audit is Pearle's 1970 detection loophole; and the
+of our second audit is Pearle's detection loophole [Pearle1970]; and the
 impossibility of eliminating the Born postulate within the symmetric pair
 is our own methodological observation, standing in the historical line of
-Kochen–Specker's demonstration that an outcome measure exists rather than
-following from that theorem. We differ from the
-classical hidden-variable literature — de Broglie–Bohm's nonlocal
-dynamics, 't Hooft's cellular automata, Palmer's invariant-set theory —
+Kochen–Specker's demonstration that an outcome measure exists [KS1967] rather
+than following from that theorem. We differ from the
+classical hidden-variable literature — de Broglie–Bohm's nonlocal dynamics
+[Bohm1952a; Bohm1952b], 't Hooft's cellular automata [tHooft2016], Palmer's
+invariant-set theory [Palmer2009] —
 not in outrunning these theorems, which we do not, but in genre: a
 single ontology, pursued to its named limit, under pre-registration,
 with every retreat documented in a version-controlled record — and every
@@ -301,10 +302,10 @@ shifting with the remote setting by Δ = 0.146 at p = 1, 0.081 at p = 3,
 0.072 at ε = 0.2 (at q = 0.85, Δ = ε·|(1−2q)³−(1−2q)| for the deformation
 family). Causality pins p = 2 within this ansatz — we make no claim of a
 general derivation of the Born rule, and the same family contains, at
-p → ∞, the Popescu–Rohrlich box (CHSH → 4): no-signaling alone selects
+p → ∞, the Popescu–Rohrlich box [PR1994] (CHSH → 4): no-signaling alone selects
 neither the quantum correlation nor ours. As we later found, this argument is the
 measurement-rule analogue of Gisin's no-go for nonlinear quantum dynamics
-(Gisin 1989; 1990): there, nonlinearity of the evolution enables
+[Gisin1989; Gisin1990]: there, nonlinearity of the evolution enables
 superluminal signaling; here, nonlinearity of the outcome rule in cos θ
 does — the argument's form is Gisin's, its object is ours. Gisin refutes a
 nonlinear dynamics; we derive a rule. The two-sided uniqueness of p = 2
@@ -326,10 +327,11 @@ causality (3.2) eliminates alternatives.
 
 We call this relocation the conservation of the postulate — a
 methodological observation within the tested model family, not a
-consequence of the Kochen–Specker theorem. (Gleason's theorem is the
+consequence of the Kochen–Specker theorem [KS1967]. (Gleason's theorem
+[Gleason1957] is the
 nearest formal relative for measure-uniqueness, with its own dimensional
 premises; we do not invoke it.) The single-end construction stands in the
-historical line of Kochen–Specker (1967) as a demonstration that an
+historical line of Kochen–Specker as a demonstration that an
 outcome measure exists; we draw no inference from that theorem to our
 observation. The observation shaped every later phase: any mechanism that
 seemed to derive the Born weights was audited for where it had hidden
@@ -572,7 +574,7 @@ signal decays smoothly to zero at α = π/2: from 0.387 to 0.005 at k_f×1 and f
 at k_f×4 (DS3; commit 0fb5452). The best-fit law is cos α at k_f×1 and steepens to ~cos²α (an
 exponential fitting equally well) at k_f×4. The axis ê — simultaneously the twist axis and the
 readout axis — is strongly privileged; the cosine dependence exists only along it, which is
-exactly why the isotropic CHSH estimator of Section 7 was invalid.
+exactly why the isotropic CHSH [CHSH1969] estimator of Section 7 was invalid.
 
 ![Fig. 3: DS3 anisotropy map](../sim/phase_D/fig/ds3_aniso.png)
 
@@ -589,7 +591,7 @@ n_B are drawn independently — the correlation is not a cosine. Fitting the
 isotropized E(θ) against both forms, the triangular local-realistic function E = −ρ(1 − 2θ/π)
 beats the cosine by a wide margin in χ²: 8 vs 39 at k_f×1 and 1 vs 218 at k_f×4 — the data lie
 on the straight line, not the curve (DS3; commit 0fb5452). This is the shared-λ local model's
-signature, and its CHSH value is exactly S = 2ρ, with ρ the source-alignment amplitude:
+signature [Bell1964], and its CHSH value is exactly S = 2ρ, with ρ the source-alignment amplitude:
 ρ = 0.374 / 0.810 gives |S| = 0.75 / 1.62 at k_f × {1, 4}. Three properties therefore trade
 off and cannot be held together: a cosine form exists only anisotropically (6.3); honest
 isotropy forces the triangle (this subsection); and the amplitude ρ is bought with stiffness
@@ -625,7 +627,7 @@ outcome, and its interpretation is deferred to Section 8.
 A hidden-variable research program faces a specific epistemic hazard: the
 researcher wants the model to violate a Bell inequality, and the pipeline is
 built by the same people who hold that hope. We therefore pre-registered,
-before any CHSH campaign, a standing kill-criterion: any result S > 2 in a
+before any CHSH [CHSH1969] campaign, a standing kill-criterion: any result S > 2 in a
 manifestly local model is treated as evidence of a protocol error, triggering
 a full audit before any interpretation. This criterion fired twice. Both
 times it caught an artifact of method, not physics — and both artifacts turn
@@ -653,14 +655,14 @@ the canonical record, struck through, with the revision documented (commit
 The isotropization protocol (a source axis drawn Haar-uniformly per replica —
 honest shared randomness, available to both ends through the geometry of the
 ribbon but not to the experimenter) produced |S| = 2.39. Since the
-construction is manifestly local, Bell's theorem guarantees this is a bug;
+construction is manifestly local, Bell's theorem [Bell1964] guarantees this is a bug;
 the trigger fired again. The audit located it in event selection: replicas
 with a weak axial projection (|proj| < 0.2) were being discarded as
 DEGENERATE — and the discard rate itself varied with the measurement
 setting, from 21% of events at the correlation extremes (θ = 0, π) to a peak of
 37–38% at intermediate angles (36–37% at the CHSH angles π/4 and 3π/4). This setting-dependence is
 not incidental to the artifact; it is the artifact. Setting-dependent post-selection is precisely the
-detection loophole of Pearle (1970) — the class of local models that forced
+detection loophole of Pearle [Pearle1970] — the class of local models that forced
 four decades of loophole-closing in experimental Bell tests. Our pipeline
 reproduced the disease and, once the cut was removed (all events kept,
 sign(0) → +1 by convention), the cure: |S| = 1.62 at k_f×4, again
@@ -732,24 +734,24 @@ not a fog but a set of named, quantified walls.
 The program repeatedly rediscovered, from the inside and with its own
 numbers, results that mark the classical-quantum boundary. Our causal
 argument for cosθ-linearity (the qubit Born rule) is the measurement-rule
-analogue of Gisin's no-go for nonlinear quantum dynamics (Gisin 1989;
-1990): there, nonlinearity of the evolution enables superluminal
+analogue of Gisin's no-go for nonlinear quantum dynamics [Gisin1989;
+Gisin1990]: there, nonlinearity of the evolution enables superluminal
 signaling; here, nonlinearity of the outcome rule in cos θ does — the
 argument's form is Gisin's, its object is ours. The uniqueness of the Born
 exponent p = 2 within the chord family is this program's own extension of
 the same causal argument; the triangular correlation of the isotropized ribbon is Bell's
-shared-λ local model, a textbook construction that the program first met
+shared-λ local model [Bell1964], a textbook construction that the program first met
 as an analytical counterexample (the "saw", session 3) and then found
 realized dynamically by its own elastic ribbon — the analytical
 counterexample and the dynamical outcome bracketing the program; the
-setting-dependent post-selection artifact of DS3 is Pearle's (1970)
-detection loophole, reproduced and repaired in one audit cycle; and the
+setting-dependent post-selection artifact of DS3 is Pearle's
+detection loophole [Pearle1970], reproduced and repaired in one audit cycle; and the
 relocation of the Born postulate between rule, measure, and branch
 weights — with no elimination available within the symmetric pair itself,
 only by the external principle of causality (Section 3) — is our own
 methodological observation within the tested model family, standing in
-the historical line of Kochen–Specker's (1967) demonstration that an
-outcome measure exists, but not derived from that theorem. The number
+the historical line of Kochen–Specker's demonstration that an
+outcome measure exists [KS1967], but not derived from that theorem. The number
 makes the wall
 tangible twice over: even the family's deterministic limit point (ρ → 1)
 yields the triangular E(45°) = −0.500 — the value the session-3 analytical
@@ -889,60 +891,73 @@ repository.
 # References
 
 *Status markers are for the author, to be stripped before submission.*
-*`[verified: …]` — bibliographic data checked against a primary or authoritative secondary
-source by the executor, with the citing location named. `[UNVERIFIED]` — cited in the text but
-the executor did not check the bibliographic record; **not to be trusted until checked**.*
+*`[verified: web, 2026-07-15]` — bibliographic data checked by the executor against the
+publisher record or an authoritative index; the checking source is named. Verification covers
+the bibliographic record only, not the content of the cited work.*
 
 [Bell1964] J. S. Bell, "On the Einstein Podolsky Rosen paradox", *Physics Physique Fizika*
-**1**, 195–200 (1964). **[UNVERIFIED]** — cited §1.1, §6.4, §8.2.
+**1**, 195–200 (1964). DOI: 10.1103/PhysicsPhysiqueFizika.1.195.
+**[verified: web, 2026-07-15 — APS publisher record]** — cited §1.1, §6.4, §8.2.
 
 [CHSH1969] J. F. Clauser, M. A. Horne, A. Shimony, R. A. Holt, "Proposed experiment to test
-local hidden-variable theories", *Phys. Rev. Lett.* **23**, 880–884 (1969). **[UNVERIFIED]** —
+local hidden-variable theories", *Phys. Rev. Lett.* **23**, 880–884 (1969).
+**[verified: web, 2026-07-15 — Stanford Encyclopedia of Philosophy; Wikipedia CHSH entry]** —
 CHSH estimator used throughout §6–§7.
 
 [KS1967] S. Kochen, E. P. Specker, "The problem of hidden variables in quantum mechanics",
-*J. Math. Mech.* **17**, 59–87 (1967). **[UNVERIFIED]** — cited §3.3, §8.2 as historical
-context for measure existence only; no inference is drawn from the theorem (per external
-review 1, resolution R4).
+*J. Math. Mech.* **17**, 59–87 (1967).
+**[verified: web, 2026-07-15 — PhilPapers; multiple citation indices]** — cited §3.3, §8.2 as
+historical context for measure existence only; no inference is drawn from the theorem (per
+external review 1, resolution R4).
 
 [Gleason1957] A. M. Gleason, "Measures on the closed subspaces of a Hilbert space",
-*J. Math. Mech.* **6**, 885–893 (1957). **[UNVERIFIED]** — named §3.3 as the nearest formal
-relative for measure-uniqueness; explicitly not invoked.
+*J. Math. Mech.* **6**(6), 885–893 (1957).
+**[verified: web, 2026-07-15 — Indiana Univ. Math. J. archive (successor journal); AMS]** —
+named §3.3 as the nearest formal relative for measure-uniqueness; explicitly not invoked.
 
 [Gisin1989] N. Gisin, "Stochastic quantum dynamics and relativity", *Helv. Phys. Acta* **62**,
-363–371 (1989). **[verified: §1.1, §3.2, §8.2]** — volume/pages confirmed via secondary
-sources during the source check (REVIEW_1.md §3). The general no-go: nonlinear modifications
-of quantum *dynamics* permit superluminal signaling. **Note:** the executor did not read the
-primary text; the abstract was not retrieved.
+363–371 (1989).
+**[verified: web, 2026-07-15 — secondary sources only; primary text not retrieved]** — cited
+§1.1, §3.2, §8.2. The general no-go: nonlinear modifications of quantum *dynamics* permit
+superluminal signaling. See REVIEW_1.md §3.
 
 [Gisin1990] N. Gisin, "Weinberg's non-linear quantum mechanics and supraluminal
 communications", *Phys. Lett. A* **143**(1–2), 1–2 (1990). DOI: 10.1016/0375-9601(90)90786-N.
-**[verified: §1.1, §3.2, §8.2]** — title, journal, volume, issue, pages, year and DOI
-confirmed (INSPIRE-HEP literature/28047; publisher record). Subject: Weinberg's nonlinear
-framework permits arbitrarily fast communication. **Note:** publisher abstract returned HTTP
-403 and the INSPIRE record returned a mismatched abstract; the subject statement rests on
-secondary sources (see REVIEW_1.md §3).
+**[verified: web, 2026-07-15 — INSPIRE-HEP literature/28047; publisher record]** — cited
+§1.1, §3.2, §8.2. Subject: Weinberg's nonlinear framework permits arbitrarily fast
+communication. **Note:** publisher abstract returned HTTP 403 and the INSPIRE record returned
+a mismatched abstract; the subject statement rests on secondary sources (REVIEW_1.md §3).
 
 [Pearle1970] P. M. Pearle, "Hidden-variable example based upon data rejection", *Phys. Rev. D*
-**2**, 1418–1425 (1970). **[UNVERIFIED]** — cited §1, §7.2 (detection loophole). Page range
-supplied by the architect; not checked by the executor.
+**2**(8), 1418–1425 (1970). DOI: 10.1103/PhysRevD.2.1418.
+**[verified: web, 2026-07-15 — APS publisher record; OSTI; Semantic Scholar]** — cited §1,
+§7.2, §8.2 (detection loophole).
 
-[PR1994] S. Popescu, D. Rohrlich, "Quantum nonlocality as an axiom", *Found. Phys.* **24**,
-379–385 (1994). **[UNVERIFIED]** — cited §3.2 (p → ∞ limit of the chord family, CHSH → 4).
+[PR1994] S. Popescu, D. Rohrlich, "Quantum nonlocality as an axiom", *Found. Phys.* **24**(3),
+379–385 (1994). DOI: 10.1007/BF02058098.
+**[verified: web, 2026-07-15 — Springer publisher record; NASA ADS 1994FoPh...24..379P]** —
+cited §3.2 (p → ∞ limit of the chord family, CHSH → 4).
 
 [tHooft2016] G. 't Hooft, *The Cellular Automaton Interpretation of Quantum Mechanics*,
-Fundamental Theories of Physics vol. 185, Springer (2016). **[UNVERIFIED]** — cited §1.1 as a
+Fundamental Theories of Physics vol. 185, Springer (2016). Print ISBN 978-3-319-41284-9;
+eBook ISBN 978-3-319-41285-6; DOI 10.1007/978-3-319-41285-6. Open access (Springer Open).
+**[verified: web, 2026-07-15 — Springer record; Library of Congress]** — cited §1.1 as a
 contrast program.
 
-[Palmer] T. N. Palmer, invariant set theory. **[UNVERIFIED — CITATION NOT SELECTED]** — cited
-§1.1 as a contrast program. The executor did not choose a canonical reference: Palmer has
-several candidate papers (a 2009 *Proc. R. Soc. A* paper on invariant set theory and later
-developments) and selecting the right one is a scientific judgment, not a lookup. **Architect
-to specify.**
+[Palmer2009] T. N. Palmer, "The Invariant Set Postulate: a new geometric framework for the
+foundations of quantum theory and the role played by gravity", *Proc. R. Soc. A* **465**(2110),
+3165–3185 (2009). Preprint: arXiv:0812.1148.
+**[verified: web, 2026-07-15 — Royal Society publisher record]** — cited §1.1 as a contrast
+program. Reference selected by the architect.
 
-[Bohm1952] D. Bohm, "A suggested interpretation of the quantum theory in terms of 'hidden'
-variables. I, II", *Phys. Rev.* **85**, 166–179 and 180–193 (1952). **[UNVERIFIED]** — cited
-§1.1 (de Broglie–Bohm as a contrast program).
+[Bohm1952a] D. Bohm, "A suggested interpretation of the quantum theory in terms of 'hidden'
+variables. I", *Phys. Rev.* **85**(2), 166–179 (1952). DOI: 10.1103/PhysRev.85.166.
+**[verified: web, 2026-07-15 — APS archive; citation indices]** — cited §1.1.
+
+[Bohm1952b] D. Bohm, "A suggested interpretation of the quantum theory in terms of 'hidden'
+variables. II", *Phys. Rev.* **85**(2), 180–193 (1952). DOI: 10.1103/PhysRev.85.180.
+**[verified: web, 2026-07-15 — APS archive; citation indices]** — cited §1.1
+(de Broglie–Bohm as a contrast program).
 
 ---
 

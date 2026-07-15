@@ -62,22 +62,23 @@ of the human–AI collaboration that executed the program (Section 9).
 ## 1.1 Related work and positioning
 
 The walls this program hit are, of course, known walls. Bell's theorem
-bounds every local hidden-variable account, and our isotropized
+[Bell1964] bounds every local hidden-variable account, and our isotropized
 correlation is his shared-λ model met dynamically; our causal argument for
 cosθ-linearity is, as we found after the fact, the measurement-rule
-analogue of Gisin's no-go for nonlinear quantum dynamics (Gisin 1989;
-1990) — there, nonlinearity of the evolution enables superluminal
+analogue of Gisin's no-go for nonlinear quantum dynamics [Gisin1989;
+Gisin1990] — there, nonlinearity of the evolution enables superluminal
 signaling; here, nonlinearity of the outcome rule in cos θ does, the
 argument's form being Gisin's and its object ours — with the uniqueness of
 the quadratic exponent within the chord family this program's own
 extension; the post-selection artifact
-of our second audit is Pearle's 1970 detection loophole; and the
+of our second audit is Pearle's detection loophole [Pearle1970]; and the
 impossibility of eliminating the Born postulate within the symmetric pair
 is our own methodological observation, standing in the historical line of
-Kochen–Specker's demonstration that an outcome measure exists rather than
-following from that theorem. We differ from the
-classical hidden-variable literature — de Broglie–Bohm's nonlocal
-dynamics, 't Hooft's cellular automata, Palmer's invariant-set theory —
+Kochen–Specker's demonstration that an outcome measure exists [KS1967] rather
+than following from that theorem. We differ from the
+classical hidden-variable literature — de Broglie–Bohm's nonlocal dynamics
+[Bohm1952a; Bohm1952b], 't Hooft's cellular automata [tHooft2016], Palmer's
+invariant-set theory [Palmer2009] —
 not in outrunning these theorems, which we do not, but in genre: a
 single ontology, pursued to its named limit, under pre-registration,
 with every retreat documented in a version-controlled record — and every

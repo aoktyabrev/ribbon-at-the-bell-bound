@@ -45,10 +45,10 @@ shifting with the remote setting by Δ = 0.146 at p = 1, 0.081 at p = 3,
 0.072 at ε = 0.2 (at q = 0.85, Δ = ε·|(1−2q)³−(1−2q)| for the deformation
 family). Causality pins p = 2 within this ansatz — we make no claim of a
 general derivation of the Born rule, and the same family contains, at
-p → ∞, the Popescu–Rohrlich box (CHSH → 4): no-signaling alone selects
+p → ∞, the Popescu–Rohrlich box [PR1994] (CHSH → 4): no-signaling alone selects
 neither the quantum correlation nor ours. As we later found, this argument is the
 measurement-rule analogue of Gisin's no-go for nonlinear quantum dynamics
-(Gisin 1989; 1990): there, nonlinearity of the evolution enables
+[Gisin1989; Gisin1990]: there, nonlinearity of the evolution enables
 superluminal signaling; here, nonlinearity of the outcome rule in cos θ
 does — the argument's form is Gisin's, its object is ours. Gisin refutes a
 nonlinear dynamics; we derive a rule. The two-sided uniqueness of p = 2
@@ -70,10 +70,11 @@ causality (3.2) eliminates alternatives.
 
 We call this relocation the conservation of the postulate — a
 methodological observation within the tested model family, not a
-consequence of the Kochen–Specker theorem. (Gleason's theorem is the
+consequence of the Kochen–Specker theorem [KS1967]. (Gleason's theorem
+[Gleason1957] is the
 nearest formal relative for measure-uniqueness, with its own dimensional
 premises; we do not invoke it.) The single-end construction stands in the
-historical line of Kochen–Specker (1967) as a demonstration that an
+historical line of Kochen–Specker as a demonstration that an
 outcome measure exists; we draw no inference from that theorem to our
 observation. The observation shaped every later phase: any mechanism that
 seemed to derive the Born weights was audited for where it had hidden

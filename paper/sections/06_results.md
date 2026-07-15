@@ -75,7 +75,7 @@ signal decays smoothly to zero at α = π/2: from 0.387 to 0.005 at k_f×1 and f
 at k_f×4 (DS3; commit 0fb5452). The best-fit law is cos α at k_f×1 and steepens to ~cos²α (an
 exponential fitting equally well) at k_f×4. The axis ê — simultaneously the twist axis and the
 readout axis — is strongly privileged; the cosine dependence exists only along it, which is
-exactly why the isotropic CHSH estimator of Section 7 was invalid.
+exactly why the isotropic CHSH [CHSH1969] estimator of Section 7 was invalid.
 
 ![Fig. 3: DS3 anisotropy map](../../sim/phase_D/fig/ds3_aniso.png)
 
@@ -92,7 +92,7 @@ n_B are drawn independently — the correlation is not a cosine. Fitting the
 isotropized E(θ) against both forms, the triangular local-realistic function E = −ρ(1 − 2θ/π)
 beats the cosine by a wide margin in χ²: 8 vs 39 at k_f×1 and 1 vs 218 at k_f×4 — the data lie
 on the straight line, not the curve (DS3; commit 0fb5452). This is the shared-λ local model's
-signature, and its CHSH value is exactly S = 2ρ, with ρ the source-alignment amplitude:
+signature [Bell1964], and its CHSH value is exactly S = 2ρ, with ρ the source-alignment amplitude:
 ρ = 0.374 / 0.810 gives |S| = 0.75 / 1.62 at k_f × {1, 4}. Three properties therefore trade
 off and cannot be held together: a cosine form exists only anisotropically (6.3); honest
 isotropy forces the triangle (this subsection); and the amplitude ρ is bought with stiffness
