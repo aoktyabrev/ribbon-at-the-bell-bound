@@ -46,6 +46,8 @@ reproduced the disease and, once the cut was removed (all events kept,
 sign(0) → +1 by convention), the cure: |S| = 1.62 at k_f×4, again
 sub-classical.
 
+[Table 1: CHSH revision — retracted vs valid values]
+
 ## 6.3 What the two audits establish
 
 First, a negative result of unusual strength: across the entire program, no

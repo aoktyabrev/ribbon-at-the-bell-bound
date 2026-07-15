@@ -1,6 +1,6 @@
 # 2. Theory  [STUB]
 
-**Section owner:** Architect
+**Section owner:** Joint (Architect + Author)
 
 ## 2.1 The ontological picture  [approved: architect, deferred-veto: author]
 
