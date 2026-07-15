@@ -10,12 +10,19 @@ so that the perfect correlations of the singlet would need no
 communication, there being nothing to communicate between. The picture
 has an immediate structural payoff (Section 2): the embedding carries a
 ℤ₂ framing class, and from it the binary character of measurement
-outcomes and the 720° spinor property descend without postulates. [*]
-The bet this program made — and adopted as its maximal stake at the
-outset — was that the classical dynamics of such an object, read by an
-honest basin measure, would also produce the quantitative statistics of
-the singlet: the isotropic −cos θ correlation at unit amplitude, the
-Born weights, and a CHSH value of 2√2. [*]
+outcomes and the 720° spinor property descend without postulates.
+The bet this program made — its maximal stake — was that the classical
+dynamics of such an object, read by an honest basin measure, would
+produce the quantitative statistics of the singlet: the isotropic
+−cos θ correlation at unit amplitude, the Born weights, and a CHSH value
+of 2√2. The registered expectation, written into the simulation
+specification and in the record before the first physics campaign it
+governs, was the opposite: "the default expectation, stated honestly
+before launch: a sawtooth or p ≈ 1; p = 2 would be a major result
+demanding paranoid verification; any outcome is informative" (SPEC §1,
+translated from the Russian original; unedited since). The program aimed
+at the quantum target while predicting, in writing, that it would
+miss — and it missed exactly where the prediction said it would.
 
 The bet was lost. This paper reports how it was lost — exactly,
 quantitatively, and, we will argue, usefully. The classical ribbon
@@ -23,7 +30,7 @@ realizes more of the singlet than we find commonly appreciated:
 anticorrelation of the right sign, a correlation amplitude that survives
 chain length unchanged (a kinetic plateau, measured to N = 96 and
 verified at two coupling stiffnesses), and a smooth cosine angular law —
-though only along one privileged axis. [*] What it cannot realize, we
+though only along one privileged axis. What it cannot realize, we
 can now name and number: exact outcome zeros are forbidden to it by a
 structural theorem (the topological invariant that could enforce them
 lives in precisely the fiber that axial measurement quotients out;
@@ -31,9 +38,9 @@ Section 4); honest isotropy collapses the cosine to the triangular
 correlation of Bell's shared-randomness local model (Section 5); and
 every apparent Bell violation the program produced — there were two —
 died in a pre-registered audit, one to a false symmetry assumption, one
-to a rediscovery of Pearle's detection loophole (Section 6). [*] The
+to a rediscovery of Pearle's detection loophole (Section 6). The
 stiffness family the model spans approaches the Bell bound from below
-and ends there: its limit point is CHSH = 2, not 2√2. [*]
+and ends there: its limit point is CHSH = 2, not 2√2.
 
 We consider the negative answer, so structured, to be the contribution.
 A classical ontology was driven to a boundary; the boundary was mapped
@@ -50,12 +57,14 @@ of the human–AI collaboration that executed the program (Section 8).
 
 The walls this program hit are, of course, known walls. Bell's theorem
 bounds every local hidden-variable account, and our isotropized
-correlation is his shared-λ model met dynamically [*]; the uniqueness of
-the quadratic Born exponent under no-signaling reproduces, as we found
-after the fact, Gisin's 1990 argument [*]; the post-selection artifact
-of our second audit is Pearle's 1970 detection loophole [*]; and the
+correlation is his shared-λ model met dynamically; the equivalence of
+cosθ-linearity with no-signaling reproduces, as we found after the fact,
+Gisin's 1990 argument — the uniqueness of the quadratic exponent within
+the chord family being this program's own extension of it; the
+post-selection artifact
+of our second audit is Pearle's 1970 detection loophole; and the
 impossibility of eliminating the Born postulate within the symmetric
-pair is the constructive face of Kochen–Specker. [*] We differ from the
+pair is the constructive face of Kochen–Specker. We differ from the
 classical hidden-variable literature — de Broglie–Bohm's nonlocal
 dynamics, 't Hooft's cellular automata, Palmer's invariant-set theory —
 not in outrunning these theorems, which we do not, but in genre: a

@@ -43,9 +43,15 @@ the subject of Section 5.
 
 ## 3.2 Methodology
 
-Every experiment was pre-registered before it was run. A registration fixed a hypothesis, a
-quantitative expectation, and a kill-criterion in a committed `*_prereg.md`, not edited
-afterward. A representative entry (D0, hypothesis D-H2; translated from the Russian original)
+Every campaign carries a pre-registration file fixing hypotheses, quantitative expectations,
+and kill-criteria. The commit record proves three properties at three strengths: no
+pre-registration was ever edited after entering the record (all eight files: one commit each);
+every pre-registration entered the record before the analysis it governs (raw-data commits
+precede analysis commits throughout); and for the final campaign, the seed audit, the
+pre-registration was committed before the runs themselves. We claim the stronger "registered
+before runs" as working practice throughout; the commit record proves it directly for the last
+campaign and proves "registered before analysis, never edited" for all. A representative entry
+(D0, hypothesis D-H2; translated from the Russian original)
 reads: "ℤ₂ parity is exactly conserved
 on accepted trajectories, and the singular-rejection fraction → 0 as dt → 0; kill: if the
 rejection fraction does not fall with dt, the parity is an artifact of the filter"

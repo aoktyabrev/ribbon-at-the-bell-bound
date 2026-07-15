@@ -46,7 +46,20 @@ reproduced the disease and, once the cut was removed (all events kept,
 sign(0) → +1 by convention), the cure: |S| = 1.62 at k_f×4, again
 sub-classical.
 
-[Table 1: CHSH revision — retracted vs valid values]
+*Table 1. Every CHSH value the program produced, and its fate. The isotropic estimator
+S = 3E(π/4) − E(3π/4) assumes E(a, b) = E(|a − b|); the ribbon is strongly anisotropic
+(Section 5.3), so every value computed with it is withdrawn. Withdrawn values are struck
+through, not deleted (canon "Ревизия CHSH"; commit 311d3ae).*
+
+| value | campaign | method | status | where corrected |
+|---|---|---|---|---|
+| ~~≈ 1.48~~ | phase C | isotropic estimator | withdrawn: invalid isotropic estimator | superseded by DS2 direct (§6.1) |
+| ~~0.73–1.25~~ | D2 | isotropic estimator | withdrawn: invalid isotropic estimator | superseded by DS2 direct (§6.1) |
+| ~~2.39~~ | DS3 (primary) | direct, but with setting-dependent DEGENERATE post-selection (\|proj\| < 0.2, ~36% of replicas) | withdrawn: setting-dependent post-selection — the detection loophole (canon also charges the isotropic estimator: double artifact) | `analysis_ds3`, post-selection removed → 1.62 (§6.2; commit 0fb5452) |
+| **1.21** | DS2 | direct, both ends rotated, no post-selection | valid: direct | — |
+| **0.75 / 1.62** | DS3 | isotropized shared randomness λ = (R, n_A, n_B); CHSH = 2ρ at k_f × {1, 4} | valid: direct | — |
+
+No value survives audit above 2; the ribbon is always sub-classical.
 
 ## 6.3 What the two audits establish
 

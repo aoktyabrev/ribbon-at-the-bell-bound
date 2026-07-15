@@ -1,6 +1,7 @@
 # Frontmatter
 
-**Title:** [placeholder — вариант B не передан исполнителю; ожидает выбора автора A/B/C]
+**Title:** The Ribbon at the Bell Bound: Mapping the Classical Boundary of a Geometric
+Entanglement Ontology  *[working title — pending author choice A/B/C]*
 
 **Author:** Artem Oktiabrev
 

@@ -15,7 +15,10 @@ DS2 (a9f6cfe → f928dd4), DS3 (3d8dd67 → 0fb5452), and the seed audit (2b946a
 pre-registration → ecff715 raw → a26f76b analysis). The two infrastructure stages, D0 and D1,
 produced deterministic validations rather than fitted numbers and are single commits
 (f25694d, 81cc7da). Each campaign's hypotheses and kill-criteria are fixed in a committed
-`*_prereg.md` before its runs.
+`*_prereg.md`, and what the record proves is graded (Section 3.2): no pre-registration was
+ever edited after entering it (eight files, one commit each); all entered it before the
+analysis they govern; and for the seed audit — the one campaign whose pre-registration was
+committed as its own step (2b946ae) — before the runs as well.
 
 Repeatability is exact: each run script fixes its PRNGKey seed protocol, so the same seed
 returns the same number, and every figure in this paper can be regenerated from a named commit
