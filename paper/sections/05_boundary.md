@@ -44,7 +44,11 @@ is the reading fixed in the canonical record after the cross-scan (commit
 311d3ae): the amplitude is a stiffness-controlled kinetic correlation,
 athermal and sector-blind (Section 4.3).
 
-[Fig. 2: A(k_f) — s1runs_kf.png]
+![Fig. 2: A∞(k_f) — stiffness memory](../../sim/phase_D/fig/s1runs_kf.png)
+
+*Fig. 2. A∞(k_f) — stiffness memory. Four points with 1σ error bars from the frozen
+S1-runs R1 raw data (N = 32, M = 1200, T = 0.05; commit a9cef7b). Dotted line: the
+D2-ext plateau A∞ = 0.363 of Section 5.1, measured over N ∈ [16, 96].*
 
 ## 5.3 Anisotropy map
 
