@@ -57,7 +57,9 @@ flip, or comparison (each stage has a `*-raw` commit preceding its `*-analysis` 
 campaign carried controls: an unbiased preparation sampler (boundary axes drawn uniformly on
 S², sector preparation without bias, so the branch is never chosen in advance and the basin
 decides; measurement.py), mirror pairs (a, b) ↔ (−a, −b), block convergence of the reported
-observable, and an explicit DEGENERATE class for undetermined basins. A standing kill-criterion
+observable, an explicit DEGENERATE class for undetermined basins, and — for the central
+scaling claim — a pre-registered cross-seed audit of the quoted errors (Section 3.3). A
+standing kill-criterion
 treated any CHSH > 2 in a manifestly local model as a protocol error to be audited before
 interpretation; it fired twice, and both times caught a method artifact rather than physics
 (Section 6).
@@ -79,9 +81,17 @@ det = +1, identity on the orthogonal complement — minimality), the ℤ₂ pari
 deformations), mirror symmetry, and singularity detection (temporal lift jump, tangent
 reversal, spatial lift-wall). The phase-D suite (9 tests) and the phase A–C suite (60 tests)
 both run green under this coverage. Phases A–C run in float32 per the simulation defaults
-(SPEC §5); all phase-D runs are CPU-JAX in float64, required by the lift bookkeeping: parity
-lives in the sign of an accumulated quaternion lift, and its conservation test (T-inv-3)
-demands precision headroom that float32 does not guarantee (invariant.py, conftest.py). The
+(SPEC §5); all phase-D runs are CPU-JAX in float64. We chose float64 for the lift
+bookkeeping: parity is the sign of a quaternion lift accumulated along the whole chain
+(invariant.py), and we judged that a sign read off an accumulated product, together with its
+conservation test (T-inv-3), wanted precision headroom we did not want to argue about. The
 runs are CPU-only because fp64 on the available GPU is ~1/64 speed, and cells this size do
-not need it. Every stage uses a fixed PRNGKey seed protocol and commits its raw data,
-so any figure can be regenerated from a named commit.
+not need it.
+
+Two distinct properties are worth separating. Repeatability is exact: every stage fixes a
+PRNGKey seed protocol and commits its raw data, so the same seed returns the same number and
+any figure can be regenerated from a named commit. Reproducibility — whether a result
+survives a change of seed — is a separate question, and we measured it rather than assumed
+it: a dedicated seed audit re-ran the N = 32 and N = 96 cells under twelve fresh base keys
+and found the cross-seed scatter consistent with the quoted binomial errors (r = 0.88 and
+1.11; Section 5.1, seed audit commit a26f76b).

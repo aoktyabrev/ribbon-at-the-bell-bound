@@ -14,7 +14,11 @@ at k_f×1 and k_f×4, the amplitude change from N = 16 to N = 96 is +0.010 ± 0.
 bounded: N ∈ [16, 96], k_f ∈ {×1, ×4}. Within that window the plateau is kinetic, not
 thermodynamic — the amplitude is flat in temperature (A(T) = 0.368 / 0.397 / 0.353 at
 T = 0.025 / 0.05 / 0.10, unchanged within σ ≈ 0.027) (S1-runs; commit a9cef7b) — so it is a
-property of the basin structure, not of thermal fluctuation.
+property of the basin structure, not of thermal fluctuation. The quoted errors are binomial,
+and a dedicated seed audit confirms they are honest as a measure of reproducibility: eleven
+independent repeats of the N = 32 cell scatter with s_seed = 0.024 against a binomial
+σ = 0.027, a ratio r = 0.88 (χ² = 7.7 / 10, p = 0.66), and the ratio does not grow with chain
+length (r = 1.11 at N = 96) (seed audit; commit a26f76b).
 
 [Fig. 1: plateau — d2ext_scaling.png + ds2_cross.png]
 
@@ -26,7 +30,8 @@ monotone dependence that refutes any fixed geometric-measure origin
 (S1-runs R1; commit a9cef7b). The plateau value A∞ = 0.363 ± 0.012 belongs
 to the D2-ext campaign (N ∈ [16, 96] at its baseline setup); the stiffness
 sweep, run at N = 32, gives 0.418 ± 0.026 at nominal k_f×1 — consistent in
-scale, not identical. This only sharpens the point: the amplitude is the
+scale, not identical — the gap reflects seed-to-seed sampling scatter,
+quantified in the seed audit (s_seed = 0.024). This only sharpens the point: the amplitude is the
 reading of a dial, not a constant of the model; the weakness of the signal
 is a property of soft coupling, not a limit of the mechanism. At θ = 0 the
 amplitude is, by identity, A = 2·P_aligned − 1 (P_aligned = 0.681 for the
