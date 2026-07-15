@@ -5,9 +5,10 @@
 ## 7.1 The final lemma
 
 Phase D leaves the program with a lemma sharper than the one it started
-with. The classical ribbon realizes, from geometry alone: the binary
-character of outcomes and their spinor structure (from the ℤ₂ framing
-class), anticorrelation (the singlet sign), a correlation amplitude
+with. The classical ribbon realizes, from geometry alone: a natural ℤ₂
+structural label with the 4π belt-trick homotopy (the candidate origin of
+outcome binarity and spinor structure — a candidacy Section 4 shows axial
+readout cannot redeem), anticorrelation (the singlet sign), a correlation amplitude
 that does not dilute with chain length (kinetic plateau, two stiffnesses,
 N ≤ 96), and a smooth cosine angular law — but only along a privileged
 axis. It does not realize: exact zeros (no outcome is forbidden by

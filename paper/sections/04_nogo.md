@@ -39,11 +39,12 @@ was blind. We registered this in advance as a named wall ("blind slice"),
 and it fired. The theorem-level statement: a ℤ₂ framing invariant of an
 embedded curve in R⁴ is invisible to any boundary observable that factors
 through the axis, because ℤ₂ ⊂ ker(S³ → SO(3)) — the invariant is stored
-exactly in the fiber that axial physics quotients out. Binarity and
-spinority thus descend from the framing topology (Section 2) while
-remaining unreadable by the very measurements whose outcomes they were
-meant to explain. This tension is, we believe, the sharpest single lesson
-of the program.
+exactly in the fiber that axial physics quotients out. The framing
+topology thus supplies the ℤ₂ label and the 4π homotopy (Section 2) — and
+this theorem closes the other half: for axial measurement, no physical map
+from that label to outcomes exists. The label is real; the readout that
+was meant to express it provably cannot. This tension is, we believe, the
+sharpest single lesson of the program.
 
 ## 4.3 Sector blindness of the axial signal
 

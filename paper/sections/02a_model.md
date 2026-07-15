@@ -48,20 +48,30 @@ step; no metric correction, Itô–Stratonovich term, or retraction
 Jacobian is applied; consequently we do not claim that the scheme
 samples a Gibbs measure at temperature T, and no stationary measure is
 derived — T is an algorithmic noise scale whose observed effect on the
-reported amplitude is flat (Section [results]). [*] Steps producing a
-lift discontinuity (⟨u_i(t+dt), u_i(t)⟩ < 1 − δ_sing) or a tangent
-reversal are rejected for the whole chain and counted; the rejection
-fraction is a mandatory observable and falls with lr in the validated
-regime. [*] Lift continuity between accepted steps (the sign of u
+reported amplitude is flat (Section [results]). Steps are rejected for
+the whole chain on any of three criteria: a temporal lift jump
+(⟨u_new, u_old⟩ < 1 − δ_sing), a tangent reversal
+(t_i · t_{i+1} < −1 + δ_tan), or a spatial lift wall — a sign change of
+the link datum g.w across one step, the passage of a link through a
+half-turn (δ_sing = δ_tan = 2·10⁻², band4d.py). The third criterion is
+what protects the parity bookkeeping: it is the "leaky lift" detector,
+and the rejection fraction falls with lr in the validated regime.
+Lift continuity between accepted steps (the sign of u
 chosen nearest the previous step) is what makes the parity bookkeeping
 well-defined. [*]
 
 ## M.4 Preparation and topological invariant
 
 The even sector is prepared as u ≡ const followed by relaxation; the odd
-sector by inserting a 2π frame rotation mid-chain and relaxing. [*]
-Boundary measurement axes are drawn uniformly on S² (the branch is never
-chosen in advance; the basin decides). [*] The ℤ₂ parity of a
+sector by a linear twist ramp distributing 2π along the chain, followed by
+relaxation. The preparation is unbiased with respect to the outcome
+branch: the two boundary frames are tilted about random axes with polar
+angle arccos(1 − 2ξ), so that each end's axis n_end is uniform on S² — the
+branch is never chosen in advance, and the basin decides
+(prep_dynamics, measurement.py). Measurement settings a, b are inputs of
+the protocol, fixed per run or drawn by the campaign design — never from
+the preparation randomness; their independence from λ is a designed
+property, used in M.6(iii). The ℤ₂ parity of a
 configuration is the sign of the lift accumulated along the chain with
 continuous sign choice, compared against the boundary frames; it is
 defined on trajectories free of rejected singular steps, is exactly
@@ -77,11 +87,15 @@ setting only. [*] Configurations with |n · a| below a fixed threshold
 column in the campaigns; for CHSH estimation this class must not be
 discarded — setting-dependent discard is precisely the detection
 loophole documented in Section [audit], and the corrected estimator
-keeps all events with sign(0) → +1 by convention. [*] The correlation
-estimator is E(a,b) = (1/M) Σ_j s_j t_j with binomial standard error
-√((1−E²)/M); a pre-registered cross-seed audit measured the seed-to-seed
-scatter at r = 0.88–1.11 of the binomial error (11 repeats of the core
-cell), so the quoted errors are honest as reproducibility measures. [*]
+keeps all events with sign(0) → +1 by convention. The correlation
+estimator is E(a,b) = (1/n_valid) Σ_{j: valid} s_j t_j with binomial
+standard error √(max(1−E², ·)/n_valid), where valid excludes the
+DEGENERATE class where it is reported separately; in the campaigns
+entering CHSH and the seed audit, degen = 0 and n_valid = M. A
+pre-registered cross-seed audit measured the seed-to-seed scatter against
+that binomial error at r = 0.88 (11 repeats, N = 32 core cell) and
+r = 1.11 (5 points, N = 96), so the quoted errors are honest as
+reproducibility measures.
 
 ## M.6 Locality status
 
