@@ -69,7 +69,7 @@ build() {
 $("$PANDOC" --version >/dev/null; pdfinfo "$OUT/$name.pdf" 2>/dev/null | awk '/^Pages/{print $2" стр."}' || echo "стр.: ?"))"
 }
 
-build "DRAFT_$V.md" main "The Ribbon at the Bell Bound"
+build "${MAIN_SRC:-DRAFT_$V.md}" main "The Ribbon at the Bell Bound"
 build "SI_$V.md"    si   "Supplementary — The Ribbon at the Bell Bound"
 
 echo
