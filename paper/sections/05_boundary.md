@@ -23,12 +23,15 @@ property of the basin structure, not of thermal fluctuation.
 The amplitude is stiffness-controlled. Sweeping the twist coupling gives
 A(k_f) = 0.27 / 0.42 / 0.56 / 0.84 for k_f × {0.5, 1, 2, 4} — a strong
 monotone dependence that refutes any fixed geometric-measure origin
-(S1-runs R1; commit a9cef7b). The A∞ ≈ 0.36 of Section 5.1 is therefore
-not a fundamental constant but the value of a dial at baseline stiffness;
-the weakness of the signal is a property of soft coupling, not a limit of
-the mechanism. At θ = 0 the amplitude is, by identity, A = 2·P_aligned − 1
-(P_aligned = 0.68 at the baseline plateau), so explaining the amplitude
-means explaining the aligned-basin weight. Two measured facts locate that
+(S1-runs R1; commit a9cef7b). The plateau value A∞ = 0.363 ± 0.012 belongs
+to the D2-ext campaign (N ∈ [16, 96] at its baseline setup); the stiffness
+sweep, run at N = 32, gives 0.418 ± 0.026 at nominal k_f×1 — consistent in
+scale, not identical. This only sharpens the point: the amplitude is the
+reading of a dial, not a constant of the model; the weakness of the signal
+is a property of soft coupling, not a limit of the mechanism. At θ = 0 the
+amplitude is, by identity, A = 2·P_aligned − 1 (P_aligned = 0.681 for the
+D2-ext plateau), so explaining the amplitude means explaining the
+aligned-basin weight. Two measured facts locate that
 weight in kinetics rather than thermodynamics. First, it is flat in
 temperature (Section 5.1), while any Boltzmann reading of the landscape
 would move with T: the census finds the four branch minima spread over

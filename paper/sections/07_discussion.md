@@ -26,14 +26,20 @@ reproduces Gisin (1990); the uniqueness of the Born exponent p = 2 within
 the chord family is this program's own extension of the same causal
 argument; the triangular correlation of the isotropized ribbon is Bell's
 shared-λ local model, a textbook construction that the program first met
-as an analytical counterexample (the "saw", session 3) and then, months of
-work later, found realized dynamically by its own elastic ribbon; the
+as an analytical counterexample (the "saw", session 3) and then found
+realized dynamically by its own elastic ribbon — the analytical
+counterexample and the dynamical outcome bracketing the program; the
 setting-dependent post-selection artifact of DS3 is Pearle's (1970)
 detection loophole, reproduced and repaired in one audit cycle; and the
 relocation of the Born postulate between rule, measure, and branch
 weights — with no elimination available within the symmetric pair itself,
 only by the external principle of causality (Section 2) — is the
-constructive face of Kochen–Specker (1967). We take the convergence itself as evidence: a program that
+constructive face of Kochen–Specker (1967). The number makes the wall
+tangible twice over: even the family's deterministic limit point (ρ → 1)
+yields the triangular E(45°) = −0.500 — the value the session-3 analytical
+construction already produced (−0.502, canon §2.7) — against the quantum
+−0.707; and the measured ribbon does not reach even that, giving −0.187 and
+−0.405 at the two stiffnesses. We take the convergence itself as evidence: a program that
 honestly explores a classical ontology does not wander freely — it is
 funneled onto the same walls the theorems describe, and arrives at them
 with measured coordinates.

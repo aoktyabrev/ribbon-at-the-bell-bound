@@ -25,8 +25,10 @@ E(θ | 2π) = −tanh(ΔS·cosθ / 2) with ΔS ∝ cosθ (ribbon_model_note.md �
 its ceiling: the amplitude tanh(ΔS/2) ≈ 0.5
 stays strictly below 1, so exact zeros — and with them the Born rule — are unreachable by a
 classical entropic measure. The ceiling was double: the phase-C lemma also recorded that the
-effect was finite-size — the 2π charge is carried by a localized twist soliton whose density
-dilutes as 2π/(N−1), so the singlet form fades as N → ∞ (phase_C_report §7). Exact zeros and
+effect was finite-size — the 2π charge is carried by a twist soliton, localized (peak twist
+density ≈ 0.9), whose effect passes through a crossover in chain length — ferromagnetic sign
+up to N−1 ≈ 33, an antiferromagnetic window near 48–64, extinction by N−1 ≈ 95 — so the
+singlet form is finite-size and fades as N → ∞ (phase_C_report §7). Exact zeros and
 scale invariance are both defining properties of the quantum correlation; the classical
 entropic mechanism had neither. These two missing invariances are precisely the questions
 phase D inherited. (The CHSH figure quoted at the time was computed with an
@@ -77,6 +79,9 @@ det = +1, identity on the orthogonal complement — minimality), the ℤ₂ pari
 deformations), mirror symmetry, and singularity detection (temporal lift jump, tangent
 reversal, spatial lift-wall). The phase-D suite (9 tests) and the phase A–C suite (60 tests)
 both run green under this coverage. Phases A–C run in float32 per the simulation defaults
-(SPEC §5); all phase-D runs are CPU-JAX in float64 (fp64 on the available GPU is ~1/64 speed
-for cells this size). Every stage uses a fixed PRNGKey seed protocol and commits its raw data,
+(SPEC §5); all phase-D runs are CPU-JAX in float64, required by the lift bookkeeping: parity
+lives in the sign of an accumulated quaternion lift, and its conservation test (T-inv-3)
+demands precision headroom that float32 does not guarantee (invariant.py, conftest.py). The
+runs are CPU-only because fp64 on the available GPU is ~1/64 speed, and cells this size do
+not need it. Every stage uses a fixed PRNGKey seed protocol and commits its raw data,
 so any figure can be regenerated from a named commit.
