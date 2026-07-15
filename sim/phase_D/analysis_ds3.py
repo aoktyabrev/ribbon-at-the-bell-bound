@@ -141,10 +141,10 @@ def main():
     for mult in d["meta"]["KF"]:
         r = out["aniso"][f"kf{mult}"]
         alf = np.linspace(0, np.pi/2, 100)
-        plt.errorbar(al, r["A"], yerr=r["sigma"], fmt="o", capsize=3, label=f"k_f×{mult} (лучш. {r['best']})")
+        plt.errorbar(al, r["A"], yerr=r["sigma"], fmt="o", capsize=3, label=f"k_f×{mult} (best {r['best']})")
         plt.plot(alf, r["params"]["cos2"]*np.cos(alf)**2, "--", alpha=0.5)
-    plt.xlabel("α (наклон оси a от ê)"); plt.ylabel("A(α)=|E_anti|")
-    plt.title("DS3 карта анизотропии (--=cos²α)"); plt.legend(); plt.grid(alpha=0.3); plt.tight_layout()
+    plt.xlabel("α (tilt of axis a from ê)"); plt.ylabel("A(α)=|E_anti|")
+    plt.title("DS3 anisotropy map (--=cos²α)"); plt.legend(); plt.grid(alpha=0.3); plt.tight_layout()
     plt.savefig(os.path.join(FIG, "ds3_aniso.png"), dpi=130); plt.close()
 
     plt.figure(figsize=(7.5,5))
@@ -160,7 +160,7 @@ def main():
     for name, v in PILLARS.items():
         plt.axhline(v, ls=":", alpha=0.4)
         plt.text(0.05, v+0.01, name, fontsize=7)
-    plt.xlabel("θ"); plt.ylabel("E_iso(θ)"); plt.title("DS3 изотропизованная E(θ)=p·cosθ + столбы")
+    plt.xlabel("θ"); plt.ylabel("E_iso(θ)"); plt.title("Isotropized E(θ): triangle vs cosine")
     plt.legend(fontsize=8); plt.grid(alpha=0.3); plt.tight_layout()
     plt.savefig(os.path.join(FIG, "ds3_iso.png"), dpi=130); plt.close()
     print(f"  анализ → {RES}/DS3_analysis.json ; фигуры → {FIG}/ds3_*.png")

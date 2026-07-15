@@ -118,7 +118,7 @@ def main():
         s = [d["cross"][f"kf{mult}|N{N}"]["sigma"] for N in Ns]
         plt.errorbar(Ns, A, yerr=s, fmt="o-", capsize=3, label=f"k_f×{mult}")
     plt.xlabel("N"); plt.ylabel("A(N)"); plt.ylim(0,1)
-    plt.title(f"DS2 кросс-скан: {out['verdict_H1'][:45]}")
+    plt.title("DS2 cross-scan: A(N) at two twist stiffnesses")
     plt.legend(); plt.grid(alpha=0.3); plt.tight_layout()
     plt.savefig(os.path.join(FIG, "ds2_cross.png"), dpi=130); plt.close()
 
@@ -131,8 +131,8 @@ def main():
         col = f"C{i}"
         plt.errorbar(th, E, yerr=sg, fmt="o", color=col, capsize=2, label=f"k_f×{mult} (β={betas[mult]:.2f})")
         plt.plot(thf, -np.tanh(betas[mult]*np.cos(thf)), "-", color=col, alpha=0.8)
-    plt.plot(thf, -np.cos(thf), "k:", alpha=0.4, label="−cosθ (чистый)")
-    plt.xlabel("θ"); plt.ylabel("E(θ) [флип]"); plt.title("DS2 ножницы: E(θ) vs k_f (—=tanh-фит)")
+    plt.plot(thf, -np.cos(thf), "k:", alpha=0.4, label="−cosθ (pure)")
+    plt.xlabel("θ"); plt.ylabel("E(θ) [flip]"); plt.title("DS2 shape: E(θ) vs k_f (—=tanh fit)")
     plt.legend(fontsize=8); plt.grid(alpha=0.3); plt.tight_layout()
     plt.savefig(os.path.join(FIG, "ds2_form.png"), dpi=130); plt.close()
     print(f"  анализ → {RES}/DS2_analysis.json ; фигуры → {FIG}/ds2_*.png")

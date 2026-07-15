@@ -136,22 +136,22 @@ def main():
     for N in NS:
         th, E, sig = series(data, N, "odd")
         plt.errorbar(th, E, yerr=sig, fmt="o", color=colors.get(N, "k"),
-                     label=f"N={N} (нечёт, raw)", capsize=2)
+                     label=f"N={N} (odd, raw)", capsize=2)
         fr = out["forms"][f"N{N}"]
         thf = np.linspace(0, np.pi, 100)
         plt.plot(thf, -fr["A_cos"]*np.cos(thf), "--", color=colors.get(N, "k"), alpha=0.5)
         plt.plot(thf, -np.tanh(fr["beta_tanh"]*np.cos(thf)), "-", color=colors.get(N, "k"), alpha=0.8)
-    plt.xlabel("θ (угол осей)"); plt.ylabel("E(θ) [флип t̃=−t]")
-    plt.title("D2: E(θ) нечёт + фиты (--=−A·cosθ, —=−tanh(β·cosθ))")
+    plt.xlabel("θ (angle between axes)"); plt.ylabel("E(θ) [flip t̃=−t]")
+    plt.title("D2: E(θ) odd sector + fits (--=−A·cosθ, —=−tanh(β·cosθ))")
     plt.legend(fontsize=8); plt.grid(alpha=0.3); plt.tight_layout()
     plt.savefig(os.path.join(FIG, "d2_Etheta_odd.png"), dpi=130); plt.close()
 
     plt.figure(figsize=(6, 4))
     xs = NS
     y0 = [a for a, _ in out["scaling"]["A0"]]; e0 = [s for _, s in out["scaling"]["A0"]]
-    plt.errorbar(xs, y0, yerr=e0, fmt="o-", capsize=3, label="A_N=|E(0)| нечёт")
+    plt.errorbar(xs, y0, yerr=e0, fmt="o-", capsize=3, label="A_N=|E(0)| odd")
     plt.xlabel("N"); plt.ylabel("A_N"); plt.ylim(0, 1)
-    plt.title(f"D2-H1 скейлинг: {out['scaling']['verdict'][:40]}")
+    plt.title("D2-H1 scaling: A_N vs N")
     plt.legend(); plt.grid(alpha=0.3); plt.tight_layout()
     plt.savefig(os.path.join(FIG, "d2_scaling_AN.png"), dpi=130); plt.close()
 

@@ -34,13 +34,13 @@ def main():
                  label="A_plateau = |E(0)| (S1-runs R1)")
     # значение канона при k_f×1 (D2-ext плато) — для привязки к §5.1
     plt.axhline(0.363, ls=":", alpha=0.5, color="gray")
-    plt.text(1.35, 0.30, "A_plateau=0.363 — плато D2-ext (N=16..96)", fontsize=7, color="gray")
+    plt.text(1.35, 0.30, "A_plateau=0.363 — D2-ext plateau (N=16..96)", fontsize=7, color="gray")
 
     plt.xscale("log", base=2)
     plt.xticks(mults, [f"×{m:g}" for m in mults])
-    plt.xlabel("k_f (жёсткость твиста, кратно базовой k_f=%.1f)" % meta["base"]["k_f"])
+    plt.xlabel("k_f (twist stiffness, × base k_f=%.1f)" % meta["base"]["k_f"])
     plt.ylabel("A_plateau = |E(0)|")
-    plt.title("S1-runs: A_plateau(k_f) — жёсткостная память (N=%d, M=%d, T=%.3f)"
+    plt.title("S1-runs: A_plateau(k_f) — stiffness memory (N=%d, M=%d, T=%.3f)"
               % (meta["N"], meta["M"], meta["T_mid"]))
     plt.ylim(0, 1)
     plt.legend(); plt.grid(alpha=0.3); plt.tight_layout()

@@ -28,8 +28,9 @@ length (r = 1.11 at N = 96) (seed audit; commit a26f76b).
 *Fig. 1. The plateau. (a) D2-ext: A_N = |E(0)| against chain length N ∈ {16, 32, 48, 64, 96}
 at M = 1200 replicas, with the three fitted models — constant M0 (A_plateau = 0.363, dotted), power
 law M1 (γ = −0.03, i.e. fitted growth rather than decay, dashed), and saturating M2 (solid).
-M0 is substantially preferred by ΔAICc = 6.36 (commit 2784edf). (b) DS2 cross-scan: A(N) at k_f×1 and k_f×4, flat
-within error at both stiffnesses (commit f928dd4).*
+M0 is substantially preferred by ΔAICc = 6.36 (commit 2784edf); M2 is degenerate on this data
+and shown for completeness. (b) DS2 cross-scan: A(N) at k_f×1 and k_f×4, flat within error at
+both stiffnesses (commit f928dd4).*
 
 ## 6.2 Origin of the amplitude
 
