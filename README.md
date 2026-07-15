@@ -1,5 +1,7 @@
 # The Ribbon at the Bell Bound
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21383667.svg)](https://doi.org/10.5281/zenodo.21383667)
+
 Pre-registered simulations mapping the classical boundary of a geometric entanglement model —
 code, data, and provenance for *"The Ribbon at the Bell Bound"*.
 
@@ -18,8 +20,20 @@ finding no forbidden outcome branch, a length-stable but stiffness-controlled an
 correlation amplitude, and two apparent Bell violations that both died in pre-registered
 audits. The negative result, quantified and named, is the contribution.
 
-**Paper:** [arXiv link TODO after submission]. Draft: [`paper/DRAFT_v3.md`](paper/DRAFT_v3.md);
-supplementary: [`paper/SI_v3.md`](paper/SI_v3.md).
+**Paper:** [arXiv link TODO after submission]. Camera-ready:
+[`paper/FINAL_v1.md`](paper/FINAL_v1.md) / [`paper/pdf/main.pdf`](paper/pdf/main.pdf);
+supplementary: [`paper/SI_v3.md`](paper/SI_v3.md) / [`paper/pdf/si.pdf`](paper/pdf/si.pdf).
+The working draft [`paper/DRAFT_v3.md`](paper/DRAFT_v3.md) is retained as a documented stage.
+
+**Archived snapshot:** https://doi.org/10.5281/zenodo.21383967 (release `paper-v1.1`,
+camera-ready state). The concept DOI https://doi.org/10.5281/zenodo.21383667 resolves to the
+latest archived version. An earlier snapshot (`paper-v1`, pre-camera-ready) is retained as
+version 1 of the same record.
+
+To cite the archive:
+
+> Oktiabrev, Artem. *The Ribbon at the Bell Bound: Mapping the Classical Boundary of a
+> Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21383967
 
 ## Reproducibility
 
@@ -62,7 +76,8 @@ mathematics, is catalogued in [`MODEL_FACTS.md`](MODEL_FACTS.md).
 ## Repository map
 
 ```
-paper/        Manuscript: sections/, SI/, build_draft.py, DRAFT_v3.md, SI_v3.md
+paper/        Manuscript: sections/, SI/, pdf/, builders, FINAL_v1.md, DRAFT_v3.md,
+              SI_v3.md, REVIEW_1.md, REVIEW_2.md
 sim/          Simulation code and data
   src/ribbon_sim/   Phase A–C toolkit (quaternion frames, energy, dynamics)
   phase_D/          Phase D model, campaigns, pre-registrations, reports, figures
