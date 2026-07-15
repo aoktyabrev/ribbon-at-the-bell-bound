@@ -1,12 +1,12 @@
 # Frontmatter
 
-**Title:** [placeholder — утверждается после §1]
+**Title:** [placeholder — вариант B не передан исполнителю; ожидает выбора автора A/B/C]
 
 **Author:** Artem Oktiabrev
 
 **Affiliation:** Independent researcher, Ukraine
 
-**Email:** [TODO: from author] · **ORCID:** [TODO: from author]
+**Email:** aoktyabrev@gmail.com · **ORCID:** 0009-0003-3626-2002
 
-**Note:** Name transliteration to be verified against author's passport latin spelling
-before submission.
+**Note:** SPELLING UNRESOLVED: email uses 'Oktyabrev', frontmatter uses 'Oktiabrev' —
+awaiting author's passport check before submission.
