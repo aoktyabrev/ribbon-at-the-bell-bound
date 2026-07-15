@@ -7,11 +7,12 @@
 Phase D leaves the program with a lemma sharper than the one it started
 with. The classical ribbon realizes, from geometry alone: the binary
 character of outcomes and their spinor structure (from the ℤ₂ framing
-class), exact anticorrelation at aligned settings, a correlation amplitude
+class), anticorrelation (the singlet sign), a correlation amplitude
 that does not dilute with chain length (kinetic plateau, two stiffnesses,
 N ≤ 96), and a smooth cosine angular law — but only along a privileged
-axis. [*] It does not realize: exact zeros (no outcome is forbidden by
-measure; Section 4.4), an isotropic cosine (honest orientation averaging
+axis. It does not realize: exact zeros (no outcome is forbidden by
+measure, and the invariant that could forbid one is unreadable by axial
+measurement — Sections 4.4 and 4.2), an isotropic cosine (honest orientation averaging
 forces the triangular law; Section 5.4), or any Bell violation (every
 S > 2 died in audit; Section 6). The boundary between the two lists is
 not a fog but a set of named, quantified walls.
@@ -19,15 +20,20 @@ not a fog but a set of named, quantified walls.
 ## 7.2 Relation to the classical theorems
 
 The program repeatedly rediscovered, from the inside and with its own
-numbers, results that mark the classical-quantum boundary. The uniqueness
-of the Born exponent from no-signaling reproduces Gisin (1990) [*]; the
-triangular correlation of the isotropized ribbon is Bell's shared-λ local
-model, met here as a dynamical outcome rather than a textbook
-construction [*]; the setting-dependent post-selection artifact of DS3 is
-Pearle's (1970) detection loophole, reproduced and repaired in one audit
-cycle [*]; and the relocation of the Born postulate from rule to measure —
-never its elimination — is the constructive face of Kochen–Specker
-(1967). [*] We take the convergence itself as evidence: a program that
+numbers, results that mark the classical-quantum boundary. The equivalence
+of cosθ-linearity (the qubit Born rule) with the no-signaling constraint
+reproduces Gisin (1990); the uniqueness of the Born exponent p = 2 within
+the chord family is this program's own extension of the same causal
+argument; the triangular correlation of the isotropized ribbon is Bell's
+shared-λ local model, a textbook construction that the program first met
+as an analytical counterexample (the "saw", session 3) and then, months of
+work later, found realized dynamically by its own elastic ribbon; the
+setting-dependent post-selection artifact of DS3 is Pearle's (1970)
+detection loophole, reproduced and repaired in one audit cycle; and the
+relocation of the Born postulate between rule, measure, and branch
+weights — with no elimination available within the symmetric pair itself,
+only by the external principle of causality (Section 2) — is the
+constructive face of Kochen–Specker (1967). We take the convergence itself as evidence: a program that
 honestly explores a classical ontology does not wander freely — it is
 funneled onto the same walls the theorems describe, and arrives at them
 with measured coordinates.
@@ -37,16 +43,21 @@ with measured coordinates.
 One exit remains formally open, registered in the canonical record as the
 open problem E: whether a physical fiber-breaking invariant of the R⁴
 embedding (a second-fundamental-form datum, or a preferred slice normal)
-can produce an empty outcome basin together with a smooth isotropic
-cosine — that is, an escape from the trilemma of Section 5.5. [*] We
-record the obstacles as honestly as the opening: any energetic anchoring
+can produce an empty aligned-branch basin together with a smooth isotropic
+cosine — that is, an escape from the trilemma of Section 5.5. We
+record the obstacles as honestly as the opening — both are our judgment
+from the phase-D results, not established results themselves: any energetic anchoring
 of the frame is another stiffness dial, moving the model along the
 classical family rather than off it; and a shared external frame is
 shared randomness, bounded by Bell's theorem regardless of its geometric
 pedigree. A related conjecture from the theory line — that basin measure
 scaling as the square of the chord ("the ribbon has a face") would
-reproduce the Born weights — remains unformalized [conjecture]. [*] We
-consider these open in the technical sense, not the hopeful one.
+reproduce the Born weights — is formalized to the point of an explicit
+measure, μ(B(s,t)) = |s·a − t·b|²/8, and posed as an open problem —
+construct it for all clamp orientations, or prove an impossibility lemma
+naming the minimal missing structure; it is unsolved, not untested
+folklore [conjecture]. We consider these open in the technical sense, not
+the hopeful one.
 
 ## 7.4 The status of the ontology, and of the classical route
 
@@ -66,7 +77,21 @@ the open problem E, would in our judgment rediscover these walls under
 new names. If the ribbon picture has a future, it lies in a quantum
 dynamics of the extended object — a question this paper does not open.
 
-## 7.5 What we take to be the product
+## 7.5 Limitations
+
+The scope of the evidence is narrower than the scope of the claims a
+reader might extrapolate, and we state it exactly. The dynamics tested is
+classical throughout; nothing here bears on a quantum dynamics of the
+same object. The discretization is one class among the possible: a framed
+curve in R⁴ with axial boundary readout — a triangulated surface, or
+non-axial boundary couplings, were designed around but not simulated. The
+U(1) theorem is a statement about axial (SO(3)-factorizable) boundary
+data, not about all conceivable measurements. And the quantitative
+results are bounded: N ∈ [16, 96], k_f ∈ {×1, ×4}, one temperature regime
+verified flat. Within these bounds the walls are measured; beyond them
+they are extrapolated.
+
+## 7.6 What we take to be the product
 
 Beyond the specific results, we submit the method as a product in its own
 right: an ontology driven to its named limit by pre-registration,
