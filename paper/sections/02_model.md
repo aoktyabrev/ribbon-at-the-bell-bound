@@ -35,7 +35,10 @@ axis obtained from u_end under SU(2) → SO(3), pins an axis only — the
 residual U(1) about it stays free — and is the clamp behind every
 scientific number in this paper (D1 through the seed audit). The
 axis–frame distinction is not a technicality: the U(1) theorem of
-Section 5 lives in exactly the fiber the axial clamp leaves free.
+Section 5 lives in exactly the fiber the axial clamp leaves free. The frame
+energy is blind to the lift sign by construction; the ℤ₂ invariant is
+therefore carried by the kinematics — lift continuity between accepted
+steps and singular-step rejection (2.3–2.4) — not by the energy.
 
 ## 2.3 Dynamics
 

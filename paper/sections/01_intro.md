@@ -22,8 +22,8 @@ of 2√2. The registered expectation, written into the simulation
 specification and in the record before the first physics campaign it
 governs, was the opposite: "the default expectation, stated honestly
 before launch: a sawtooth or p ≈ 1; p = 2 would be a major result
-demanding paranoid verification; any outcome is informative" (SPEC §1,
-translated from the Russian original; unedited since). The program aimed
+demanding paranoid verification; any outcome is informative …" (SPEC §1,
+translated from the Russian original; unedited since).[^lang] The program aimed
 at the quantum target while predicting, in writing, that it would
 miss — and it missed exactly where the prediction said it would.
 
@@ -58,6 +58,9 @@ mirror controls, and a standing audit that treats any too-good result as
 a defect until proven otherwise. That machinery caught not only the
 physics artifacts above but the authors' own errors, in both directions
 of the human–AI collaboration that executed the program (Section 9).
+
+[^lang]: Primary program documents (specification, canonical record, campaign
+reports) are in Russian; quoted excerpts are translated and marked as such.
 
 ## 1.1 Related work and positioning
 
