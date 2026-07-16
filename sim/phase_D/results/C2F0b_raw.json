@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "script": "run_c2f0b",
+    "prereg_commit": "eb4a7a8",
+    "backend": "gpu",
+    "jax_version": "0.10.2",
+    "device": "cuda:0",
+    "x64": true,
+    "N": 32,
+    "M": 1200,
+    "kf_mult": 4.0,
+    "T": 0.0
+  },
+  "F_s_self": {
+    "F": 0.06333333333333334,
+    "sigma": 0.007031015942606388,
+    "rot": "a→a' π/2, b=ê"
+  },
+  "F_t_self": {
+    "F": 0.03916666666666667,
+    "sigma": 0.005600047536173903,
+    "rot": "b→b' π/2, a=ê"
+  },
+  "marginals": {
+    "P_s_plus": 0.9433333333333334,
+    "P_t_plus": 0.98
+  },
+  "kill": false
+}
