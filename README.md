@@ -26,15 +26,15 @@ audits. The negative result, quantified and named, is the contribution.
 supplementary: [`paper/SI_v3.md`](paper/SI_v3.md) / [`paper/pdf/si.pdf`](paper/pdf/si.pdf).
 The working draft [`paper/DRAFT_v3.md`](paper/DRAFT_v3.md) is retained as a documented stage.
 
-**Archived snapshot:** https://doi.org/10.5281/zenodo.21383967 (release `paper-v1.1`,
-camera-ready state). The concept DOI https://doi.org/10.5281/zenodo.21383667 resolves to the
-latest archived version. An earlier snapshot (`paper-v1`, pre-camera-ready) is retained as
-version 1 of the same record.
+**Archived snapshot:** https://doi.org/10.5281/zenodo.21388902 (release `paper-v1.2`). The
+concept DOI https://doi.org/10.5281/zenodo.21383667 resolves to the latest archived version.
+Earlier snapshots (`paper-v1`, pre-camera-ready; `paper-v1.1`, camera-ready) are retained as
+prior versions of the same record.
 
 To cite the archive *(version DOI — camera-ready snapshot)*:
 
 > Oktiabrev, Artem. *The Ribbon at the Bell Bound: Mapping the Classical Boundary of a
-> Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21383967
+> Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21388902
 
 ## Reproducibility
 

@@ -8,13 +8,13 @@ All code, data, and pre-registrations are in the repository: the phase A–C too
 `sim/src/ribbon_sim/`, the phase-D model and campaigns in `sim/phase_D/`, and the frozen raw
 measurements in `sim/phase_D/results/*.json`.
 
-The repository snapshot at submission is archived at Zenodo: DOI 10.5281/zenodo.21383967
-(release paper-v1.1, camera-ready state). The concept DOI 10.5281/zenodo.21383667 resolves to
-the latest archived version. An earlier snapshot (paper-v1, pre-camera-ready) is retained as
-version 1 of the same record. To cite the archive:
+The repository snapshot at submission is archived at Zenodo: DOI 10.5281/zenodo.21388902
+(release paper-v1.2). The concept DOI 10.5281/zenodo.21383667 resolves to the latest archived
+version. Earlier snapshots (paper-v1, pre-camera-ready; paper-v1.1, camera-ready) are retained
+as prior versions of the same record. To cite the archive:
 
 > Oktiabrev, Artem. *The Ribbon at the Bell Bound: Mapping the Classical Boundary of a
-> Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21383967
+> Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21388902
 
 Every stage whose result required a fit, a flip, or a model comparison committed its raw
 measurements before any analysis touched them, as a `*-raw` commit preceding a `*-analysis`
