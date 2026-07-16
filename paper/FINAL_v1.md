@@ -772,9 +772,9 @@ the hopeful one.
 
 ## 8.4 The status of the ontology, and of the classical route
 
-The ontological picture itself — the pair as one extended object, with
-binarity and spinority descending from its framing topology — is not
-refuted by anything in this paper. What is refuted, by construction and
+The ontological picture itself — the pair as one extended object, whose
+framing topology supplies the ℤ₂ label behind binarity and spinority
+(Section 3.1) — is not refuted by anything in this paper. What is refuted, by construction and
 at scale, is the proposition that the *studied classical relaxation model*
 of such an object reproduces singlet statistics. We state our position beyond the
 minimal one: we regard the classical route as exhausted within the

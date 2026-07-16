@@ -27,6 +27,13 @@
 | 1 | «manifestly local model» — заявляет больше, чем доказано | заменено везде на «a model whose readout is local by construction (Section 2.6)»; в §7.2 обоснование kill-триггера переведено с «конструкция манифестно локальна» на операциональное: «the isotropized protocol is an operational shared-λ scheme with settings independent of λ (Section 2.6(iii))» | §4.1, §7 преамбула, §7.2 |
 | 2 | relaxation-model wording — утверждения звучат как о ленте, а не об исследованной модели | «the classical dynamics of such an object» → «the studied classical relaxation model of such an object» | §1 (ставка), §8.4 (что опровергнуто) |
 | 3 | novelty framing | §6.4: добавлено «The isotropized correlation is statistically consistent with the standard triangular LHV form; we do not claim Bell-locality of the underlying global relaxation dynamics, for which factorization has not been established (Section 2.6(ii))» | §6.4 |
+| 5 | «binarity and spinority descending from its framing topology» — пережило правку по ревью 2 п.9 (искали по другой формулировке, «descend without postulates») | → «whose framing topology supplies the ℤ₂ label behind binarity and spinority (Section 3.1)». Противоречие с §1/§3.1/§5.2/§8.1 снято: во всех пяти местах теперь одно — топология даёт label, физическое отображение к исходам требует отдельного обоснования | §8.4 |
+
+### 2.3 Оставлено намеренно (решение архитектора)
+
+| # | место | решение |
+|---|---|---|
+| 6 | §3.1: «What this paper tests, to its limit, is whether the classical dynamics of such an object can also produce the quantitative statistics of the singlet state» — формулировка не сужена до «studied classical relaxation model», в отличие от §1 и §8.4 | **НЕ менять.** Вопрос ставки намеренно шире исследованной модели; ответ ограничен в §8.4/§8.5. Асимметрия сознательная: §3.1 ставит вопрос об онтологии, §8.4 и §8.5 отвечают в границах исследованного класса моделей и измеренного диапазона. |
 
 ### 2.2 Отклонено с объяснением
 
