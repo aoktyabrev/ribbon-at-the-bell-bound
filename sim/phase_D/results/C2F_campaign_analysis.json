@@ -2,7 +2,8 @@
   "meta": {
     "raw": "C2F_campaign_raw.json",
     "prereg": "e70e658",
-    "addendum": "eb4a7a8"
+    "addendum": "eb4a7a8",
+    "role": "первичная T=0"
   },
   "verdicts": {
     "H_F1": {
@@ -73,6 +74,7 @@
       "verdict": "Δ_s совместим с 0 (χ²=0.0/4, p=1.000, |δ|_max=0.0σ)"
     },
     "mirror_ok": true,
+    "A_diagnostic": null,
     "confirming_kf4": {
       "established": true
     }

@@ -14,6 +14,7 @@ H-F3: Δ_s совместим с 0 (χ² знакового δ_γ=P(s+|b')−P(s
 """
 import json
 import os
+import sys
 
 import numpy as np
 from scipy import stats
@@ -21,6 +22,8 @@ from scipy import stats
 HERE = os.path.dirname(__file__)
 RES = os.path.join(os.path.dirname(HERE), "phase_D", "results")
 GRID = ["pi/8", "pi/4", "3pi/8", "pi/2"]
+# диагностика A (addendum п.5): эталон S1 k_f×1 (a9cef7b), σ_comb=√(σ_bin²+s_seed²)
+A_REF, A_SIG_BIN, S_SEED = 0.418, 0.026, 0.024
 
 
 def hf1(cell):
@@ -54,10 +57,15 @@ def hf3(cell):
 
 
 def main():
-    d = json.load(open(os.path.join(RES, "C2F_campaign_raw.json")))
-    out = {"meta": dict(raw="C2F_campaign_raw.json", prereg=d["meta"]["prereg_commit"],
-                        addendum=d["meta"]["addendum"]), "verdicts": {}}
-    print("=== C2-F кампания: H-F1/H-F2/H-F3 (первичная k_f×1) ===")
+    # T=0 первичная по умолчанию; T=0.05 вторичная через argv
+    raw_name = sys.argv[1] if len(sys.argv) > 1 else "C2F_campaign_raw.json"
+    secondary = "T005" in raw_name
+    out_name = raw_name.replace("_raw", "_analysis")
+    d = json.load(open(os.path.join(RES, raw_name)))
+    out = {"meta": dict(raw=raw_name, prereg=d["meta"]["prereg_commit"],
+                        addendum=d["meta"].get("addendum"),
+                        role="вторичная T=0.05" if secondary else "первичная T=0"), "verdicts": {}}
+    print(f"=== C2-F кампания: H-F1/H-F2/H-F3 ({'ВТОРИЧНАЯ T=0.05' if secondary else 'первичная T=0'}) ===")
 
     c32 = d["primary_kf1"]["N32"]
     c96 = d["primary_kf1"]["N96"]
@@ -107,6 +115,15 @@ def main():
     print(f"   зеркало |F_s−F_s^mir| в пределах 2σ: {mir_ok}")
     print(f"   маргиналы N=32: P(s+)={c32['marginals']['P_s_plus']:.3f} "
           f"P(t+)={c32['marginals']['P_t_plus']:.3f} degen={c32['marginals']['degen_base']:.3f}")
+    # диагностика A (addendum п.5) — только если сырьё содержит A_stat (T=0.05)
+    A_diag = None
+    if "A_stat" in c32["marginals"]:
+        A = c32["marginals"]["A_stat"]; sbin = c32["marginals"].get("A_sigma_bin", A_SIG_BIN)
+        scomb = float(np.sqrt(sbin**2 + S_SEED**2))
+        dev = abs(A - A_REF) / scomb
+        A_diag = dict(A=A, A_ref=A_REF, sigma_comb=scomb, dev_sigma=float(dev))
+        print(f"   ДИАГНОСТИКА A(k_f×1,T=0.05)={A:.3f} vs эталон {A_REF} ⇒ {dev:.2f}σ_comb "
+              f"(НЕ kill; след флага V0: 0.327 против 0.418)")
     # стратификация на самом широком Δγ
     gmax = "pi/2" if "pi/2" in c32["gamma"] else list(c32["gamma"])[-1]
     strat = c32["gamma"][gmax]["strat_Fs"]
@@ -127,9 +144,10 @@ def main():
         H_F2=dict(verdict=v_hf2, rows=[dict(gamma=g, F32=a, F96=b, decays=bool(c)) for g, a, b, c in hf2_rows]),
         H_F3=dict(p_value=p, chi2=chi2, dof=k, dmax_sigma=dmax_s, surprise=bool(surprise), verdict=v_hf3),
         mirror_ok=bool(mir_ok),
+        A_diagnostic=A_diag,
         confirming_kf4=dict(established=bool(est4)))
-    json.dump(out, open(os.path.join(RES, "C2F_campaign_analysis.json"), "w"), indent=2, ensure_ascii=False)
-    print(f"  → {RES}/C2F_campaign_analysis.json")
+    json.dump(out, open(os.path.join(RES, out_name), "w"), indent=2, ensure_ascii=False)
+    print(f"  → {RES}/{out_name}")
 
 
 if __name__ == "__main__":
