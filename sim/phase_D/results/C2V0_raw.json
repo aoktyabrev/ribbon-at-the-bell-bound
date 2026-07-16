@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "script": "run_c2v0",
+    "prereg_commit": "ede8d7e",
+    "backend": "gpu",
+    "jax_version": "0.10.2",
+    "device": "cuda:0",
+    "x64": true,
+    "N": 32,
+    "M": 1200,
+    "steps": 4000,
+    "protocol": "a9cef7b S1-R1"
+  },
+  "cells": {
+    "kf1.0": {
+      "A": 0.32666666666666666,
+      "sigma_bin": 0.02728383051199753,
+      "n_valid": 1200,
+      "degen": 0,
+      "rej_per_step": 2.7777777777777776e-07,
+      "A_ref": 0.418,
+      "sigma_comb": 0.03633741057653128,
+      "dev_sigma": 2.513479411004632,
+      "ok": true
+    },
+    "kf4.0": {
+      "A": 0.8333333333333334,
+      "sigma_bin": 0.015957118462605634,
+      "n_valid": 1200,
+      "degen": 0,
+      "rej_per_step": 0.0,
+      "A_ref": 0.837,
+      "sigma_comb": 0.0288206458919579,
+      "dev_sigma": 0.12722361186533093,
+      "ok": true
+    }
+  },
+  "gate_pass": true
+}
