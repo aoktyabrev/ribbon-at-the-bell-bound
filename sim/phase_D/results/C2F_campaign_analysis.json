@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "raw": "C2F_campaign_raw.json",
+    "prereg": "e70e658",
+    "addendum": "eb4a7a8"
+  },
+  "verdicts": {
+    "H_F1": {
+      "established": true,
+      "verdict": "KILL: факторизация при T=0 конструктивно установлена (F_s<3σ на всей сетке)",
+      "rows": [
+        {
+          "gamma": "pi/8",
+          "F_s": 0.0,
+          "sigma": 4.5643546458763846e-07,
+          "below3": true
+        },
+        {
+          "gamma": "pi/4",
+          "F_s": 0.0,
+          "sigma": 4.5643546458763846e-07,
+          "below3": true
+        },
+        {
+          "gamma": "3pi/8",
+          "F_s": 0.0,
+          "sigma": 4.5643546458763846e-07,
+          "below3": true
+        },
+        {
+          "gamma": "pi/2",
+          "F_s": 0.0,
+          "sigma": 4.5643546458763846e-07,
+          "below3": true
+        }
+      ]
+    },
+    "H_F2": {
+      "verdict": "H-F2 не применим содержательно: H-F1 дал F_s≈0 (нечему затухать)",
+      "rows": [
+        {
+          "gamma": "pi/8",
+          "F32": 0.0,
+          "F96": 0.0,
+          "decays": false
+        },
+        {
+          "gamma": "pi/4",
+          "F32": 0.0,
+          "F96": 0.0,
+          "decays": false
+        },
+        {
+          "gamma": "3pi/8",
+          "F32": 0.0,
+          "F96": 0.0,
+          "decays": false
+        },
+        {
+          "gamma": "pi/2",
+          "F32": 0.0,
+          "F96": 0.0,
+          "decays": false
+        }
+      ]
+    },
+    "H_F3": {
+      "p_value": 1.0,
+      "chi2": 0.0,
+      "dof": 4,
+      "dmax_sigma": 0.0,
+      "surprise": false,
+      "verdict": "Δ_s совместим с 0 (χ²=0.0/4, p=1.000, |δ|_max=0.0σ)"
+    },
+    "mirror_ok": true,
+    "confirming_kf4": {
+      "established": true
+    }
+  }
+}
