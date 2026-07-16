@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "script": "run_c2tm_stage2",
+    "prereg_commit": "99ad201",
+    "predictions_commit": "99ad201",
+    "backend": "gpu",
+    "jax_version": "0.10.2",
+    "device": "cuda:0",
+    "x64": true,
+    "N": 32,
+    "M": 1200,
+    "T_mid": 0.05,
+    "protocol": "a9cef7b S1-R1",
+    "note": "frozen 4 pts=CPU; these=GPU (V0-confound flag)"
+  },
+  "points": {
+    "kf0.25": {
+      "k_f": 0.25,
+      "E_raw": 0.25666666666666665,
+      "A": 0.25666666666666665,
+      "sigma": 0.027900451343754015,
+      "E_mirror": 0.25666666666666665,
+      "P_aligned": 0.6283333333333333,
+      "n_valid": 1200,
+      "degen": 0,
+      "rej_per_step": 0.0001361111111111111
+    },
+    "kf6.0": {
+      "k_f": 6.0,
+      "E_raw": 0.9566666666666667,
+      "A": 0.9566666666666667,
+      "sigma": 0.008405796060303119,
+      "E_mirror": 0.9566666666666667,
+      "P_aligned": 0.9783333333333334,
+      "n_valid": 1200,
+      "degen": 0,
+      "rej_per_step": 0.0
+    },
+    "kf8.0": {
+      "k_f": 8.0,
+      "E_raw": 0.995,
+      "A": 0.995,
+      "sigma": 0.0028831406486676927,
+      "E_mirror": 0.995,
+      "P_aligned": 0.9975,
+      "n_valid": 1200,
+      "degen": 0,
+      "rej_per_step": 0.0
+    }
+  }
+}
