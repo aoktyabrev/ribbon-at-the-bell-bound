@@ -80,8 +80,8 @@ the minimal alternative]
 The ontological picture itself — the pair as one extended object, with
 binarity and spinority descending from its framing topology — is not
 refuted by anything in this paper. What is refuted, by construction and
-at scale, is the proposition that the *classical dynamics* of such an
-object reproduces singlet statistics. We state our position beyond the
+at scale, is the proposition that the *studied classical relaxation model*
+of such an object reproduces singlet statistics. We state our position beyond the
 minimal one: we regard the classical route as exhausted within the
 explored model class — framed-curve discretizations with axial readout,
 over the measured parameter range — and expect further classical

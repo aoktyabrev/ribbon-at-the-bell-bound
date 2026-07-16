@@ -47,9 +47,9 @@ structural label and the homotopy underlying the 4π belt-trick return.
 A physical map from this label to measurement outcomes is an additional
 requirement — and Section 5 proves that for axial readout no such map
 exists.
-The bet this program made — its maximal stake — was that the classical
-dynamics of such an object, read by an honest basin measure, would
-produce the quantitative statistics of the singlet: the isotropic
+The bet this program made — its maximal stake — was that the studied
+classical relaxation model of such an object, read by an honest basin
+measure, would produce the quantitative statistics of the singlet: the isotropic
 −cos θ correlation at unit amplitude, the Born weights, and a CHSH value
 of 2√2. The registered expectation, written into the simulation
 specification and in the record before the first physics campaign it
@@ -376,7 +376,8 @@ decides; measurement.py), mirror pairs (a, b) ↔ (−a, −b), block convergenc
 observable, an explicit DEGENERATE class for undetermined basins, and — for the central
 scaling claim — a pre-registered cross-seed audit of the quoted errors (Section 4.2). A
 standing kill-criterion
-treated any CHSH > 2 in a manifestly local model as a protocol error to be audited before
+treated any CHSH > 2 in a model whose readout is local by construction (Section 2.6) as a
+protocol error to be audited before
 interpretation; it fired twice, and both times caught a method artifact rather than physics
 (Section 7).
 
@@ -576,7 +577,10 @@ isotropized E(θ) against both forms, the triangular local-realistic function E 
 beats the cosine by a wide margin in χ²: 8 vs 39 at k_f×1 and 1 vs 218 at k_f×4 — the data lie
 on the straight line, not the curve (DS3; commit 0fb5452). This is the shared-λ local model's
 signature [Bell1964], and its CHSH value is exactly S = 2ρ, with ρ the source-alignment amplitude:
-ρ = 0.374 / 0.810 gives |S| = 0.75 / 1.62 at k_f × {1, 4}. Three properties therefore trade
+ρ = 0.374 / 0.810 gives |S| = 0.75 / 1.62 at k_f × {1, 4}. The isotropized correlation is
+statistically consistent with the standard triangular LHV form; we do not claim Bell-locality
+of the underlying global relaxation dynamics, for which factorization has not been established
+(Section 2.6(ii)). Three properties therefore trade
 off and cannot be held together: a cosine form exists only anisotropically (6.3); honest
 isotropy forces the triangle (this subsection); and the amplitude ρ is bought with stiffness
 (6.2). The measured family moves toward the Bell bound as stiffness grows: |S| = 1.62 at
@@ -610,7 +614,8 @@ A hidden-variable research program faces a specific epistemic hazard: the
 researcher wants the model to violate a Bell inequality, and the pipeline is
 built by the same people who hold that hope. We therefore pre-registered,
 before any CHSH [CHSH1969] campaign, a standing kill-criterion: any result S > 2 in a
-manifestly local model is treated as evidence of a protocol error, triggering
+model whose readout is local by construction (Section 2.6) is treated as evidence of a
+protocol error, triggering
 a full audit before any interpretation. This criterion fired twice. Both
 times it caught an artifact of method, not physics — and both artifacts turn
 out to be textbook failure modes with decades of history in the Bell-test
@@ -638,7 +643,8 @@ The isotropization protocol — the shared randomness λ = (R, n_A, n_B), with
 R ~ Haar on SO(3) the ribbon's orientation, common to both ends through the
 geometry but not available to the experimenter, and the settings n_A, n_B drawn
 independently (Section 6.4) — produced |S| = 2.39. Since the
-construction is manifestly local, Bell's theorem [Bell1964] guarantees this is a bug;
+isotropized protocol is an operational shared-λ scheme with settings
+independent of λ (Section 2.6(iii)), Bell's theorem [Bell1964] guarantees this is a bug;
 the trigger fired again. The audit located it in event selection: replicas
 with a weak axial projection (|proj| < 0.2) were being discarded as
 DEGENERATE — and the discard rate itself varied with the measurement
@@ -769,8 +775,8 @@ the hopeful one.
 The ontological picture itself — the pair as one extended object, with
 binarity and spinority descending from its framing topology — is not
 refuted by anything in this paper. What is refuted, by construction and
-at scale, is the proposition that the *classical dynamics* of such an
-object reproduces singlet statistics. We state our position beyond the
+at scale, is the proposition that the *studied classical relaxation model*
+of such an object reproduces singlet statistics. We state our position beyond the
 minimal one: we regard the classical route as exhausted within the
 explored model class — framed-curve discretizations with axial readout,
 over the measured parameter range — and expect further classical

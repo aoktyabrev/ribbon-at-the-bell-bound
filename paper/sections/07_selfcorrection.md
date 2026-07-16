@@ -6,7 +6,8 @@ A hidden-variable research program faces a specific epistemic hazard: the
 researcher wants the model to violate a Bell inequality, and the pipeline is
 built by the same people who hold that hope. We therefore pre-registered,
 before any CHSH [CHSH1969] campaign, a standing kill-criterion: any result S > 2 in a
-manifestly local model is treated as evidence of a protocol error, triggering
+model whose readout is local by construction (Section 2.6) is treated as evidence of a
+protocol error, triggering
 a full audit before any interpretation. This criterion fired twice. Both
 times it caught an artifact of method, not physics — and both artifacts turn
 out to be textbook failure modes with decades of history in the Bell-test
@@ -34,7 +35,8 @@ The isotropization protocol — the shared randomness λ = (R, n_A, n_B), with
 R ~ Haar on SO(3) the ribbon's orientation, common to both ends through the
 geometry but not available to the experimenter, and the settings n_A, n_B drawn
 independently (Section 6.4) — produced |S| = 2.39. Since the
-construction is manifestly local, Bell's theorem [Bell1964] guarantees this is a bug;
+isotropized protocol is an operational shared-λ scheme with settings
+independent of λ (Section 2.6(iii)), Bell's theorem [Bell1964] guarantees this is a bug;
 the trigger fired again. The audit located it in event selection: replicas
 with a weak axial projection (|proj| < 0.2) were being discarded as
 DEGENERATE — and the discard rate itself varied with the measurement

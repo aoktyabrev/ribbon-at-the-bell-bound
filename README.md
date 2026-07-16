@@ -1,6 +1,7 @@
 # The Ribbon at the Bell Bound
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21383667.svg)](https://doi.org/10.5281/zenodo.21383667)
+*(concept DOI — all versions)*
 
 Pre-registered simulations mapping the classical boundary of a geometric entanglement model —
 code, data, and provenance for *"The Ribbon at the Bell Bound"*.
@@ -30,7 +31,7 @@ camera-ready state). The concept DOI https://doi.org/10.5281/zenodo.21383667 res
 latest archived version. An earlier snapshot (`paper-v1`, pre-camera-ready) is retained as
 version 1 of the same record.
 
-To cite the archive:
+To cite the archive *(version DOI — camera-ready snapshot)*:
 
 > Oktiabrev, Artem. *The Ribbon at the Bell Bound: Mapping the Classical Boundary of a
 > Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21383967

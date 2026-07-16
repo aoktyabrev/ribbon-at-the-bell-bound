@@ -94,7 +94,10 @@ isotropized E(θ) against both forms, the triangular local-realistic function E 
 beats the cosine by a wide margin in χ²: 8 vs 39 at k_f×1 and 1 vs 218 at k_f×4 — the data lie
 on the straight line, not the curve (DS3; commit 0fb5452). This is the shared-λ local model's
 signature [Bell1964], and its CHSH value is exactly S = 2ρ, with ρ the source-alignment amplitude:
-ρ = 0.374 / 0.810 gives |S| = 0.75 / 1.62 at k_f × {1, 4}. Three properties therefore trade
+ρ = 0.374 / 0.810 gives |S| = 0.75 / 1.62 at k_f × {1, 4}. The isotropized correlation is
+statistically consistent with the standard triangular LHV form; we do not claim Bell-locality
+of the underlying global relaxation dynamics, for which factorization has not been established
+(Section 2.6(ii)). Three properties therefore trade
 off and cannot be held together: a cosine form exists only anisotropically (6.3); honest
 isotropy forces the triangle (this subsection); and the amplitude ρ is bought with stiffness
 (6.2). The measured family moves toward the Bell bound as stiffness grows: |S| = 1.62 at

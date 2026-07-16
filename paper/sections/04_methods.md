@@ -30,7 +30,8 @@ decides; measurement.py), mirror pairs (a, b) ↔ (−a, −b), block convergenc
 observable, an explicit DEGENERATE class for undetermined basins, and — for the central
 scaling claim — a pre-registered cross-seed audit of the quoted errors (Section 4.2). A
 standing kill-criterion
-treated any CHSH > 2 in a manifestly local model as a protocol error to be audited before
+treated any CHSH > 2 in a model whose readout is local by construction (Section 2.6) as a
+protocol error to be audited before
 interpretation; it fired twice, and both times caught a method artifact rather than physics
 (Section 7).
 

@@ -14,9 +14,9 @@ structural label and the homotopy underlying the 4π belt-trick return.
 A physical map from this label to measurement outcomes is an additional
 requirement — and Section 5 proves that for axial readout no such map
 exists.
-The bet this program made — its maximal stake — was that the classical
-dynamics of such an object, read by an honest basin measure, would
-produce the quantitative statistics of the singlet: the isotropic
+The bet this program made — its maximal stake — was that the studied
+classical relaxation model of such an object, read by an honest basin
+measure, would produce the quantitative statistics of the singlet: the isotropic
 −cos θ correlation at unit amplitude, the Born weights, and a CHSH value
 of 2√2. The registered expectation, written into the simulation
 specification and in the record before the first physics campaign it
