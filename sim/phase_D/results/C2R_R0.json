@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "script": "run_c2r_r0",
+    "prereg_commit": "ddc9880",
+    "backend": "gpu"
+  },
+  "anchor": {
+    "A": 0.815,
+    "sigma": 0.016727596958320105,
+    "ref": 0.839,
+    "sigma_comb": 0.02925427319213383,
+    "ok": true
+  },
+  "rej_ladder": {
+    "kf8.0": 0.0,
+    "kf32.0": 0.0,
+    "kf128.0": 0.0,
+    "kf512.0": 0.0
+  },
+  "R0_pass": true
+}
