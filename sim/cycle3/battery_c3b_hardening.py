@@ -58,7 +58,13 @@ def zero_set(lam):
 
 def analytic_Delta(dens_c, p):
     """Точная Δ(p) = |P₊f_p(m₊)+P₋f_p(m₋) − f_p(⟨λ_z⟩)| (a=ẑ vs a=x̂ тривиально),
-    1D-интеграл по c=λ_z с плотностью dens_c (равномерная мера в cosθ)."""
+    1D-интеграл по c=λ_z с плотностью dens_c (равномерная мера в cosθ).
+    addendum2: в p=2 — АЛГЕБРАИЧЕСКИЙ ноль, не квадратура. f₂(c)=(1+c)/2 аффинна
+    ⇒ P₊f₂(m₊)+P₋f₂(m₋) = ½[(P₊+P₋)+(P₊m₊+P₋m₋)] = ½[1+⟨λ_z⟩] = f₂(⟨λ_z⟩)
+    тождественно (зазор Йенсена аффинной функции ≡ 0) ∀ меры ⇒ Δ(2)≡0 точно.
+    Квадратура здесь давала ошибку трапеции ~2.3e-5 (1/ngrid) → ложный СТОП."""
+    if abs(p - 2.0) < 1e-12:
+        return 0.0
     c = np.linspace(-1, 1, 20001); g = dens_c(c); g = g / np.trapezoid(g, c)
     pos = c >= 0
     Pp = np.trapezoid(g[pos], c[pos]); Pm = np.trapezoid(g[~pos], c[~pos])
@@ -119,7 +125,10 @@ def T2_deform():
         zs = zero_set(lam); zs_an = analytic_zero_set(dens)
         mism = max(abs(analytic_Delta(dens, p) - steer_scan(lam, p)) for p in P_GRID)
         scan = {f"{p}": steer_scan(lam, p) for p in P_GRID}
-        # робастность по АНАЛИТИКЕ (точная); численность в пределах 2σ
+        # ГЕЙТ per addendum2 (=prereg addendum1/A4): D(χ)>0 ∧ аналит. нуль-множ.={2}
+        # (арбитр физики, в p=2 алгебраический ноль) ∧ |аналит−числ|<2σ.
+        # Числ. нуль-множ. шире {2} (напр. 1.75 у mu_k0.5) = статистика, снимается
+        # согласием <2σ; tol=1e-9-гейт на квадратуре (ложный СТОП 19:39) снят.
         robust = (D is not None and not np.isnan(D) and D > 5*SIG and zs_an == [2.0] and mism < 2*SIG)
         allrobust = allrobust and robust
         out[name] = dict(D=None if (D is None or np.isnan(D)) else float(D), zero_set_num=zs,
