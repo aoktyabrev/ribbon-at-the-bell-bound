@@ -56,36 +56,47 @@ midpoint-аффинности). Возьмём A с двухточечным {a,
 f(c)=(1+c)/2 = f_{p=2}. ⇒ no-signaling на внутренних ансамблях с D>0
 выделяет p=2 ЕДИНСТВЕННО (лемма §1 + нечётность + нормировка).
 
-**2.2–2.3 ФИНАЛЬНЫЙ ТЕКСТ СЕКЦИИ (архитектор, дословно; в статью 3).**
-Сырьё чисел: C3L_L3.json (9567ddb), C3L_L2.json (49e8c1b).
+**2.2 Расслоение (стратификация).** Отбор правила (mechanism-independent):
+где мера порождает стиринг-диверсность D>0, лемма §1 форсирует аффинность
+⇒ p=2. Значение S — свойство механизма разрешения (shared-λ ≤2, потолок
+1/3-косинуса E=cosθ/3; совместный хорд. =2√2). Сырьё: C3L_L3.json (9567ddb),
+C3L_L2.json (49e8c1b).
 
-> The no-signaling argument stratifies into two layers, and stating
-> them separately is what makes the claim exact. The RULE-SELECTION
-> layer is mechanism-independent: whenever the source measure
-> generates steering diversity (D(χ)>0), any non-affine odd readout
-> produces a strictly positive Jensen gap and hence a telegraph;
-> affinity, oddness and normalization intersect in the single rule
-> f₂=(1+c)/2, so no-signaling selects p=2 in every layer where
-> steering exists. The VALUE layer is mechanism-dependent: what S the
-> selected rule attains is a property of how the pair is resolved.
-> Shared-λ (factorizable) resolution is Bell-bounded — our internal
-> family sits at S=√2 at χ=0.5, and its ceiling is the 1/3-cosine
-> point E=cosθ/3, the maximal isotropic-cosine statistics available
-> to local linear readout of a hidden vector. Joint resolution of the
-> chord law attains S=2√2 exactly, and the same Jensen argument cuts
-> the non-affine tail there too: the super-quantum range S∈(2√2,4],
-> carried by p>2, is forbidden by no-signaling alone — the Tsirelson
-> bound emerges as the upper cut of the non-affine tail in the joint
-> layer, with no appeal to information causality. What no-signaling
-> does not do is lift amplitude: it selects the rule in both layers
-> but leaves the local layer at the 1/3-cosine point and the quantum
-> value to the joint layer. The gap between them — the AMPLITUDE
-> SEAM — is, we find, the same wall met by the classical relaxation
-> dynamics of the preceding cycles, now seen from the reconstruction
-> side. Whether an internal construction can generate its own
-> steering diversity AND attain S=2√2 — closing the seam — or whether
-> the seam is fundamental to outcome-definite mechanisms, is the
-> program's registered central open problem (campaign C3-S).
+**РЕТРАКЦИЯ (в протокол):** первая редакция §2.3 содержала ОВЕРКЛЕЙМ —
+«no-signaling один режет хвост p>2 в СОВМЕСТНОМ слое». Пойман J5-батареей
+C3-S (324f097): постулированный |·|^p имеет равномерные маргиналы ∀p ⇒
+вся семья no-signaling вплоть до PR-бокса ([PR94] — был в исходном списке
+ссылок секции; промах архитектора). Клейм «Tsirelson from NS без IC» СУЖЕН
+до стиринг-эндовед слоёв (L3-скан не тронут — там стиринг есть). Ниже —
+исправленный §2.3 дословно.
+
+**2.3 ФИНАЛЬНЫЙ ТЕКСТ (архитектор, исправлено, дословно; в статью 3):**
+
+> Rule selection is exactly as strong as steering. In any layer whose
+> measurements produce conditional states that can themselves be
+> steered — internally generated diversity D>0 — the Jensen argument
+> applies: no-signaling forces affinity, selects p=2, and with it the
+> quantum value of S available to that layer. In a bare-correlation
+> joint layer, however, where outcomes carry no post-measurement
+> structure, the |·|^p family has uniform marginals for every p: the
+> entire family is no-signaling, up to and including the PR box — the
+> classic observation of Popescu and Rohrlich [PR94], which our
+> battery rediscovered as a registered finding against an earlier
+> over-claim of this section (retained in the record). No-signaling
+> alone therefore does not enforce the Tsirelson bound; what enforces
+> it, in this geometry, is no-signaling PLUS steering structure — and
+> this localizes, within one construction, the same gap that
+> information causality [ARCH: Pawlowski09] was invented to fill.
+> The amplitude seam then resolves into a reduction rather than a
+> mystery: within the internally-generated class (hidden measure +
+> local response) Bell's theorem itself caps S at 2, so closing the
+> seam — D>0 together with S=2√2 — demands joint, nonlocal resolution
+> of the pair; and joint resolution, by the foliation results above,
+> demands a preferred frame that the statistics provably hide. The
+> program's bridge statement follows: Einstein's prohibition selects
+> the quantum rule wherever mechanisms carry steering; the quantum
+> amplitude is bought only by joint resolution, whose frame
+> Einstein's own statistics render invisible.
 
 ## 3. Батарея-дополнение L3 — ВЫПОЛНЕНА (prereg 2d78c51, сырьё 9567ddb)
 - Ячейка1 скан Δ(p) p∈{4,6,10,∞}: ПОДТВЕРЖДЁН — Δ>0 ∀p, монотонно,
