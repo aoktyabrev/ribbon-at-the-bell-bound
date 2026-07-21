@@ -1,0 +1,64 @@
+{
+  "M3": 4.0,
+  "M3_order21": 4.0,
+  "order_disc": 0.0,
+  "ns_worst": 0.0,
+  "ns": {
+    "p3": 0.0,
+    "p1": 0.0,
+    "e12": 0.0,
+    "e13": 0.0
+  },
+  "marginals": {
+    "XXX": [
+      0.5003775,
+      0.5003775,
+      1.0
+    ],
+    "XXY": [
+      0.5003775,
+      0.5003775,
+      0.0
+    ],
+    "XYX": [
+      0.5003775,
+      0.5003775,
+      1.0
+    ],
+    "XYY": [
+      0.5003775,
+      0.5003775,
+      0.0
+    ],
+    "YXX": [
+      0.5003775,
+      0.5003775,
+      1.0
+    ],
+    "YXY": [
+      0.5003775,
+      0.5003775,
+      0.0
+    ],
+    "YYX": [
+      0.5003775,
+      0.4996225,
+      1.0
+    ],
+    "YYY": [
+      0.5003775,
+      0.4996225,
+      0.0
+    ]
+  },
+  "checks": {
+    "M3_is_4": true,
+    "NS_intact": true,
+    "pair_order_invisible": true,
+    "pair_marginals_half": true,
+    "party3_deterministic": true
+  },
+  "sigma": 0.0007071067811865475,
+  "N": 2000000,
+  "note": "Mermin-VALUE witness (one ordered pair \u21d2 M\u2083=4); party3 deterministic \u21d2 not full GHZ statistics (open, per addendum1 o\u0433\u043e\u0432\u043e\u0440\u043a\u0430)"
+}
