@@ -87,6 +87,13 @@ case "$V" in
     EXTRA_HEADER="\\usepackage{fancyhdr}\\pagestyle{fancy}\\fancyhf{}\\cfoot{DRAFT v1 — ${DATE} — commit ${HASH}}\\rfoot{\\thepage}\\lfoot{cycle-3 paper}" \
       build "C3_paper_DRAFT_v1.md" c3_draft_v1 "Born from causality, Tsirelson from steering, and the amplitude seam (DRAFT v1)"
     echo; echo "Готово (C3 draft): $OUT/c3_draft_v1.pdf" ;;
+  C3DRAFTV2)
+    # paper 3 драфт v2 → c3_draft_v2.pdf, колонтитул v2 + актуальный хэш
+    HASH="$(cd "$ROOT" && git log -1 --format=%h -- paper/C3_paper_DRAFT_v1.md)"
+    DATE="$(cd "$ROOT" && git log -1 --format=%cs -- paper/C3_paper_DRAFT_v1.md)"
+    EXTRA_HEADER="\\usepackage{fancyhdr}\\pagestyle{fancy}\\fancyhf{}\\cfoot{DRAFT v2 — ${DATE} — commit ${HASH}}\\rfoot{\\thepage}\\lfoot{cycle-3 paper}" \
+      build "C3_paper_DRAFT_v1.md" c3_draft_v2 "Born from causality, Tsirelson from steering, and the amplitude seam (DRAFT v2)"
+    echo; echo "Готово (C3 draft v2): $OUT/c3_draft_v2.pdf" ;;
   C2TR)
     # синтез цикла 2 → технический отчёт
     build "../sim/cycle2/C2_synthesis.md" c2_synthesis_TR "Technical Report — Cycle 2 Synthesis"

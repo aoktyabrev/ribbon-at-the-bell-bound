@@ -17,14 +17,16 @@ exponent p=2 uniquely; the derivation is internal (the steering ensembles
 are produced by a shifted source measure, not imported), executable, and
 robust under five deformations of the measure. (ii) Mechanisms that resolve
 outcomes **locally** are capped by Bell's theorem at S=2, with a **1/3-cosine
-point** (E=cosθ/3) as their isotropic-cosine ceiling, reached independently
-three ways. (iii) The **amplitude seam** between that ceiling and the quantum
+point** (E=cosθ/3) as their isotropic-cosine ceiling, anchored analytically and
+reached by two mechanisms, with ISO-DYN bracketing it. (iii) The **amplitude
+seam** between that ceiling and the quantum
 value S=2√2 is not crossed by decorating local mechanisms — three registered
 attempts fail on a trilemma of horns (no steering / no amplitude / superluminal
 telegraph) — but only by **joint, nonlocal resolution**, which by our
-foliation results demands a preferred frame that the statistics render
-invisible. The bridge statement is an exact division of labor, not a
-unification.
+foliation results demands a shared, statistically invisible precedence
+structure — a preferred foliation being one realization, a frameless shared
+order-coin another (class-M theorem). The bridge statement is an exact
+division of labor, not a unification.
 
 ---
 
@@ -95,11 +97,13 @@ closed forms — not a theorem.
 ## 4. CEILING — the 1/3-cosine point
 Local resolution (hidden λ + local linear readout) yields
 E(a,b)=E_λ[(λ·a)(λ·b)]=aᵀ(⅓I)b = **cosθ/3** (χ-corrections odd ⇒ vanish),
-S=2√2/3≈0.943 — the isotropic-cosine ceiling of the local layer. Reached
-independently three ways: dynamical isotropization ρ=0.335 (C2ISO_analysis.json,
-a043f8f); the analytic lever rule; frame-local space-like resolution
-E(0)=0.333, E(90)=0, E(180)=−0.333 (C3L_L2.json, 49e8c1b). Three ideas, one
-point ⇒ a structural boundary, the lower bank of the seam.
+S=2√2/3≈0.943 — the isotropic-cosine ceiling of the local layer. The exact
+convergence is analytic (lever rule, exactly 1/3) and frame-local (E(0)=0.333;
+C3L_L2.json, 49e8c1b); dynamical isotropization lands NEAR the point:
+ρ_cos=0.311±0.010 (cosine-fit, the form-matched estimator), ρ_model-free=0.336
+(C2ISO_analysis.json, a043f8f) — bracketing 1/3 within ~2σ. Estimators named per
+program rule. Anchored analytically and reached by two mechanisms, with ISO-DYN
+bracketing it ⇒ a structural boundary, the lower bank of the seam.
 
 ## 5. SEAM — the trilemma of horns (C3-S)
 Can an internal model reach **D>0 and S=2√2** together? Registered attempts,
@@ -117,8 +121,9 @@ ansätze fixed before batteries:
 
 **Reduction (Bell corollary, not a new theorem).** The internal class =
 λ-average of local responses = LHV ⇒ S≤2. Closing the seam therefore demands
-**joint, nonlocal resolution**; and joint resolution demands a preferred
-frame (§6). Attempt count: 3. (C3S_seam_reduction.md.)
+**joint, nonlocal resolution**; and joint resolution demands a shared,
+statistically invisible precedence structure (§6). Attempt count: 3.
+(C3S_seam_reduction.md.)
 
 ## 6. FRAME — foliation (C3-L, L1/L2)
 On the chord joint law, two resolution mechanics:
@@ -133,13 +138,24 @@ factorized witness disc=0.00); the collapse realization's order-dependence
 (addendum1). **Method note:** the foliation-invariance test required common
 random numbers — a raw cross-range would false-STOP on Monte-Carlo noise (§7).
 
-**Conjecture L2c** (status: conjecture with model evidence, path α/β/γ):
-outcome-definiteness (P1) + joint resolution (P2) + S=2√2 ⇒ a preferred,
-statistically hidden foliation. **Experimental anchor:** real before-before
-experiments [ZBGT01, SZGS02] exclude the frame-local branch (ii) in nature;
-the surviving corner is preferred-foliation (i) — exact QM, invisible frame
-— consistent with L2c and with Bohmian preferred slicing [DGZ92]; kin to
-[H92], [SS97].
+**Class-M theorem** (status: theorem; canonical statement in
+`sim/cycle3/C3L_L2c_THEOREM.md`, c8e1bf3): in the class M of
+outcome-definite sequential resolution mechanisms (shared
+preparation randomness λ, setting-independence M4′, no
+retrocausation), S>2 is achievable **iff** M admits a shared,
+space-like-transcending, statistically invisible precedence
+structure. Realizations demonstrated: a preferred foliation
+(five axes, cross-discrimination 0.000000 under CRN) and a
+**frameless per-run shared order-coin** (S=2√2±2σ, no telegraph,
+coin invisible; battery c8e1bf3, independently re-executed).
+The earlier conjecture's "preferred foliation is required" was
+**retracted as too strong** during the adversarial passes: the
+foliation is one realization of the required structure, not its
+only form. Experimental anchor unchanged: before-before
+experiments [ZBGT01, SZGS02] exclude the frame-local branch in
+nature; what survives is joint resolution carrying a shared,
+hidden precedence structure. Kin: Bohmian preferred slicing [DGZ92],
+steering-axiomatic reconstructions [CDP11]; [H92], [SS97].
 
 ## 7. METHODS — batteries, controls, self-correction
 All batteries: pure numpy, N=2·10⁶, PRNGKey from config, analytics beside
@@ -159,7 +175,16 @@ analysis. Estimator named in every prediction; metric = the model observable.
    alone cuts p>2 in the joint layer"; J5 rediscovered the Popescu–Rohrlich
    fact that the postulated |·|^p family is no-signaling up to the PR box
    [PR94]; the claim was narrowed to steering-endowed layers (324f097; §8).
+5. **Frame over-claim** (abstract/§5/§8/§9 v1): "preferred frame required" —
+   retracted by the class-M theorem's T3′ and the β-coin demonstration; revised
+   in v2, history retained.
 Each was caught by a preregistered criterion, not by hindsight.
+
+**Reproduction.** The full numpy battery suite of cycle 3 was independently
+re-executed (2026-07-21); fixed-seed raw reproduces bitwise (C3-B B1–B7, C3-B
+hardening, L3, L1, L2, C3-S, β-coin — all results JSON byte-identical under
+`git diff`). C3-B and the β-coin were additionally reproduced by the architect
+in a separate environment.
 
 ## 8. The Tsirelson section (§2.3, corrected — verbatim)
 > Rule selection is exactly as strong as steering. In any layer whose
@@ -180,7 +205,11 @@ Each was caught by a preregistered criterion, not by hindsight.
 > local response) Bell's theorem itself caps S at 2, so closing the seam —
 > D>0 together with S=2√2 — demands joint, nonlocal resolution of the pair;
 > and joint resolution, by the foliation results above, demands a preferred
-> frame that the statistics provably hide. The program's bridge statement
+> frame that the statistics provably hide.
+> [Revised by the class-M theorem, §6: read 'a shared, statistically invisible
+> precedence structure', of which a preferred frame is one realization — the
+> frameless order-coin is another.]
+> The program's bridge statement
 > follows: Einstein's prohibition selects the quantum rule wherever mechanisms
 > carry steering; the quantum amplitude is bought only by joint resolution,
 > whose frame Einstein's own statistics render invisible.
@@ -204,16 +233,18 @@ Each was caught by a preregistered criterion, not by hindsight.
 > (4) FRAME: joint resolution of the frame-local kind reconstructs the
 > Suarez–Scarani alternative and degrades to the local ceiling, which real
 > before-before experiments [ZBGT01, SZGS02] have excluded in nature; the
-> surviving corner, preferred-foliation resolution, reproduces quantum
-> statistics exactly while rendering its own foliation statistically invisible
-> to the resolution of our batteries. The bridge statement of the program is
-> therefore not a unification but an exact division of labor: Einstein's
-> causality selects the quantum rule; the quantum amplitude is bought only by
-> joint resolution; and the frame that joint resolution requires is precisely
-> what the selected statistics forever hide. What remains open is stated as
-> precisely: a mechanical realization of the asymmetry parameter (C3-B-mech),
-> the structural theorem behind the seam trilemma (conjecture L2c, path
-> α/β/γ), and the ground-state problem of the stiff chain — walls mapped,
+> surviving corner, joint resolution carrying a shared, statistically invisible
+> precedence structure (foliation or shared order-coin), reproduces quantum
+> statistics exactly while rendering its own precedence structure statistically
+> invisible to the resolution of our batteries. The bridge statement of the
+> program is therefore not a unification but an exact division of labor:
+> Einstein's causality selects the quantum rule; the quantum amplitude is bought
+> only by joint resolution; and the precedence structure that joint resolution
+> requires is precisely what the selected statistics forever hide. What remains
+> open is stated as precisely: a mechanical realization of the asymmetry
+> parameter (C3-B-mech), the structural theorem behind the seam trilemma
+> (the class-M theorem, proved; N-event generalization = C4 G-T), and the
+> ground-state problem of the stiff chain — walls mapped,
 > kill criteria attached, commits public.
 
 ## Appendix A — batteries (reproducible)
@@ -225,8 +256,16 @@ Each was caught by a preregistered criterion, not by hindsight.
 | C3-L L1/L2 | 0b10f5d,100a261 | 1e0cf0a,49e8c1b | foliation invisible; frame-local→ceiling |
 | C3-S J1–J7 | 3d516d4 | 324f097 | seam not closed (S-F1/S-F2) |
 | S-F3 analytics | — | 2053106 | closed pre-battery (telegraph) |
+| β-coin (class M) | C3L_coin_prereg | c8e1bf3 | frameless 2√2, invisible |
+| Class-M theorem | — | c8e1bf3 | achievability iff shared invisible precedence |
+| C3-B-mech M0 (calibration) | C3Bmech addenda | 0a6c51e | source polarizes; χ(h) linear |
+| C3-B-mech M1/M2 | 63456cd | 2080bbe | mechanical steering, form-free (M1✓M2✓) |
 
 ## References
+[B64] J. S. Bell, Physics 1, 195 (1964).
+[CHSH69] J. F. Clauser, M. A. Horne, A. Shimony, R. A. Holt, Phys. Rev. Lett. 23, 880 (1969).
+[C80] B. S. Cirel'son, Lett. Math. Phys. 4, 93 (1980).
+[CDP11] G. Chiribella, G. M. D'Ariano, P. Perinotti, Phys. Rev. A 84, 012311 (2011).
 [H92] L. Hardy, Phys. Rev. Lett. 68, 2981 (1992).
 [SS97] A. Suarez, V. Scarani, Phys. Lett. A 232, 9–14 (1997).
 [ZBGT01] H. Zbinden, J. Brendel, N. Gisin, W. Tittel, Phys. Rev. A 63, 022111 (2001).
@@ -243,8 +282,3 @@ Each was caught by a preregistered criterion, not by hindsight.
 [HJW93] L. P. Hughston, R. Jozsa, W. K. Wootters, Phys. Lett. A 183, 14 (1993).
 [SBG01] C. Simon, V. Bužek, N. Gisin, Phys. Rev. Lett. 87, 170405 (2001).
 [A04] S. Aaronson, quant-ph/0401062 (2004).
-
-## Missing ARCH-checks (для сверки архитектором, DOI при вёрстке)
-- CDP-родня по стиринг-аксиоматике (Chiribella–D'Ariano–Perinotti) — не в списке, кандидат для §6.
-- Bell 1964 (Physics 1, 195) — добавить в список формально (цитируется в §5 редукции).
-- финальная DOI-сверка всех канонических [S35,HJW93,SBG01,A04] при вёрстке.
