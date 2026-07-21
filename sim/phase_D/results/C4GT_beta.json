@@ -1,0 +1,34 @@
+{
+  "M3_by_order": {
+    "(0, 1, 2)": 4.0,
+    "(0, 2, 1)": 4.0,
+    "(1, 0, 2)": 4.0,
+    "(1, 2, 0)": 4.0,
+    "(2, 0, 1)": 4.0,
+    "(2, 1, 0)": 4.0
+  },
+  "M3_coin": 4.0,
+  "pairwise": [
+    0.00032,
+    -0.000239,
+    0.000755
+  ],
+  "marginals": [
+    0.5003775,
+    0.4998805,
+    0.50016
+  ],
+  "order_disc": 0.0,
+  "coin_invis": 0.0,
+  "checks": {
+    "M3_is_4": true,
+    "pairwise_zero": true,
+    "marginals_half": true,
+    "order_invisible": true,
+    "coin_invisible": true
+  },
+  "all_pass": true,
+  "sigma": 0.0007071067811865475,
+  "N": 2000000,
+  "note": "import of QM GHZ-law LEGAL: testing class-theorem, not law-internality"
+}
