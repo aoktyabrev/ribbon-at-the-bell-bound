@@ -49,3 +49,10 @@ theorem to N events; Mermin bounds from global disorder) prior 0.7; G-M
 mandatory J-test) prior 0.35; named wall ("bipartite-complete,
 tripartite-locked") prior 0.45. Scaffold `990cb99`; canonical inputs `12cb5d6`;
 prereg drafts (GM-F1 closed analytically) `812e32a`.
+
+## v2.0 — Cycles 1-3: theorems and walls (release)
+Git tag `v2.0`; GitHub Release with four PDF assets (paper 1 camera-ready
+main+SI; paper 3 draft v1; cycle-2 technical report). Version DOI:
+`10.5281/zenodo.21476426` (concept DOI `10.5281/zenodo.21383667`, all versions).
+Freezes the program state: two theorem-status results (C3-B selection; class-M
+precedence), the bridge statement, and the public record of false stops.

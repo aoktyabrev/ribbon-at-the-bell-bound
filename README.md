@@ -3,6 +3,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21383667.svg)](https://doi.org/10.5281/zenodo.21383667)
 *(concept DOI — all versions)*
 
+Latest release: [v2.0](../../releases/tag/v2.0) — version DOI 10.5281/zenodo.21476426.
+
 A three-cycle, preregistered research program on the boundary between classical
 mechanisms and quantum correlations. Cycle 1 mapped the walls (the
 amplitude–form–isotropy trilemma of a geometric hidden-connection model).
