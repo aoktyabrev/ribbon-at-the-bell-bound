@@ -34,7 +34,11 @@ mkdir -p "$OUT"
 # Остальная юникод-математика (ℤ θ σ × → ⟨⟩ π ₁ ₂ ⁴ √ ≈ ≤ − ∈ Σ ∝ ∞ Δ χ ² ° ê λ ρ α)
 # и кириллица шрифтом покрыты — xelatex берёт их как есть.
 preprocess() {
-  sed -e 's/ℓ/$\\ell$/g' -e 's/≪/$\\ll$/g' "$1"
+  # Глифы, которых нет в DejaVu Serif — заменяем на матрежим-эквиваленты (amssymb).
+  # ≪/≫ → текстовые <</>> (инъекция $...$ в плотных таблицах с ^/_ ломает
+  # парность мат-режима и утягивает кириллицу в lmmi10). ℓ — только в мат-контексте.
+  sed -e 's/ℓ/$\\ell$/g' -e 's/≪/<</g' -e 's/≫/>>/g' \
+      -e 's/✓/$\\checkmark$/g' -e 's/✗/$\\times$/g' "$1"
 }
 
 build() {
@@ -56,7 +60,7 @@ build() {
     --variable=linkcolor:black \
     --variable=urlcolor:blue \
     --variable=title:"$title" \
-    --variable=header-includes:'\usepackage[normalem]{ulem}\let\st\sout' \
+    --variable=header-includes:"\\usepackage{amssymb}\\usepackage[normalem]{ulem}\\let\\st\\sout ${EXTRA_HEADER:-}" \
     --pdf-engine=xelatex \
     --output="$HERE/$name.tex"
 
@@ -69,8 +73,26 @@ build() {
 $("$PANDOC" --version >/dev/null; pdfinfo "$OUT/$name.pdf" 2>/dev/null | awk '/^Pages/{print $2" стр."}' || echo "стр.: ?"))"
 }
 
-build "${MAIN_SRC:-DRAFT_$V.md}" main "The Ribbon at the Bell Bound"
-build "SI_$V.md"    si   "Supplementary — The Ribbon at the Bell Bound"
-
-echo
-echo "Готово: $OUT/main.pdf, $OUT/si.pdf"
+# Диспетч целей: v3 (по умолчанию) | FINAL | C3DRAFT | C2TR
+case "$V" in
+  FINAL)
+    # paper 1 финальная редакция → main.pdf + si.pdf (SI — единственный SI_v3)
+    build "FINAL_v1.md" main "The Ribbon at the Bell Bound"
+    build "SI_v3.md"    si   "Supplementary — The Ribbon at the Bell Bound"
+    echo; echo "Готово (FINAL): $OUT/main.pdf, $OUT/si.pdf" ;;
+  C3DRAFT)
+    # paper 3 драфт → c3_draft_v1.pdf, водяная честность в колонтитуле
+    HASH="$(cd "$ROOT" && git log -1 --format=%h -- paper/C3_paper_DRAFT_v1.md)"
+    DATE="$(cd "$ROOT" && git log -1 --format=%cs -- paper/C3_paper_DRAFT_v1.md)"
+    EXTRA_HEADER="\\usepackage{fancyhdr}\\pagestyle{fancy}\\fancyhf{}\\cfoot{DRAFT v1 — ${DATE} — commit ${HASH}}\\rfoot{\\thepage}\\lfoot{cycle-3 paper}" \
+      build "C3_paper_DRAFT_v1.md" c3_draft_v1 "Born from causality, Tsirelson from steering, and the amplitude seam (DRAFT v1)"
+    echo; echo "Готово (C3 draft): $OUT/c3_draft_v1.pdf" ;;
+  C2TR)
+    # синтез цикла 2 → технический отчёт
+    build "../sim/cycle2/C2_synthesis.md" c2_synthesis_TR "Technical Report — Cycle 2 Synthesis"
+    echo; echo "Готово (C2 TR): $OUT/c2_synthesis_TR.pdf" ;;
+  *)
+    build "${MAIN_SRC:-DRAFT_$V.md}" main "The Ribbon at the Bell Bound"
+    build "SI_$V.md"    si   "Supplementary — The Ribbon at the Bell Bound"
+    echo; echo "Готово: $OUT/main.pdf, $OUT/si.pdf" ;;
+esac

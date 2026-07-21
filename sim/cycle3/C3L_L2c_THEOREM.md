@@ -1,3 +1,19 @@
+<!-- English abstract; canonical text below in Russian (do not translate/edit canonical). -->
+> **English abstract — Class-M precedence theorem (L2c).**
+> Class M = outcome-definite sequential pair-resolution mechanisms (axioms
+> M1–M4′: local maps from preparation randomness λ, local setting, and the
+> ≺-preceding transcript; no retrocausation; settings independent of λ).
+> **Theorem:** in class M, CHSH S>2 is *achievable* iff M admits a shared,
+> space-like-transcending, statistically invisible precedence structure ≺.
+> Realizations: preferred foliation; per-run shared coin (frameless);
+> degenerate (single joint resolution event). Proof: global contrapositive
+> (all pairs unordered ⇒ global LHV ⇒ S≤2) + T2 invisibility (chain rule) +
+> β-battery (the coin reaches S=2√2 without signaling, order/coin invisible).
+> **Status:** theorem — assigned after a clean third adversarial pass + operator
+> authorization. Commits: `c8e1bf3` (theorem + β-coin), `2053106` (§2.3 retraction).
+> Kinship: Suarez–Scarani + Bell (core) + our delta = formalized class M,
+> T2-invisibility, executable β, before-before anchor [ZBGT01, SZGS02].
+
 # C3-L / L2c — ТЕОРЕМА КЛАССА M. Статус: ТЕОРЕМА (α письм.+ β батарея + γ авториз.).
 # Присвоено после ЧИСТОГО третьего адверсариального прохода (см. низ файла).
 #

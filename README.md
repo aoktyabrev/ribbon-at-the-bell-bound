@@ -58,10 +58,15 @@ unification but an exact division of labor."
 
 ## Papers
 
-- **Paper 1** (camera-ready): Zenodo DOI `10.5281/zenodo.21383667` — `paper/FINAL_v1.md`.
-- **Paper 2** (cycle-2 synthesis): in preparation — `sim/cycle2/C2_synthesis.md`.
-- **Paper 3** (cycle-3, RULE/CEILING/SEAM/FRAME): draft v1, in preparation —
-  `paper/C3_paper_DRAFT_v1.md`.
+- **Paper 1** (camera-ready): Zenodo DOI `10.5281/zenodo.21383667`. Source
+  `paper/FINAL_v1.md` · PDF [`paper/pdf/main.pdf`](paper/pdf/main.pdf),
+  supplement [`paper/pdf/si.pdf`](paper/pdf/si.pdf).
+- **Paper 2** (cycle-2 synthesis): in preparation. Source
+  `sim/cycle2/C2_synthesis.md` · Technical Report PDF
+  [`paper/pdf/c2_synthesis_TR.pdf`](paper/pdf/c2_synthesis_TR.pdf).
+- **Paper 3** (cycle-3, RULE/CEILING/SEAM/FRAME): draft v1, in preparation.
+  Source `paper/C3_paper_DRAFT_v1.md` · PDF
+  [`paper/pdf/c3_draft_v1.pdf`](paper/pdf/c3_draft_v1.pdf) (watermarked DRAFT v1).
 
 ## Methodology
 
@@ -92,10 +97,10 @@ unification but an exact division of labor."
 
 The operator and owner of the kill criteria is Artem. The "architect" and
 "executor" are AI roles (Claude) run in an adversarial scheme: the executor
-proposes analytics/batteries and runs a second/third adversarial pass against
-its own drafts; theorem status is granted only after a clean pass plus operator
-review. This is stated plainly — see Methodology; it is neither hidden nor
-foregrounded.
+runs adversarial passes against the architect's theorem drafts, while the
+architect reviews the executor's analytics and gates; theorem status is granted
+only after a clean pass plus operator review. This is stated plainly — see
+Methodology; it is neither hidden nor foregrounded.
 
 ## Repository map
 

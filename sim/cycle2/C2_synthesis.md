@@ -1,3 +1,17 @@
+<!-- English abstract; canonical text below in Russian (do not translate/edit canonical). -->
+> **English abstract — Cycle 2 synthesis: why the walls stand.**
+> Cycle 2 measured the mechanisms behind the cycle-1 walls. **Factorization**
+> (C2-F): relaxational readout factorizes — no-signaling F_s < 6.3·10⁻⁴ in the
+> tested envelope. **Rule-dial** (C2-R): no kink in the rule up to k_f×512.
+> **Form** (C2-ISO/TM): dynamical isotropization gives a cosine with S≤2
+> (third angle of the trilemma); the amplitude A(k_f) has no closed form.
+> **Quench-glass** (C2-J): basins defined, structural decorrelation of the ends
+> near the ground state (A≈0.21 while E_std collapses ~100×). Together these
+> establish that classical relaxational dynamics in this class cannot reach
+> quantum correlations — the wall met later from the reconstruction side in
+> cycle 3. **Status:** measured / reduction (technical report; paper 2 in prep).
+> Backbone table with per-result commits below.
+
 # Синтез цикла 2 (закрытие). Хребет-таблица + выводы архитектора.
 Выводы — секция ниже (релиз-сессия, мандат Артема). Счёт прогнозов AI-ролей —
 самооценка в п.6, сверить с журналом Артема.
