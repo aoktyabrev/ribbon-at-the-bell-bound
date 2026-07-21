@@ -95,23 +95,32 @@ def telegraph(nm, p):
     return abs(bobP(Z) - bobP(X))
 
 
-def synth_mu(chi, n=4_000_000):
-    """Синтетический ансамбль n~(1+χ n_z) на S² — аналитика матч. формы."""
-    rng = np.random.default_rng(1); mx = 1 + abs(chi); out = []; need = n
+def synth_ext(chi1, chi3, n=4_000_000):
+    """Синтетич. ансамбль n~(1+χ₁n_z+χ₃n_z³) на S² (деформ. класс addendum3).
+    Позитивность проверяется; при min<0 плотность клипуется (нота в отчёте)."""
+    rng = np.random.default_rng(1)
+    cc = np.linspace(-1, 1, 2001); dens = np.maximum(1 + chi1 * cc + chi3 * cc ** 3, 0.0)
+    posmin = float((1 + chi1 * cc + chi3 * cc ** 3).min())
+    mx = dens.max(); out = []; need = n
     while need > 0:
         v = rng.normal(size=(need * 2, 3)); v /= np.linalg.norm(v, axis=1, keepdims=True)
-        acc = rng.random(need * 2) < (1 + chi * v[:, 2]) / mx
+        d = np.maximum(1 + chi1 * v[:, 2] + chi3 * v[:, 2] ** 3, 0.0)
+        acc = rng.random(need * 2) < d / mx
         out.append(v[acc]); need -= int(acc.sum())
-    return np.concatenate(out)[:n]
+    return np.concatenate(out)[:n], posmin
 
 
-def fit_chi(nm):
-    c = nm[:, 2]; chi = 3 * float(c.mean())
+def fit_ext(nm):
+    """Фит расширенным классом (b): y=2p−1 = χ₁c + χ₃c³, взвеш. МНК на [c,c³]. χ²/dof."""
+    c = nm[:, 2]
     hist, e = np.histogram(c, 20, (-1, 1), density=True); ctr = 0.5 * (e[:-1] + e[1:])
-    y = 2 * hist - 1; var = 4 * np.maximum(hist, 1e-3) / (len(c) * 0.1)
-    cf = float(np.sum(ctr * y / var) / (np.sum(ctr * ctr / var) + 1e-12))
-    chi2 = float(np.sum((y - cf * ctr) ** 2 / var) / 19)
-    return chi, cf, chi2
+    y = 2 * hist - 1.0; W = 1.0 / (4 * np.maximum(hist, 1e-3) / (len(c) * 0.1))
+    Xb = np.stack([ctr, ctr ** 3], 1)
+    A = (Xb.T * W) @ Xb; bvec = (Xb.T * W) @ y
+    coef = np.linalg.solve(A + 1e-9 * np.eye(2), bvec)
+    resid = y - Xb @ coef
+    chi2 = float(np.sum(resid ** 2 * W) / (20 - 2))
+    return float(coef[0]), float(coef[1]), chi2
 
 
 def get_source(h):
@@ -126,8 +135,8 @@ def main():
     print(f"[{'SMOKE' if SMOKE else 'FULL'}] N={N} BATCH={BATCH} T_prep={T_PREP} h={H} GPU={jax.devices()}")
     prep, xp, up = get_source(H)
     # --- калибровка χ_frozen(rate): БЫСТРЫЙ квенч С ПОЛЕМ ---
-    print("\n M1-калибровка χ_frozen(rate) [квенч T_prep→0 с полем h]:")
-    print(f"  {'rate':>6} {'χ_frozen':>10} {'фит χ':>8} {'χ²/dof':>8} {'форма':>6}")
+    print("\n M1-калибровка χ_frozen(rate) [квенч с полем]; фит РАСШИРЕННЫМ классом (b) 1+χ₁c+χ₃c³:")
+    print(f"  {'rate':>6} {'χ_mom':>8} {'χ₁':>8} {'χ₃':>8} {'χ²/dof':>8} {'форма(b)':>9}")
     cal = {}; chosen = None
     for r in RATES:
         if r == 0:
@@ -135,21 +144,29 @@ def main():
         else:
             sf = jnp.linspace(T_PREP, 0.0, r)
             _, uf = relaxer(H)(jr.PRNGKey(9), xp, up, prep["X0"], prep["XL"], sf)
-        nm = nmid_vec(uf); chi, cf, chi2 = fit_chi(nm)
-        ok = chi2 < 2 and abs(chi) > 3 * SIG
-        cal[str(r)] = dict(chi_frozen=chi, chi_fit=cf, chi2dof=chi2, form_ok=bool(chi2 < 2), nm=nm)
-        print(f"  {r:>6} {chi:>10.4f} {cf:>8.4f} {chi2:>8.3f} {str(chi2<2):>6}")
+        nm = nmid_vec(uf); chi_mom = 3 * float(nm[:, 2].mean()); chi1, chi3, chi2 = fit_ext(nm)
+        ok = chi2 < 2 and abs(chi_mom) > 3 * SIG
+        cal[str(r)] = dict(chi_mom=chi_mom, chi1=chi1, chi3=chi3, chi2dof=chi2,
+                           form_ok=bool(chi2 < 2), nm=nm)
+        print(f"  {r:>6} {chi_mom:>8.4f} {chi1:>8.4f} {chi3:>8.4f} {chi2:>8.3f} {str(chi2<2):>9}")
         if chosen is None and ok:
             chosen = r
+    # выбор ансамбля: (b) самая быстрая с формой; иначе (b′) form-free = самая быстрая с D>0
+    form_free = False
     if chosen is None:
-        print("  KILL протокола: ни одна ступень не держит χ_frozen>3σ с валидной формой ⇒")
-        print("    СТЕНА «биас источника не переживает заморозку». Фронт A стопорится.")
+        for r in RATES:
+            if abs(cal[str(r)]["chi_mom"]) > 3 * SIG:
+                chosen = r; form_free = True; break
+    if chosen is None:
+        print("  СТЕНА (c): D_mech<3σ на всех ступенях ⇒ источник не поляризуется. Фронт A стоп.")
         json.dump(dict(calibration={k: {kk: vv for kk, vv in v.items() if kk != 'nm'}
-                                     for k, v in cal.items()}, wall=True),
+                                     for k, v in cal.items()}, wall_c=True),
                   open(os.path.join(RES, f"C3Bmech_M1M2{'_smoke' if SMOKE else ''}.json"), "w"), indent=2)
         return
-    print(f"  ВЫБРАНА ступень (самая быстрая, форма ok): rate={chosen}")
-    nm = cal[str(chosen)]["nm"]; chi_f = cal[str(chosen)]["chi_frozen"]
+    mode = "(b′) form-free" if form_free else "(b) расширенный класс"
+    print(f"  ВЫБРАНА ступень rate={chosen}, режим клейма: {mode}")
+    nm = cal[str(chosen)]["nm"]; chi1, chi3 = cal[str(chosen)]["chi1"], cal[str(chosen)]["chi3"]
+    chi_f = cal[str(chosen)]["chi_mom"]
 
     # --- контроль чистоты h=0 через тот же fast-freeze ---
     _, xp0, up0 = get_source(0.0)
@@ -159,14 +176,16 @@ def main():
         _, uf0 = relaxer(0.0)(jr.PRNGKey(9), xp0, up0, prep["X0"], prep["XL"], jnp.linspace(T_PREP, 0.0, chosen))
     nm0 = nmid_vec(uf0)
 
-    # --- M1: D_mech vs аналитика (синтетич. μ_χ при χ_f) ---
+    # --- M1: D_mech (3-й И 5-й, стандарт A3) vs аналитика на ФИТ. мере (b) ---
     d3, d5, dmean = D_mech(nm); d3_0, d5_0, dmean0 = D_mech(nm0)
-    syn = synth_mu(chi_f); d3_an, d5_an, _ = D_mech(syn)
-    print("\n M1 — стиринг D_mech (механич.) vs аналитика (синтетич. 1+χ_f·c):")
-    print(f"  χ_frozen={chi_f:.4f}  D_mech(3)={d3:.5f} (аналит {d3_an:.5f})  D5={d5:.5f}  |Δmean|={dmean:.5f}")
-    print(f"  КОНТРОЛЬ h=0: D_mech(3)={d3_0:.5f} (<2σ={2*SIG:.4f}: {d3_0<2*SIG})  |Δmean|={dmean0:.5f}")
-    m1_pass = (d3 > 5 * SIG) and (abs(d3 - d3_an) < max(3 * SIG, 0.15 * d3_an)) and (d3_0 < 2 * SIG)
-    print(f"  M1 ВЕРДИКТ: {'ПРОХОД (D_mech>0, матч аналитике, h=0 чист)' if m1_pass else 'разбор'}")
+    syn, posmin = synth_ext(chi1, chi3); d3_an, d5_an, _ = D_mech(syn)
+    print(f"\n M1 — стиринг D_mech vs аналитика (синт. 1+{chi1:.3f}c+{chi3:.3f}c³; min-плотн={posmin:.3f}):")
+    print(f"  D3_мех={d3:.5f} (аналит {d3_an:.5f})  D5_мех={d5:.5f} (аналит {d5_an:.5f})  |Δmean|={dmean:.5f}")
+    print(f"  КОНТРОЛЬ h=0: D3={d3_0:.5f} D5={d5_0:.5f} (<2σ={2*SIG:.4f}: {d3_0<2*SIG})  |Δmean|={dmean0:.5f}")
+    match3 = abs(d3 - d3_an) < max(3 * SIG, 0.15 * abs(d3_an))
+    match5 = abs(d5 - d5_an) < max(3 * SIG, 0.20 * abs(d5_an) + 1e-9)
+    m1_pass = (d3 > 5 * SIG) and match3 and match5 and (d3_0 < 2 * SIG)
+    print(f"  матч 3-й={match3} 5-й={match5}; M1 ВЕРДИКТ: {'ПРОХОД (D>0, матч 3+5, h=0 чист)' if m1_pass else 'разбор'}")
 
     # --- M2: телеграф-скан Δ(p) на механич. ансамбле ---
     print("\n M2 — телеграф Δ(p) на механич. условных ансамблях (арбитр = аналитика):")
@@ -186,14 +205,23 @@ def main():
     print(f"  нуль-множ. числ={zero_num} аналит={zero_an}; max|ан−чис|={max_mism:.5f} (2σ={2*SIG:.4f})")
     print(f"  M2 ВЕРДИКТ: {'ПРОХОД (аналит={2}, согласие <2σ)' if m2_pass else 'разбор'}")
 
+    full_pass = m1_pass and m2_pass
+    # вердикт клейм-строки (addendum3): вставлена при проходе full; иначе (b′)/стена
+    if full_pass and not form_free:
+        claim = "ВСТАВЛЕНА клейм-строка (b) — премиса отбора на упругой механике ЦЕЛИКОМ"
+    elif full_pass and form_free:
+        claim = "(b′) form-free: премиса = полярная мера с D>0 (форма не фитится, Йенсен-на-эмпирике)"
+    else:
+        claim = "НЕ вставлена: разбор (M1/M2 не прошли на full)"
     tag = "_smoke" if SMOKE else ""
     json.dump(dict(calibration={k: {kk: vv for kk, vv in v.items() if kk != 'nm'} for k, v in cal.items()},
-                   chosen_rate=chosen, chi_frozen=chi_f,
-                   M1=dict(d3=d3, d5=d5, dmean=dmean, d3_analytic=d3_an, d3_h0=d3_0, dmean_h0=dmean0, pass_=bool(m1_pass)),
-                   M2=dict(scan=scan, zero_set=zero, pass_=bool(m2_pass)),
+                   chosen_rate=chosen, mode=mode, chi_frozen=chi_f, chi1=chi1, chi3=chi3, posmin=posmin,
+                   M1=dict(d3=d3, d5=d5, dmean=dmean, d3_analytic=d3_an, d5_analytic=d5_an,
+                           d3_h0=d3_0, d5_h0=d5_0, dmean_h0=dmean0, pass_=bool(m1_pass)),
+                   M2=dict(scan=scan, zero_num=zero_num, zero_analytic=zero_an, max_mismatch=max_mism, pass_=bool(m2_pass)),
+                   full_pass=bool(full_pass), form_free=bool(form_free), claim_verdict=claim,
                    sigma=SIG, N=N, batch=BATCH), open(os.path.join(RES, f"C3Bmech_M1M2{tag}.json"), "w"), indent=2)
-    print(f"\n === ФРОНТ A: M1 {'✓' if m1_pass else '✗'} M2 {'✓' if m2_pass else '✗'} "
-          f"⇒ {'премиса отбора на упругой механике ЦЕЛИКОМ' if (m1_pass and m2_pass) else 'не замкнуто'} ===")
+    print(f"\n === ФРОНТ A: M1 {'✓' if m1_pass else '✗'} M2 {'✓' if m2_pass else '✗'} ({mode}) ⇒ {claim} ===")
     print(f"  → {RES}/C3Bmech_M1M2{tag}.json")
 
 
