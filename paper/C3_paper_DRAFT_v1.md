@@ -100,8 +100,9 @@ E(a,b)=E_λ[(λ·a)(λ·b)]=aᵀ(⅓I)b = **cosθ/3** (χ-corrections odd ⇒ va
 S=2√2/3≈0.943 — the isotropic-cosine ceiling of the local layer. The exact
 convergence is analytic (lever rule, exactly 1/3) and frame-local (E(0)=0.333;
 C3L_L2.json, 49e8c1b); dynamical isotropization lands NEAR the point:
-ρ_cos=0.311±0.010 (cosine-fit, the form-matched estimator), ρ_model-free=0.336
-(C2ISO_analysis.json, a043f8f) — bracketing 1/3 within ~2σ. Estimators named per
+ρ_cos=0.311±0.010 (cosine-fit, the form-matched estimator; raw
+C2ISO_analysis.json: cells/kf4.0/rho_cos = 0.3113, a043f8f), ρ_model-free=0.336
+(same file) — bracketing 1/3 within ~2σ. Estimators named per
 program rule. Anchored analytically and reached by two mechanisms, with ISO-DYN
 bracketing it ⇒ a structural boundary, the lower bank of the seam.
 
@@ -177,7 +178,7 @@ analysis. Estimator named in every prediction; metric = the model observable.
    [PR94]; the claim was narrowed to steering-endowed layers (324f097; §8).
 5. **Frame over-claim** (abstract/§5/§8/§9 v1): "preferred frame required" —
    retracted by the class-M theorem's T3′ and the β-coin demonstration; revised
-   in v2, history retained.
+   in v2, history retained. §9 CEILING wording aligned in v2.
 Each was caught by a preregistered criterion, not by hindsight.
 
 **Reproduction.** The full numpy battery suite of cycle 3 was independently
@@ -223,9 +224,9 @@ in a separate environment.
 > uniquely; the derivation is internal, executable, and robust to deformations
 > of the source measure. (2) CEILING: mechanisms that resolve outcomes locally
 > (hidden measure plus local response) are capped by Bell's theorem at S=2,
-> with the 1/3-cosine point as their isotropic-cosine ceiling — a landmark our
-> program reached independently from simulation (relaxational dynamics), from
-> analysis (the lever rule), and from frame-local resolution. (3) SEAM: the
+> with the 1/3-cosine point as their isotropic-cosine ceiling — a landmark
+> anchored analytically (the lever rule), reached by frame-local resolution, and
+> bracketed by relaxational dynamics (estimator-dependent, §4). (3) SEAM: the
 > gap between that ceiling and the quantum value is not crossed by decorating
 > local mechanisms — our registered attempts fail on a trilemma of horns (no
 > steering, no amplitude, or superluminal telegraph; kin to finite-speed

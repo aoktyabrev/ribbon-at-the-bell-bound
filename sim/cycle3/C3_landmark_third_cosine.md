@@ -20,9 +20,10 @@ E(0)=0.333.
    **49e8c1b** (C3L_L2.json).
 3. **ISO-DYN (динамич. изотропизация, цикл 2) — БРЕКЕТИТ, не точно.** dynamical
    isotropization lands NEAR the point: ρ_cos=0.311±0.010 (cosine-fit, the
-   form-matched estimator), ρ_model-free=0.336 (C2ISO_analysis.json, **a043f8f**)
-   — bracketing 1/3 within ~2σ. Эстиматоры названы (правило программы). Сырьё
-   3fd3e3d, prereg 77f734c.
+   form-matched estimator; raw **C2ISO_analysis.json: cells/kf4.0/rho_cos =
+   0.3113**, **a043f8f**), ρ_model-free=0.336 (same file, cells/kf4.0/H_I0/
+   model_free) — bracketing 1/3 within ~2σ. Эстиматоры названы (правило
+   программы). Сырьё 3fd3e3d, prereg 77f734c.
 
 ## Значение для программы
 Anchored analytically and reached by two mechanisms, with ISO-DYN bracketing it
