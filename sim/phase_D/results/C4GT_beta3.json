@@ -1,0 +1,13 @@
+{
+  "M4_im": 4.0,
+  "M4_re": -4.0,
+  "M4_im_order21": 4.0,
+  "lhv_bound": 4,
+  "beats_bound": false,
+  "ns_worst": 0.0,
+  "order_disc": 0.0,
+  "sigma": 0.0007071067811865475,
+  "N": 2000000,
+  "parties": 4,
+  "note": "candidate ties LHV bound (deterministic tail is classical, no \u221a2); \u0414\u042b\u0420\u0410-N2 stays open; theorem(N=3 value) intact"
+}
