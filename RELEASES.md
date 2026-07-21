@@ -50,6 +50,16 @@ mandatory J-test) prior 0.35; named wall ("bipartite-complete,
 tripartite-locked") prior 0.45. Scaffold `990cb99`; canonical inputs `12cb5d6`;
 prereg drafts (GM-F1 closed analytically) `812e32a`.
 
+## Cycle-4 in progress — tripartite mirror
+Tripartite mirror complete: the seam (signature at the classical bound, GM-F2,
+predicted 0.45) and its crossing (full GHZ statistics — all marginals ½, zero
+pairwise, maximal triple, M₃=4 — from parity-in-geometry plus ONE ordered pair,
+GM-F2j branch (i)). Full GHZ statistics achieved by a three-party construction
+with one ordered pair; general-N is the subject of G-T2 (depth ladder). Class-M
+precedence theorem holds for N=3 (Mermin value); ДЫРА-N2 (general-N sufficiency)
+reframed as a depth ladder — pencil shows N=4 beats its bound at k=2 (M₄=8=quantum).
+Commits: GM-F2 `99205c3`, GM-F2j `ed8e950`, G-T theorem(N=3) `840602b`, G-T2 pencil `e814867`.
+
 ## v2.0 — Cycles 1-3: theorems and walls (release)
 Git tag `v2.0`; GitHub Release with four PDF assets (paper 1 camera-ready
 main+SI; paper 3 draft v1; cycle-2 technical report). Version DOI:

@@ -1,6 +1,15 @@
-# Цикл 4 — «Многочастичность и геометрия связи». Статус: этап 0 (scaffold).
-# БАТАРЕЙ НЕТ до prereg'ов (мандат прежний). Наследует цикл 3 (см.
-# ../cycle3/: L2c-ТЕОРЕМА класса M, C3-S редукция шва, C3-B-mech форма-KILL).
+# Цикл 4 — «Многочастичность и геометрия связи». Статус: флагман в работе.
+# Наследует цикл 3 (../cycle3/: L2c-ТЕОРЕМА класса M, C3-S редукция шва, C3-B-mech).
+
+## Результат (трипартитное зеркало)
+**Tripartite mirror complete: the seam (signature at the classical bound, GM-F2,
+predicted 0.45) and its crossing (full GHZ statistics — all marginals ½, zero
+pairwise, maximal triple, M₃=4 — from parity-in-geometry plus ONE ordered pair,
+GM-F2j branch (i)).** Оговорка: полная GHZ-статистика достигнута ТРЁХчастичной
+конструкцией с парой; general-N — предмет G-T2 (лестница глубины). Сырьё:
+GM-F2 `99205c3` (стена «трипартитный шов»), GM-F2j `ed8e950` (развилка (i)).
+G-T: theorem(N=3 value) `840602b`; ДЫРА-N2 → G-T2 лестница (N=4 бьётся при k=2,
+карандаш `e814867`).
 
 ## Флагман: C4-GHZ (два трека)
 ### G-T (карандаш/теория) — обобщение теоремы класса M на N событий
