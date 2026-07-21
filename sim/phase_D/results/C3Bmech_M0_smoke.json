@@ -1,0 +1,109 @@
+{
+  "anneal": {
+    "0.0": {
+      "chi": -0.010369347408413887,
+      "sigma": 0.10496402531862259,
+      "mean_c": -0.0034564491361379623,
+      "rej_per_step": 0.0,
+      "above_3sig": false,
+      "stable": true
+    },
+    "0.25": {
+      "chi": 2.1071181893348694,
+      "sigma": 0.057297131046652794,
+      "mean_c": 0.7023727297782898,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    },
+    "0.5": {
+      "chi": 2.8110596537590027,
+      "sigma": 0.015535321086645126,
+      "mean_c": 0.9370198845863342,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    },
+    "1.0": {
+      "chi": 2.992671847343445,
+      "sigma": 0.0006304172129603103,
+      "mean_c": 0.9975572824478149,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    },
+    "2.0": {
+      "chi": 2.999860167503357,
+      "sigma": 1.007647256301425e-05,
+      "mean_c": 0.9999533891677856,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    }
+  },
+  "quench": {
+    "0.0": {
+      "chi": 2.999993920326233,
+      "sigma": 5.040557198299211e-07,
+      "mean_c": 0.9999979734420776,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    },
+    "0.25": {
+      "chi": 2.999998390674591,
+      "sigma": 1.4456251662409159e-07,
+      "mean_c": 0.999999463558197,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    },
+    "0.5": {
+      "chi": 2.9999996423721313,
+      "sigma": 5.890569099165077e-08,
+      "mean_c": 0.9999998807907104,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    },
+    "1.0": {
+      "chi": 3.0,
+      "sigma": 1.8174218130440067e-08,
+      "mean_c": 1.0,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    },
+    "2.0": {
+      "chi": 3.0,
+      "sigma": 2.9634501519382184e-09,
+      "mean_c": 1.0,
+      "rej_per_step": 0.0,
+      "above_3sig": true,
+      "stable": true
+    }
+  },
+  "params": {
+    "k_s": 20.0,
+    "k_b": 2.0,
+    "k_f": 1.0,
+    "ell": 1.0
+  },
+  "N": 24,
+  "batch": 256,
+  "h_grid": [
+    0.0,
+    0.25,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "wall_M0": false,
+  "stable_h": [
+    0.0,
+    0.25,
+    0.5,
+    1.0,
+    2.0
+  ]
+}
