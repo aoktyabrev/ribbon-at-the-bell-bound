@@ -56,31 +56,36 @@ midpoint-аффинности). Возьмём A с двухточечным {a,
 f(c)=(1+c)/2 = f_{p=2}. ⇒ no-signaling на внутренних ансамблях с D>0
 выделяет p=2 ЕДИНСТВЕННО (лемма §1 + нечётность + нормировка).
 
-**2.2 РАССЛОЕНИЕ (per C3L_addendum1 §1; сырьё C3L_L3.json 9567ddb).**
-Теорема расслаивается на два независимых слоя:
-- **Слой ОТБОРА ПРАВИЛА (слоенезависим, УСТАНОВЛЕН):** no-signaling + D>0
-  ⇒ p=2 единственно (§2.1 + лемма §1 + батарея ячейка1: Δ(p)>0 ∀p≠2,
-  Δ(4)=0.042, Δ(6)=0.105, Δ(10)=0.217, Δ(∞)=0.375, монотонно, аналит↔числ
-  <2σ). Это НЕ зависит от механизма разрешения.
-- **Слой ЗНАЧЕНИЯ S(p=2) (свойство МЕХАНИЗМА разрешения, не отбора):**
-  · shared-λ / внутренний стиринг ⇒ S≤2 (батарея ячейка2: S_внутр(2)=√2
-    при χ=0.5; локально, суб-единичное усл. среднее);
-  · совместный хордовый закон ⇒ S(2)=2√2 (L2 (i); Bell-нарушающий).
-  Значение амплитуды — НЕ то, что фиксирует no-signaling.
+**2.2–2.3 ФИНАЛЬНЫЙ ТЕКСТ СЕКЦИИ (архитектор, дословно; в статью 3).**
+Сырьё чисел: C3L_L3.json (9567ddb), C3L_L2.json (49e8c1b).
 
-**2.3 Следствие (флагман, ПЕРЕформулирован).** «Tsirelson from no-signaling»
-= **верхний обрез неаффинного хвоста в СОВМЕСТНОМ слое**: no-signaling
-исключает весь неаффинный хвост (лемма §1) ⇒ p≠2 исключено ⇒ сектор
-S∈(2√2, 4] (сверх-цирельсоновский, вплоть до PR при p→∞) ЗАПРЕЩЁН.
-No-signaling ставит ПОТОЛОК (2√2 в совместном слое), но АМПЛИТУДУ до него
-не поднимает — это работа механизма разрешения. **Без information causality**
-[ARCH: контраст Pawłowski et al., Nature 461, 1101 (2009); сверю сам].
-- **АМПЛИТУДНЫЙ ШОВ (центральный долг):** построить внутреннюю модель с
-  D>0 ∧ S(2)=2√2 = замыкание реконструкции; доказать невозможность =
-  фундаментальность шва между shared-λ (≤2) и совместным (2√2). В Outlook.
-- Оговорки: клейм в классе конструкции; χ феноменологичен (долг C3-B-mech).
-- Формулировка: «no-signaling forbids the super-Tsirelson tail in the joint
-  layer; the Tsirelson value itself is set by the resolution mechanism».
+> The no-signaling argument stratifies into two layers, and stating
+> them separately is what makes the claim exact. The RULE-SELECTION
+> layer is mechanism-independent: whenever the source measure
+> generates steering diversity (D(χ)>0), any non-affine odd readout
+> produces a strictly positive Jensen gap and hence a telegraph;
+> affinity, oddness and normalization intersect in the single rule
+> f₂=(1+c)/2, so no-signaling selects p=2 in every layer where
+> steering exists. The VALUE layer is mechanism-dependent: what S the
+> selected rule attains is a property of how the pair is resolved.
+> Shared-λ (factorizable) resolution is Bell-bounded — our internal
+> family sits at S=√2 at χ=0.5, and its ceiling is the 1/3-cosine
+> point E=cosθ/3, the maximal isotropic-cosine statistics available
+> to local linear readout of a hidden vector. Joint resolution of the
+> chord law attains S=2√2 exactly, and the same Jensen argument cuts
+> the non-affine tail there too: the super-quantum range S∈(2√2,4],
+> carried by p>2, is forbidden by no-signaling alone — the Tsirelson
+> bound emerges as the upper cut of the non-affine tail in the joint
+> layer, with no appeal to information causality. What no-signaling
+> does not do is lift amplitude: it selects the rule in both layers
+> but leaves the local layer at the 1/3-cosine point and the quantum
+> value to the joint layer. The gap between them — the AMPLITUDE
+> SEAM — is, we find, the same wall met by the classical relaxation
+> dynamics of the preceding cycles, now seen from the reconstruction
+> side. Whether an internal construction can generate its own
+> steering diversity AND attain S=2√2 — closing the seam — or whether
+> the seam is fundamental to outcome-definite mechanisms, is the
+> program's registered central open problem (campaign C3-S).
 
 ## 3. Батарея-дополнение L3 — ВЫПОЛНЕНА (prereg 2d78c51, сырьё 9567ddb)
 - Ячейка1 скан Δ(p) p∈{4,6,10,∞}: ПОДТВЕРЖДЁН — Δ>0 ∀p, монотонно,
