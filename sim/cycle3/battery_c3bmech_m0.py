@@ -25,8 +25,8 @@ RES = os.path.join(os.path.dirname(os.path.dirname(__file__)), "phase_D", "resul
 PARAMS = dict(k_s=20.0, k_b=2.0, k_f=1.0, ell=1.0)     # без k_c (нет зажимов в prep)
 N = 24 if SMOKE else 32
 BATCH = 256 if SMOKE else 2000
-H_GRID = [0.0, 0.25, 0.5, 1.0, 2.0]
-LR, T_HOT = 5e-3, 2.0
+H_GRID = [0.0, 0.02, 0.05, 0.1, 0.2]     # линейный режим (форма 1+χn_z ⇒ χ≤1)
+LR, T_HOT, T_PREP = 5e-3, 2.0, 0.5      # addendum1 A-T1: T_prep=0.5
 Z = jnp.array([0.0, 0.0, 1.0])
 axis_all = jax.vmap(M.end_axis)  # (N,4)->(N,3)
 
@@ -74,14 +74,30 @@ def build_relaxer(h):
     return run
 
 
-def sched(regime):
-    """отжиг: T_hot→0 линейно + доводка; квенч: сразу T=0 (быстрый спуск)."""
-    steps = (300 if SMOKE else 1500)
-    if regime == "anneal":
-        slow = 16 if not SMOKE else 4
-        ramp = steps * slow // 4
-        return jnp.concatenate([jnp.linspace(T_HOT, 0.0, ramp), jnp.zeros(ramp // 4)])
-    return jnp.zeros(steps)   # квенч: прямой T=0 спуск
+def sched_plateau():
+    """отжиг T_hot→T_prep + ПЛАТО при T_prep (addendum1 A-T1 шаг 1)."""
+    ramp = (400 if SMOKE else 3000)
+    plat = (300 if SMOKE else 2000)
+    return jnp.concatenate([jnp.linspace(T_HOT, T_PREP, ramp), jnp.full(plat, T_PREP)]), plat
+
+
+def sched_freeze():
+    """квенч T_prep→0 БЕЗ поля (addendum1 A-T1 шаг 2)."""
+    return jnp.linspace(T_PREP, 0.0, (300 if SMOKE else 2000))
+
+
+def fit_form(c):
+    """Фит плотности ∝ 1+χ·c на гистограмме cosθ=n_z; χ²/dof. Возврат (χ_fit, chi2dof)."""
+    bins = 20; w = 2.0 / bins
+    hist, edges = np.histogram(c, bins=bins, range=(-1, 1), density=True)
+    ctr = 0.5 * (edges[:-1] + edges[1:])
+    # плотность на S² в cosθ равномерна ⇒ p(c)=(1+χc)/2; взвеш. МНК: y=2p−1=χc.
+    y = 2 * hist - 1.0
+    var_p = np.maximum(hist, 1e-3) / (len(c) * w)      # var плотностного бина
+    var_y = 4 * var_p
+    chi = float(np.sum(ctr * y / var_y) / (np.sum(ctr * ctr / var_y) + 1e-12))
+    chi2 = float(np.sum((y - chi * ctr) ** 2 / var_y) / max(bins - 1, 1))
+    return chi, chi2
 
 
 def n_mid_z(u):
@@ -93,38 +109,52 @@ def n_mid_z(u):
     return mid[:, 2]
 
 
-def run_regime(regime):
+def run_M0():
     prep = M.prep_dynamics(N, False, BATCH, jr.PRNGKey(20260721))
-    T_sched = sched(regime)
+    sp, plat = sched_plateau(); sf = sched_freeze()
     rows = {}
-    print(f"\n  [{regime}] steps={T_sched.shape[0]}  h-сетка {H_GRID}")
-    print(f"  {'h':>6} {'χ=3⟨c⟩':>10} {'σ_χ':>9} {'⟨c⟩':>9} {'rej/step':>10} {'>3σ':>5}")
+    print(f"\n  Протокол: отжиг T_hot→T_prep={T_PREP} + плато({plat}) [поле h] → квенч→0 [поле off]")
+    print(f"  {'h':>6} {'χ_plat=3⟨c⟩':>12} {'σ':>8} {'фит χ':>8} {'χ²/dof':>8} "
+          f"{'χ_froz':>8} {'froz/plat':>9} {'rej/step':>10} {'эрго':>6}")
     for h in H_GRID:
-        run = build_relaxer(h)
-        x, u, rej = run(jr.PRNGKey(7), prep["x0"], prep["u0"], prep["X0"], prep["XL"], T_sched)
+        run_field = build_relaxer(h)
+        x, u, rej = run_field(jr.PRNGKey(7), prep["x0"], prep["u0"], prep["X0"], prep["XL"], sp)
         c = np.asarray(n_mid_z(u))
-        chi = 3.0 * float(c.mean()); sig = 3.0 * float(c.std()) / np.sqrt(len(c))
-        rejps = float(np.asarray(rej).sum()) / (BATCH * T_sched.shape[0])
-        ok = abs(chi) > 3 * sig
-        rows[f"{h}"] = dict(chi=chi, sigma=sig, mean_c=float(c.mean()),
-                            rej_per_step=rejps, above_3sig=bool(ok), stable=bool(rejps < 1e-3))
-        print(f"  {h:>6} {chi:>10.4f} {sig:>9.4f} {c.mean():>9.4f} {rejps:>10.2e} {str(ok):>5}")
+        chi_p = 3.0 * float(c.mean()); sig = 3.0 * float(c.std()) / np.sqrt(len(c))
+        chi_fit, chi2dof = fit_form(c)
+        rejps = float(np.asarray(rej).sum()) / (BATCH * sp.shape[0])
+        # эргодичность: дрейф ⟨c⟩ за последние 20% плато — оценка через доп. короткий прогон
+        x2, u2, _ = build_relaxer(h)(jr.PRNGKey(8), x, u, prep["X0"], prep["XL"],
+                                     jnp.full(max(1, plat // 5), T_PREP))
+        drift = abs(3.0 * float(np.asarray(n_mid_z(u2)).mean()) - chi_p)
+        ergo = drift < sig
+        # заморозка: поле off, квенч T_prep→0 от плато-конфига
+        xf, uf, _ = build_relaxer(0.0)(jr.PRNGKey(9), x, u, prep["X0"], prep["XL"], sf)
+        chi_f = 3.0 * float(np.asarray(n_mid_z(uf)).mean())
+        ratio = chi_f / chi_p if abs(chi_p) > 3 * sig else float("nan")
+        rows[f"{h}"] = dict(chi_plateau=chi_p, sigma=sig, chi_fit=chi_fit, chi2dof=chi2dof,
+                            chi_frozen=chi_f, frozen_over_plateau=ratio, rej_per_step=rejps,
+                            ergodic=bool(ergo), stable=bool(rejps < 1e-3), form_ok=bool(chi2dof < 2))
+        print(f"  {h:>6} {chi_p:>12.4f} {sig:>8.4f} {chi_fit:>8.4f} {chi2dof:>8.3f} "
+              f"{chi_f:>8.4f} {ratio:>9.3f} {rejps:>10.2e} {str(ergo):>6}")
     return rows
 
 
 def main():
-    print(f"[{'SMOKE' if SMOKE else 'FULL'}] N={N}, BATCH={BATCH}, GPU={jax.devices()}")
-    anneal = run_regime("anneal"); quench = run_regime("quench")
-    # KILL: χ<3σ ∀h (в отжиге — первичный режим)
-    wall = all(not v["above_3sig"] for v in anneal.values())
-    # h_max по гейту стабильности (A3): наибольший h с rej/step<1e-3
-    stable_h = [float(h) for h, v in anneal.items() if v["stable"]]
+    print(f"[{'SMOKE' if SMOKE else 'FULL'}] N={N}, BATCH={BATCH}, T_prep={T_PREP}, GPU={jax.devices()}")
+    rows = run_M0()
+    # h_max (A-T3): наибольший h с rej/step<1e-3 И form_ok на плато
+    stable_h = [float(h) for h, v in rows.items() if v["stable"] and v["form_ok"]]
+    # технический KILL (A-T4): форма 1+χn_z не фитится где-либо в валидном диапазоне
+    form_fail = [h for h, v in rows.items() if float(h) > 0 and not v["form_ok"] and v["stable"]]
     tag = "_smoke" if SMOKE else ""
-    json.dump(dict(anneal=anneal, quench=quench, params=PARAMS, N=N, batch=BATCH,
-                   h_grid=H_GRID, wall_M0=wall, stable_h=stable_h),
+    json.dump(dict(rows=rows, params=PARAMS, N=N, batch=BATCH, T_prep=T_PREP,
+                   h_grid=H_GRID, h_max=(max(stable_h) if stable_h else None),
+                   form_fail_h=form_fail),
               open(os.path.join(RES, f"C3Bmech_M0{tag}.json"), "w"), indent=2)
-    print(f"\n  h_max (rej/step<1e-3, отжиг): {max(stable_h) if stable_h else 'нет'}")
-    print(f"  KILL M0 (χ<3σ ∀h, отжиг): {'СТЕНА — источник НЕ поляризуется' if wall else 'нет — источник поляризуется'}")
+    print(f"\n  h_max (rej<1e-3 ∧ форма χ²/dof<2, плато): {max(stable_h) if stable_h else 'нет'}")
+    print(f"  калибровка χ_plateau(h) ≈ h/T_prep (Больцман); "
+          f"технический KILL (форма не фитится): {form_fail if form_fail else 'нет'}")
     print(f"  → {RES}/C3Bmech_M0{tag}.json")
 
 

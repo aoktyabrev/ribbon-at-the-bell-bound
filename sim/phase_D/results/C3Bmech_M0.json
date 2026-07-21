@@ -1,0 +1,85 @@
+{
+  "rows": {
+    "0.0": {
+      "chi_plateau": 0.0069878194481134415,
+      "sigma": 0.038642579657597306,
+      "chi_fit": 0.004536470641200075,
+      "chi2dof": 0.5283243760926424,
+      "chi_frozen": -0.019817627035081387,
+      "frozen_over_plateau": NaN,
+      "rej_per_step": 4.1e-06,
+      "ergodic": false,
+      "stable": true,
+      "form_ok": true
+    },
+    "0.02": {
+      "chi_plateau": 0.19696804136037827,
+      "sigma": 0.03842090430083866,
+      "chi_fit": 0.19971655952019238,
+      "chi2dof": 1.0937822981050835,
+      "chi_frozen": -0.04100647196173668,
+      "frozen_over_plateau": -0.20818845371320968,
+      "rej_per_step": 4.2e-06,
+      "ergodic": true,
+      "stable": true,
+      "form_ok": true
+    },
+    "0.05": {
+      "chi_plateau": 0.4765228182077408,
+      "sigma": 0.03792808137020451,
+      "chi_fit": 0.4702591622889001,
+      "chi2dof": 1.1611902524821358,
+      "chi_frozen": 0.008367158705368638,
+      "frozen_over_plateau": 0.017558778689420417,
+      "rej_per_step": 4.2e-06,
+      "ergodic": true,
+      "stable": true,
+      "form_ok": true
+    },
+    "0.1": {
+      "chi_plateau": 0.9100669920444489,
+      "sigma": 0.03525184354056221,
+      "chi_fit": 0.8249626131945536,
+      "chi2dof": 2.1194515416441995,
+      "chi_frozen": 0.019556952640414238,
+      "frozen_over_plateau": 0.02148957473611904,
+      "rej_per_step": 4.8e-06,
+      "ergodic": false,
+      "stable": true,
+      "form_ok": false
+    },
+    "0.2": {
+      "chi_plateau": 1.6632249355316162,
+      "sigma": 0.028043324073560978,
+      "chi_fit": 1.1746720407351032,
+      "chi2dof": 32.17225022126227,
+      "chi_frozen": 0.006077977130189538,
+      "frozen_over_plateau": 0.0036543326163197736,
+      "rej_per_step": 4.3e-06,
+      "ergodic": true,
+      "stable": true,
+      "form_ok": false
+    }
+  },
+  "params": {
+    "k_s": 20.0,
+    "k_b": 2.0,
+    "k_f": 1.0,
+    "ell": 1.0
+  },
+  "N": 32,
+  "batch": 2000,
+  "T_prep": 0.5,
+  "h_grid": [
+    0.0,
+    0.02,
+    0.05,
+    0.1,
+    0.2
+  ],
+  "h_max": 0.05,
+  "form_fail_h": [
+    "0.1",
+    "0.2"
+  ]
+}

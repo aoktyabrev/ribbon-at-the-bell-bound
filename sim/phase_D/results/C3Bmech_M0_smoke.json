@@ -1,86 +1,64 @@
 {
-  "anneal": {
+  "rows": {
     "0.0": {
-      "chi": -0.010369347408413887,
-      "sigma": 0.10496402531862259,
-      "mean_c": -0.0034564491361379623,
+      "chi_plateau": -0.041146717965602875,
+      "sigma": 0.10624026507139206,
+      "chi_fit": -0.13014874018791128,
+      "chi2dof": 1.114940502454852,
+      "chi_frozen": -0.0049708932638168335,
+      "frozen_over_plateau": NaN,
       "rej_per_step": 0.0,
-      "above_3sig": false,
-      "stable": true
+      "ergodic": true,
+      "stable": true,
+      "form_ok": true
     },
-    "0.25": {
-      "chi": 2.1071181893348694,
-      "sigma": 0.057297131046652794,
-      "mean_c": 0.7023727297782898,
+    "0.02": {
+      "chi_plateau": 0.14505833387374878,
+      "sigma": 0.1068463996052742,
+      "chi_fit": 0.32185028623877143,
+      "chi2dof": 2.1183249781342717,
+      "chi_frozen": 0.0831384714692831,
+      "frozen_over_plateau": NaN,
       "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
+      "ergodic": true,
+      "stable": true,
+      "form_ok": false
     },
-    "0.5": {
-      "chi": 2.8110596537590027,
-      "sigma": 0.015535321086645126,
-      "mean_c": 0.9370198845863342,
+    "0.05": {
+      "chi_plateau": 0.3464135527610779,
+      "sigma": 0.10440420359373093,
+      "chi_fit": 0.3588125751661566,
+      "chi2dof": 0.38489820340218334,
+      "chi_frozen": 0.1356860250234604,
+      "frozen_over_plateau": 0.39168798085981155,
       "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
+      "ergodic": false,
+      "stable": true,
+      "form_ok": true
     },
-    "1.0": {
-      "chi": 2.992671847343445,
-      "sigma": 0.0006304172129603103,
-      "mean_c": 0.9975572824478149,
+    "0.1": {
+      "chi_plateau": 0.7474012523889542,
+      "sigma": 0.09735306724905968,
+      "chi_fit": 0.7606207105076297,
+      "chi2dof": 0.9199383441186528,
+      "chi_frozen": 0.3160518407821655,
+      "frozen_over_plateau": 0.4228676895736447,
       "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
+      "ergodic": true,
+      "stable": true,
+      "form_ok": true
     },
-    "2.0": {
-      "chi": 2.999860167503357,
-      "sigma": 1.007647256301425e-05,
-      "mean_c": 0.9999533891677856,
+    "0.2": {
+      "chi_plateau": 1.3474014401435852,
+      "sigma": 0.08719483204185963,
+      "chi_fit": 1.0564243003439655,
+      "chi2dof": 2.6263881105152747,
+      "chi_frozen": 0.7491050809621811,
+      "frozen_over_plateau": 0.5559628026539388,
       "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
-    }
-  },
-  "quench": {
-    "0.0": {
-      "chi": 2.999993920326233,
-      "sigma": 5.040557198299211e-07,
-      "mean_c": 0.9999979734420776,
-      "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
-    },
-    "0.25": {
-      "chi": 2.999998390674591,
-      "sigma": 1.4456251662409159e-07,
-      "mean_c": 0.999999463558197,
-      "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
-    },
-    "0.5": {
-      "chi": 2.9999996423721313,
-      "sigma": 5.890569099165077e-08,
-      "mean_c": 0.9999998807907104,
-      "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
-    },
-    "1.0": {
-      "chi": 3.0,
-      "sigma": 1.8174218130440067e-08,
-      "mean_c": 1.0,
-      "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
-    },
-    "2.0": {
-      "chi": 3.0,
-      "sigma": 2.9634501519382184e-09,
-      "mean_c": 1.0,
-      "rej_per_step": 0.0,
-      "above_3sig": true,
-      "stable": true
+      "ergodic": true,
+      "stable": true,
+      "form_ok": false
     }
   },
   "params": {
@@ -91,19 +69,17 @@
   },
   "N": 24,
   "batch": 256,
+  "T_prep": 0.5,
   "h_grid": [
     0.0,
-    0.25,
-    0.5,
-    1.0,
-    2.0
+    0.02,
+    0.05,
+    0.1,
+    0.2
   ],
-  "wall_M0": false,
-  "stable_h": [
-    0.0,
-    0.25,
-    0.5,
-    1.0,
-    2.0
+  "h_max": 0.1,
+  "form_fail_h": [
+    "0.02",
+    "0.2"
   ]
 }
