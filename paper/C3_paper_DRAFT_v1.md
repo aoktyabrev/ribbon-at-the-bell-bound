@@ -77,6 +77,21 @@ steering class** (C3B_hardening.json, c152c98). One **false stop** en route
 documented, and corrected without loosening any registered criterion
 (addendum2, ccf5af6; §7).
 
+**Mechanical realization (C3-B-mech, form-free).** The steering premise is
+realized mechanically and form-free: an annealed, field-magnetized and
+fast-frozen elastic source supplies a polar-biased orientation measure that
+fits no registered closed form; no closed form is needed. The sign-readout
+conditionals of that measure carry steering diversity in the third and fifth
+moments, matching the Jensen analytics computed directly on the empirical
+ensembles, with the unbiased (h=0) control showing null effects throughout; on
+ensembles produced entirely by the elastic dynamics, no-signaling selects p=2.
+The selection theorem's premise thus rests on measured moments, not on an
+assumed measure — a weaker assumption and hence a stronger claim
+(C3Bmech_M1M2.json, 2080bbe; M1✓M2✓ in form-free mode). That the source measure
+admits no closed form is kin to the C2-TM wall (the relaxational amplitude
+A(k_f) likewise has no closed form): an observation — elasticity does not favor
+closed forms — not a theorem.
+
 ## 4. CEILING — the 1/3-cosine point
 Local resolution (hidden λ + local linear readout) yields
 E(a,b)=E_λ[(λ·a)(λ·b)]=aᵀ(⅓I)b = **cosθ/3** (χ-corrections odd ⇒ vanish),
