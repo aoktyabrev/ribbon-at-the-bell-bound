@@ -1,0 +1,34 @@
+{
+  "S": 2.829061,
+  "tsirelson": 2.8284271247461903,
+  "E": {
+    "ab": -0.707581,
+    "abp": 0.707485,
+    "apb": -0.707695,
+    "apbp": -0.7063
+  },
+  "mA": {
+    "ab": 0.499899,
+    "abp": 0.500111,
+    "apb": 0.4998065,
+    "apbp": 0.500182
+  },
+  "mB": {
+    "ab": 0.4999915,
+    "abp": 0.5002725,
+    "apb": 0.500486,
+    "apbp": 0.499988
+  },
+  "telegraph": 0.0004945000000000088,
+  "w_invisibility": 0.001275553417097397,
+  "checks": {
+    "S_tsirelson": true,
+    "E_cos": true,
+    "marginals_half": true,
+    "telegraph_zero": true,
+    "w_invisible": true
+  },
+  "all_pass": true,
+  "sigma": 0.0007071067811865475,
+  "N": 2000000
+}
