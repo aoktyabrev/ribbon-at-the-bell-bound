@@ -40,7 +40,36 @@ stands between such a mechanism and full quantum correlations. The answer
 assembles into four registered statements (RULE, CEILING, SEAM, FRAME),
 each with kill-criteria and public commits.
 
-## 2. Model
+## 2. Method frame
+This work is preregistered. Each campaign registers predictions, estimators, and
+**kill criteria** (owned by the operator) *before* raw data; the pipeline is
+raw → commit → analysis, with executable prereg↔JSON assert checklists run before
+every battery. Batteries are pure numpy (N=2·10⁶ unless noted), PRNGKey from
+config; analytics sit beside numerics (a >2σ mismatch is a stop). Claim-discipline:
+**theorem** only with a written proof, a battery, and operator review; **conjecture**
+otherwise.
+
+**Reproduction.** The full numpy battery suite of cycle 3 reproduces bitwise:
+re-executed with fixed seeds, every results JSON is byte-identical under `git diff`
+(C3-B B1–B7, hardening, L3, L1, L2, C3-S, β-coin), and C3-B and the β-coin were
+independently reproduced by the operator in a separate environment.
+
+**Self-correction register (a feature, not dirty laundry).** Every false stop and
+retraction below was caught by a preregistered criterion or a literature check,
+not by hindsight; all are public with commits.
+
+| # | What | Caught by | Resolution | Commit |
+|---|---|---|---|---|
+| 1 | Δ(2)>0 (normalized conditional axis broke total probability) | "Δ(2)>0 = bug" criterion | raw sub-unit Bloch vector | 968aaa5 |
+| 2 | Quadrature-tolerance gate (absent from prereg) false-stopped T1/T2 | prereg↔registered criterion | <2σ criterion + algebraic zero at p=2; no threshold loosened | ccf5af6 |
+| 3 | Monte-Carlo cross-range would false-stop the foliation test | control design | common-random-number comparison | 49e8c1b |
+| 4 | §2.3 over-claim ("no-signaling alone bounds Tsirelson") | battery rediscovered the PR-box fact [PR94] | narrowed to steering-endowed layers | 2053106 |
+| 5 | Frame over-claim ("preferred frame required") | class-M theorem T3′ + β-coin | "shared statistically invisible precedence structure"; foliation one realization | c8e1bf3 |
+
+Section 8 gives the detailed methods and controls; this frame is the summary a
+reader needs first.
+
+## 3. Model
 **Source / steering (F2).** A shared connection orientation λ on S² is drawn
 from a shifted measure μ_χ ∝ 1+χλ_z. A measurement setting a partitions λ by
 s=sign(λ·a); the conditional ensemble's **raw** (sub-unit) mean vector m_s is
@@ -55,7 +84,7 @@ criterion caught it; the raw sub-unit Bloch vector is correct
 used where the mechanism resolves the pair jointly rather than by local
 readout of λ.
 
-## 3. RULE — Born from no-signaling, internally (C3-B)
+## 4. RULE — Born from no-signaling, internally (C3-B)
 **Steering is generated, not imported.** With μ_χ, χ>0 yields steering
 diversity D(χ): 0.03→0.08 as χ grows (C3B_hardening.json, 968aaa5) — remote
 ensembles with **equal means, distinct higher moments**.
@@ -77,7 +106,7 @@ direct law) is a boundary (postulated, not steering-collapse). Verdict:
 steering class** (C3B_hardening.json, c152c98). One **false stop** en route
 — a quadrature-tolerance gate absent from preregistration — was caught,
 documented, and corrected without loosening any registered criterion
-(addendum2, ccf5af6; §7).
+(addendum2, ccf5af6; §8).
 
 **Mechanical realization (C3-B-mech, form-free).** The steering premise is
 realized mechanically and form-free: an annealed, field-magnetized and
@@ -94,7 +123,7 @@ admits no closed form is kin to the C2-TM wall (the relaxational amplitude
 A(k_f) likewise has no closed form): an observation — elasticity does not favor
 closed forms — not a theorem.
 
-## 4. CEILING — the 1/3-cosine point
+## 5. CEILING — the 1/3-cosine point
 Local resolution (hidden λ + local linear readout) yields
 E(a,b)=E_λ[(λ·a)(λ·b)]=aᵀ(⅓I)b = **cosθ/3** (χ-corrections odd ⇒ vanish),
 S=2√2/3≈0.943 — the isotropic-cosine ceiling of the local layer. The exact
@@ -106,7 +135,7 @@ C2ISO_analysis.json: cells/kf4.0/rho_cos = 0.3113, a043f8f), ρ_model-free=0.336
 program rule. Anchored analytically and reached by two mechanisms, with ISO-DYN
 bracketing it ⇒ a structural boundary, the lower bank of the seam.
 
-## 5. SEAM — the trilemma of horns (C3-S)
+## 6. SEAM — the trilemma of horns (C3-S)
 Can an internal model reach **D>0 and S=2√2** together? Registered attempts,
 ansätze fixed before batteries:
 - **S-F1** (weighted chord, α=√(1+χ), β=√(1−χ)): S(χ)=2√2·√(1−χ²) —
@@ -123,10 +152,10 @@ ansätze fixed before batteries:
 **Reduction (Bell corollary, not a new theorem).** The internal class =
 λ-average of local responses = LHV ⇒ S≤2. Closing the seam therefore demands
 **joint, nonlocal resolution**; and joint resolution demands a shared,
-statistically invisible precedence structure (§6). Attempt count: 3.
+statistically invisible precedence structure (§7). Attempt count: 3.
 (C3S_seam_reduction.md.)
 
-## 6. FRAME — foliation (C3-L, L1/L2)
+## 7. FRAME — foliation (C3-L, L1/L2)
 On the chord joint law, two resolution mechanics:
 - **(i) preferred-foliation:** S=2√2 **identical across five foliations**
   (cross-disc 0.000000 under common random numbers), foliation statistically
@@ -137,7 +166,7 @@ L1: the joint admits an order-invariant realization (existential PASS,
 factorized witness disc=0.00); the collapse realization's order-dependence
 (0.0418 with invariant marginals) is evidence for L2c, not pathology
 (addendum1). **Method note:** the foliation-invariance test required common
-random numbers — a raw cross-range would false-STOP on Monte-Carlo noise (§7).
+random numbers — a raw cross-range would false-STOP on Monte-Carlo noise (§8).
 
 **Class-M theorem** (status: theorem; canonical statement in
 `sim/cycle3/C3L_L2c_THEOREM.md`, c8e1bf3): in the class M of
@@ -158,7 +187,7 @@ nature; what survives is joint resolution carrying a shared,
 hidden precedence structure. Kin: Bohmian preferred slicing [DGZ92],
 steering-axiomatic reconstructions [CDP11]; [H92], [SS97].
 
-## 7. METHODS — batteries, controls, self-correction
+## 8. METHODS — batteries, controls, self-correction (detail; summary in §2)
 All batteries: pure numpy, N=2·10⁶, PRNGKey from config, analytics beside
 numerics (>2σ mismatch = stop), assert prereg↔JSON before raw, raw→commit→
 analysis. Estimator named in every prediction; metric = the model observable.
@@ -175,7 +204,7 @@ analysis. Estimator named in every prediction; metric = the model observable.
 4. **§2.3 over-claim retraction** (C3-S): the first §2.3 asserted "no-signaling
    alone cuts p>2 in the joint layer"; J5 rediscovered the Popescu–Rohrlich
    fact that the postulated |·|^p family is no-signaling up to the PR box
-   [PR94]; the claim was narrowed to steering-endowed layers (324f097; §8).
+   [PR94]; the claim was narrowed to steering-endowed layers (324f097; §9).
 5. **Frame over-claim** (abstract/§5/§8/§9 v1): "preferred frame required" —
    retracted by the class-M theorem's T3′ and the β-coin demonstration; revised
    in v2, history retained. §9 CEILING wording aligned in v2.
@@ -187,7 +216,7 @@ hardening, L3, L1, L2, C3-S, β-coin — all results JSON byte-identical under
 `git diff`). C3-B and the β-coin were additionally reproduced by the architect
 in a separate environment.
 
-## 8. The Tsirelson section (§2.3, corrected — verbatim)
+## 9. The Tsirelson section (§2.3, corrected — verbatim)
 > Rule selection is exactly as strong as steering. In any layer whose
 > measurements produce conditional states that can themselves be steered —
 > internally generated diversity D>0 — the Jensen argument applies:
@@ -207,7 +236,7 @@ in a separate environment.
 > D>0 together with S=2√2 — demands joint, nonlocal resolution of the pair;
 > and joint resolution, by the foliation results above, demands a preferred
 > frame that the statistics provably hide.
-> [Revised by the class-M theorem, §6: read 'a shared, statistically invisible
+> [Revised by the class-M theorem, §7: read 'a shared, statistically invisible
 > precedence structure', of which a preferred frame is one realization — the
 > frameless order-coin is another.]
 > The program's bridge statement
@@ -215,7 +244,7 @@ in a separate environment.
 > carry steering; the quantum amplitude is bought only by joint resolution,
 > whose frame Einstein's own statistics render invisible.
 
-## 9. Outlook (verbatim)
+## 10. Outlook (verbatim)
 > Three cycles of this program asked one question from three sides: what
 > stands between a mechanism and quantum correlations. The answer assembled
 > itself into four registered statements. (1) RULE: wherever a mechanism
@@ -226,7 +255,7 @@ in a separate environment.
 > (hidden measure plus local response) are capped by Bell's theorem at S=2,
 > with the 1/3-cosine point as their isotropic-cosine ceiling — a landmark
 > anchored analytically (the lever rule), reached by frame-local resolution, and
-> bracketed by relaxational dynamics (estimator-dependent, §4). (3) SEAM: the
+> bracketed by relaxational dynamics (estimator-dependent, §5). (3) SEAM: the
 > gap between that ceiling and the quantum value is not crossed by decorating
 > local mechanisms — our registered attempts fail on a trilemma of horns (no
 > steering, no amplitude, or superluminal telegraph; kin to finite-speed
@@ -247,6 +276,14 @@ in a separate environment.
 > (the class-M theorem, proved; N-event generalization = C4 G-T), and the
 > ground-state problem of the stiff chain — walls mapped,
 > kill criteria attached, commits public.
+
+**[ARCH placeholder — cycle-4 paragraph, verbatim after γ on T2(N)]** One
+paragraph: the class-M theorem generalizes to the Mermin *value* at N=3
+(theorem, N=3); the tripartite mirror (seam GM-F2 / crossing GM-F2j, the GHZ
+signature at the Mermin settings); the block-size tier is binary (genuine-N
+requires a block of size N; Svetlichny S₃=4 at the biseparable bound); the
+N-partite steering cut is stated as an open problem. Text supplied by the
+architect after the T2(N) adversarial pass is closed.
 
 ## Appendix A — batteries (reproducible)
 | Battery | Prereg | Raw | Result |
