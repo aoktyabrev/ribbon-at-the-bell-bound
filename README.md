@@ -68,7 +68,7 @@ unification but an exact division of labor."
   [`paper/pdf/c2_synthesis_TR.pdf`](paper/pdf/c2_synthesis_TR.pdf).
 - **Paper 3** (cycle-3, RULE/CEILING/SEAM/FRAME): draft v1, in preparation.
   Source `paper/C3_paper_DRAFT_v1.md` · PDF
-  [`paper/pdf/c3_draft_v2.pdf`](paper/pdf/c3_draft_v2.pdf) (watermarked DRAFT v2).
+  [`paper/pdf/c3_draft_v3.pdf`](paper/pdf/c3_draft_v3.pdf) (SUBMISSION v3).
 
 ## Methodology
 
