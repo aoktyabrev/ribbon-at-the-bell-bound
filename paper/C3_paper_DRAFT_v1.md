@@ -277,13 +277,25 @@ in a separate environment.
 > ground-state problem of the stiff chain — walls mapped,
 > kill criteria attached, commits public.
 
-**[ARCH placeholder — cycle-4 paragraph, verbatim after γ on T2(N)]** One
-paragraph: the class-M theorem generalizes to the Mermin *value* at N=3
-(theorem, N=3); the tripartite mirror (seam GM-F2 / crossing GM-F2j, the GHZ
-signature at the Mermin settings); the block-size tier is binary (genuine-N
-requires a block of size N; Svetlichny S₃=4 at the biseparable bound); the
-N-partite steering cut is stated as an open problem. Text supplied by the
-architect after the T2(N) adversarial pass is closed.
+> A fourth cycle extended the bridge to N parties. A value theorem at N=3:
+> Mermin M₃ > 2 is achievable in class M iff at least one space-like pair is
+> ordered — a single ordered pair suffices for the algebraic maximum. The
+> tripartite mirror of the bipartite picture is complete: internal geometry (a
+> shared parity invariant — the ribbon's Z₂ holonomy) yields the GHZ signature
+> at the Mermin settings while capped at the classical bound (the tripartite
+> seam, registered at prior 0.45 before the battery), and one ordered pair
+> crosses it, reproducing the complete GHZ signature at those settings. The
+> currency of genuine N-partite nonlocality is binary in block size: disjoint
+> ordered pairs cap the Mermin-Klyshko value at the 2-producible ceiling for
+> N ≥ 4 and at the Svetlichny bound, while only a full precedence block attains
+> the top tier — algebraic (4.0 at N = 4), above the quantum 2^{(N−1)/2}. What
+> cuts class M from the algebraic to the quantum tier at N parties — the
+> bipartite answer was no-signaling plus steering structure — is the program's
+> registered next open problem. Schedule-invisibility within a precedence
+> structure stands as a theorem: the achieved tier certifies the structure; no
+> statistic reveals the schedule. This cycle's registered retractions (a k-pair
+> "climbing ladder", an over-scoped GHZ claim, a "45°-tail" construction) are
+> part of the public record, per the method frame of §2.
 
 ## Appendix A — batteries (reproducible)
 | Battery | Prereg | Raw | Result |
