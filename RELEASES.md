@@ -57,8 +57,11 @@ pairwise, maximal triple, M₃=4 — from parity-in-geometry plus ONE ordered pa
 GM-F2j branch (i)). Full GHZ statistics achieved by a three-party construction
 with one ordered pair; general-N is the subject of G-T2 (depth ladder). Class-M
 precedence theorem holds for N=3 (Mermin value); ДЫРА-N2 (general-N sufficiency)
-reframed as a depth ladder — pencil shows N=4 beats its bound at k=2 (M₄=8=quantum).
-Commits: GM-F2 `99205c3`, GM-F2j `ed8e950`, G-T theorem(N=3) `840602b`, G-T2 pencil `e814867`.
+remains open. The G-T2 "climbing depth ladder" was RETRACTED as a non-standard-operator
+artifact: under the standard Mermin-Klyshko operator, one ordered pair reaches |M|=2
+(the 2-producible ceiling, = quantum at N=3, below quantum for N≥4) and additional
+disjoint pairs do not climb (kinship check vs Svetlichny/SS02/CGPRS02).
+Commits: GM-F2 `99205c3`, GM-F2j `ed8e950`, G-T theorem(N=3) `840602b`, kinship+retraction `C4GT2_kinship_check.md`.
 
 ## v2.0 — Cycles 1-3: theorems and walls (release)
 Git tag `v2.0`; GitHub Release with four PDF assets (paper 1 camera-ready
