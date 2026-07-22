@@ -10,7 +10,9 @@ after kinship check: full-settings GHZ statistics is genuinely tripartite
 (Svetlichny) and unreachable by a fixed ordered pair — architect overclaim,
 retracted (self-correction register). Сырьё:
 GM-F2 `99205c3` (стена «трипартитный шов»), GM-F2j `ed8e950` (развилка (i)).
-G-T: theorem(N=3 value) `840602b`. ДЫРА-N2 (general-N достаточность) ОТКРЫТА:
+G-T: theorem(N=3 value) `840602b`; **schedule-invisibility THEOREM** (class M,
+v2, чистый 2-й проход `bb0cec6`): линейное расширение ≺ статистически невидимо,
+структура ≺ certified ярусами. ДЫРА-N2 (general-N достаточность) ОТКРЫТА:
 G-T2 «климбинг-лестница» РЕТРАГИРОВАНА (артефакт нестандартного оператора;
 под стандартным Мермин-Клышко одна упоряд. пара даёт |M|=2 = 2-producible
 ПОТОЛОК, k>1 не поднимает; N=3 квант, N≥4 ниже кванта). Сверка родни +

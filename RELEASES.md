@@ -63,7 +63,11 @@ remains open. The G-T2 "climbing depth ladder" was RETRACTED as a non-standard-o
 artifact: under the standard Mermin-Klyshko operator, one ordered pair reaches |M|=2
 (the 2-producible ceiling, = quantum at N=3, below quantum for N≥4) and additional
 disjoint pairs do not climb (kinship check vs Svetlichny/SS02/CGPRS02).
-Commits: GM-F2 `99205c3`, GM-F2j `ed8e950`, G-T theorem(N=3) `840602b`, kinship+retraction `C4GT2_kinship_check.md`.
+Schedule-invisibility is now a **theorem** (class M, v2 clean second pass): the linear
+extension of the precedence structure is statistically invisible; the structure itself is
+certified by achieved tiers (Mermin/Svetlichny), not invisible. Commits: GM-F2 `99205c3`,
+GM-F2j `ed8e950`, G-T theorem(N=3) `840602b`, schedule-invisibility theorem `bb0cec6`,
+kinship+retraction `C4GT2_kinship_check.md`.
 
 ## v2.0 — Cycles 1-3: theorems and walls (release)
 Git tag `v2.0`; GitHub Release with four PDF assets (paper 1 camera-ready
