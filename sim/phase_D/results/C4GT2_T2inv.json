@@ -1,0 +1,20 @@
+{
+  "orders": [
+    "(0, 1, 2, 3)",
+    "(3, 2, 1, 0)",
+    "(1, 3, 0, 2)",
+    "(2, 0, 3, 1)"
+  ],
+  "E4_by_order": {
+    "(0, 1, 2, 3)": 1.0,
+    "(3, 2, 1, 0)": 1.0,
+    "(1, 3, 0, 2)": 1.0,
+    "(2, 0, 3, 1)": 1.0
+  },
+  "worst_correlator_spread": 0.00174,
+  "worst_marginal_spread": 0.00174,
+  "invisible": true,
+  "sigma": 0.0007071067811865475,
+  "N": 2000000,
+  "note": "T2(N): chain-rule statistics order-invariant; order not recoverable"
+}
