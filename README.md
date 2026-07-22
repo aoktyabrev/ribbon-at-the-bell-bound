@@ -39,8 +39,8 @@ precedence). Everything else is measured / reduction / landmark / named wall.
 
 ## The bridge
 
-Four registered statements (verbatim opening clauses from the committed Outlook,
-`paper/C3_paper_DRAFT_v1.md` §9):
+Four registered statements (opening clauses from the committed Outlook,
+`paper/C3_paper_DRAFT_v1.md` §10):
 
 - **RULE** — "wherever a mechanism carries steering … the prohibition of
   superluminal signaling forces the Born exponent p=2 uniquely; the derivation
@@ -51,9 +51,10 @@ Four registered statements (verbatim opening clauses from the committed Outlook,
 - **SEAM** — "the gap between that ceiling and the quantum value is not crossed
   by decorating local mechanisms … it is crossed only by joint resolution of
   the pair."
-- **FRAME** — "the surviving corner, preferred-foliation resolution, reproduces
-  quantum statistics exactly while rendering its own foliation statistically
-  invisible."
+- **FRAME** — "the surviving corner, joint resolution carrying a shared,
+  statistically invisible precedence structure (foliation or shared order-coin),
+  reproduces quantum statistics exactly while rendering its own precedence
+  structure statistically invisible" (frame over-claim retracted, §8 register).
 
 The program's bridge statement is, in its own committed words, "not a
 unification but an exact division of labor."
