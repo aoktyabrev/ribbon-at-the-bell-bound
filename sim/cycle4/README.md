@@ -3,10 +3,12 @@
 
 ## Результат (трипартитное зеркало)
 **Tripartite mirror complete: the seam (signature at the classical bound, GM-F2,
-predicted 0.45) and its crossing (full GHZ statistics — all marginals ½, zero
-pairwise, maximal triple, M₃=4 — from parity-in-geometry plus ONE ordered pair,
-GM-F2j branch (i)).** Оговорка: полная GHZ-статистика достигнута ТРЁХчастичной
-конструкцией с парой; general-N — предмет G-T2 (лестница глубины). Сырьё:
+predicted 0.45) and its crossing (the complete GHZ signature AT THE MERMIN
+SETTINGS (all marginals ½, zero pairwise, maximal triple, M₃=4) — from
+parity-in-geometry plus ONE ordered pair, GM-F2j branch (i)).** Scope corrected
+after kinship check: full-settings GHZ statistics is genuinely tripartite
+(Svetlichny) and unreachable by a fixed ordered pair — architect overclaim,
+retracted (self-correction register). Сырьё:
 GM-F2 `99205c3` (стена «трипартитный шов»), GM-F2j `ed8e950` (развилка (i)).
 G-T: theorem(N=3 value) `840602b`. ДЫРА-N2 (general-N достаточность) ОТКРЫТА:
 G-T2 «климбинг-лестница» РЕТРАГИРОВАНА (артефакт нестандартного оператора;

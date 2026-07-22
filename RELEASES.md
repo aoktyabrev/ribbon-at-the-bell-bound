@@ -52,10 +52,12 @@ prereg drafts (GM-F1 closed analytically) `812e32a`.
 
 ## Cycle-4 in progress — tripartite mirror
 Tripartite mirror complete: the seam (signature at the classical bound, GM-F2,
-predicted 0.45) and its crossing (full GHZ statistics — all marginals ½, zero
-pairwise, maximal triple, M₃=4 — from parity-in-geometry plus ONE ordered pair,
-GM-F2j branch (i)). Full GHZ statistics achieved by a three-party construction
-with one ordered pair; general-N is the subject of G-T2 (depth ladder). Class-M
+predicted 0.45) and its crossing (the complete GHZ signature AT THE MERMIN
+SETTINGS (all marginals ½, zero pairwise, maximal triple, M₃=4) — from
+parity-in-geometry plus ONE ordered pair, GM-F2j branch (i)). Scope corrected
+after kinship check: full-settings GHZ statistics is genuinely tripartite
+(Svetlichny) and unreachable by a fixed ordered pair — architect overclaim,
+retracted (self-correction register). Class-M
 precedence theorem holds for N=3 (Mermin value); ДЫРА-N2 (general-N sufficiency)
 remains open. The G-T2 "climbing depth ladder" was RETRACTED as a non-standard-operator
 artifact: under the standard Mermin-Klyshko operator, one ordered pair reaches |M|=2
