@@ -16,3 +16,6 @@ sim/results/*.log
 paper/pdf/*.log
 paper/pdf/*.aux
 paper/pdf/*.tex
+private_correspondence/
+paper/arxiv_submit/*.log
+paper/arxiv_submit/*.pdf
