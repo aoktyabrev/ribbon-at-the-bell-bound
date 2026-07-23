@@ -26,7 +26,7 @@ being one realization, a frameless shared order-coin another; class-M theorem).
 The bridge statement is an exact division of labor, not a unification.
 
 **Comments:** Fully reproducible: every claim carries a commit hash; batteries
-are single numpy scripts. DOI 10.5281/zenodo.21476426
+are single numpy scripts. DOI 10.5281/zenodo.21505219
 
 **Authors:** A. Oktiabrev (Independent researcher, Ukraine).
 ORCID 0009-0003-3626-2002. Email aoktyabrev@gmail.com.

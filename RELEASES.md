@@ -75,3 +75,11 @@ main+SI; paper 3 draft v1; cycle-2 technical report). Version DOI:
 `10.5281/zenodo.21476426` (concept DOI `10.5281/zenodo.21383667`, all versions).
 Freezes the program state: two theorem-status results (C3-B selection; class-M
 precedence), the bridge statement, and the public record of false stops.
+
+## v2.1 — The tripartite mirror, and a submission (release)
+Git tag `v2.1`; GitHub Release with the paper PDFs. Version DOI:
+`10.5281/zenodo.21505219` (concept DOI `10.5281/zenodo.21383667`, all versions).
+Freezes the submission state: paper 3 in submission form (method frame forward,
+three theorem-status results: Born selection / class-M precedence /
+schedule-invisibility), cycle-4 synthesis, publication kit (arXiv source +
+journal cover letter + endorser targets).

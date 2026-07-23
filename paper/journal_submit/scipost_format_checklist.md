@@ -16,7 +16,7 @@
       endorser list (Scarani, Gisin, Chiribella, Bancal); pick 3, avoid conflicts.
 - [ ] **Abstract:** on the submission form (1252 chars, well within any limit).
 - [ ] **Data / reproducibility:** SciPost encourages open code/data — point to
-      the public repository + Zenodo DOI 10.5281/zenodo.21476426. Strong fit
+      the public repository + Zenodo DOI 10.5281/zenodo.21505219. Strong fit
       (bitwise reproduction, single-script batteries).
 - [ ] **Cover letter / author comments:** `cover_letter_DRAFT.md` (this dir).
 - [ ] **License:** SciPost is CC-BY-4.0 by default — confirm acceptable.

@@ -1,6 +1,6 @@
 # Release v2.1 — "The tripartite mirror, and a submission"
 
-**Version DOI: to be minted on Zenodo** (New version of concept
+**Version DOI: 10.5281/zenodo.21505219** (New version of concept
 `10.5281/zenodo.21383667`; do NOT use auto-integration — mint manually).
 
 A three-cycle, preregistered research program on the boundary between classical

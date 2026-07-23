@@ -28,4 +28,4 @@ TEXT mode (θ σ √ ⊗ ⅓ ᵀ ½ χ λ ρ α ε …), which DejaVu Serif cove
 
 ## Reproducibility line (for the arXiv comments field)
 "Fully reproducible: every claim carries a commit hash; batteries are single
-numpy scripts. DOI 10.5281/zenodo.21476426"
+numpy scripts. DOI 10.5281/zenodo.21505219"
