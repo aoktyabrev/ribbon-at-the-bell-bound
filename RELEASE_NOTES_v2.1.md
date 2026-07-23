@@ -1,7 +1,7 @@
 # Release v2.1 — "The tripartite mirror, and a submission"
 
-**Version DOI: 10.5281/zenodo.21505219** (New version of concept
-`10.5281/zenodo.21383667`; do NOT use auto-integration — mint manually).
+**Version DOI: 10.5281/zenodo.21505219**
+(concept DOI `10.5281/zenodo.21383667` — all versions).
 
 A three-cycle, preregistered research program on the boundary between classical
 mechanisms and quantum correlations. Cycle 1 mapped the walls (the
@@ -45,25 +45,12 @@ preregistered kill criteria, and the false stops are part of the public record.
   | "full GHZ statistics" (GM-F2j) | Svetlichny genuine-N check | scope → "GHZ signature at the Mermin settings" | `60e3246` |
   | "45°-tail gains (√2)^{N−2}" | executor pencil before run | deterministic tail is classical; √2 needs superposition | `37b9af8` |
 
-## Assets (attach to the GitHub Release)
-- `paper/pdf/c3_draft_v3.pdf` — paper 3 (cycle-3), submission v3.
-- `paper/pdf/c2_synthesis_TR.pdf` — cycle-2 synthesis, technical report.
-- `paper/pdf/main.pdf`, `paper/pdf/si.pdf` — paper 1 (camera-ready) + supplement.
+## Assets
+- `c3_draft_v3.pdf` — paper 3 (cycle-3), submission v3.
+- `c2_synthesis_TR.pdf` — cycle-2 synthesis, technical report.
+- `main.pdf`, `si.pdf` — paper 1 (camera-ready) + supplement.
 
-## Commands for the operator (tag + GitHub Release)
-```bash
-# from repo root, after pushing main:
-git tag -a v2.1 -m "v2.1 — tripartite mirror, schedule-invisibility theorem, paper-3 submission v3"
-git push origin v2.1
-
-# GitHub Release with the four PDF assets:
-gh release create v2.1 \
-  paper/pdf/c3_draft_v3.pdf \
-  paper/pdf/c2_synthesis_TR.pdf \
-  paper/pdf/main.pdf \
-  paper/pdf/si.pdf \
-  --title "v2.1 — The tripartite mirror, and a submission" \
-  --notes-file RELEASE_NOTES_v2.1.md
-```
-Zenodo: use the existing record → "New version" (manual upload of the same
-assets), then paste the minted Version DOI back into this file's header.
+## Reproducibility
+Every quantitative claim carries a commit hash; batteries are single numpy (or
+JAX/GPU) scripts run under preregistered kill criteria; the cycle reproduces
+bitwise. Repository: <https://github.com/aoktyabrev/ribbon-at-the-bell-bound>.
