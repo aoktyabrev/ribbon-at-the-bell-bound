@@ -21,9 +21,13 @@
 \usepackage{lmodern}
 \ifPDFTeX\else
   % xetex/luatex font selection
-  \setmainfont[]{DejaVu Serif}
-  \setsansfont[]{DejaVu Sans}
-  \setmonofont[]{DejaVu Sans Mono}
+  % Fonts shipped alongside this source (Path-based) so the build does not
+  % depend on DejaVu being installed on the compiling host (arXiv).
+  \setmainfont{DejaVuSerif}[Path=./, Extension=.ttf,
+    BoldFont=DejaVuSerif-Bold, ItalicFont=DejaVuSerif-Italic,
+    BoldItalicFont=DejaVuSerif-BoldItalic]
+  \setsansfont{DejaVuSans}[Path=./, Extension=.ttf, BoldFont=DejaVuSans-Bold]
+  \setmonofont{DejaVuSansMono}[Path=./, Extension=.ttf]
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}

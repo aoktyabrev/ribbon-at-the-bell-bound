@@ -1,3 +1,14 @@
+# arXiv font fallbacks — VARIANT (a) IS APPLIED
+
+> **STATUS (applied):** Variant (a) below is now the committed state —
+> `c3_submission.tex` references the 7 shipped DejaVu `.ttf` files by Path, and
+> those TTFs live in this directory. Clean-dir control build: 0 errors, 0 missing
+> characters, 0 absolute-path warnings, PDF 83808 B. Variant (b) is kept only as
+> a documented alternative. The historical "prepared, not applied" note below is
+> retained for the record.
+
+---
+
 # arXiv font fallbacks — PREPARED, NOT APPLIED (operator decides)
 
 ## Situation
