@@ -17,5 +17,6 @@ paper/pdf/*.log
 paper/pdf/*.aux
 paper/pdf/*.tex
 private_correspondence/
+private_upload/
 paper/arxiv_submit/*.log
 paper/arxiv_submit/*.pdf
