@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21383667.svg)](https://doi.org/10.5281/zenodo.21383667)
 *(concept DOI — all versions)*
 
-Latest release: [v2.1](../../releases/tag/v2.1) — version DOI 10.5281/zenodo.21505219.
+Latest release: [v2.2](../../releases/tag/v2.2) — version DOI 10.5281/zenodo.21651899.
 
 A three-cycle, preregistered research program on the boundary between classical
 mechanisms and quantum correlations. Cycle 1 mapped the walls (the
@@ -78,6 +78,9 @@ unification but an exact division of labor."
   prereg↔gate assert checklists before every run.
 - Claim-discipline: `theorem` only with written proof + battery + review;
   `conjecture` otherwise; metric = the model observable; analytics beside numerics.
+- Operator commands (tagging, release, upload steps) do not live in files that
+  ship as public release bodies or archive contents — they belong in the working
+  correspondence; a release note states what was frozen, not how to freeze it.
 - **False stops and retractions are public and are a feature, not dirty
   laundry** — e.g. the quadrature-gate false stop caught and corrected without
   loosening any registered criterion (`ccf5af6`); the §2.3 Tsirelson over-claim

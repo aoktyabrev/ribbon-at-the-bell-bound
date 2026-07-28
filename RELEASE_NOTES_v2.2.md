@@ -1,6 +1,6 @@
 # Release v2.2 — "Submission snapshot"
 
-**Version DOI: to be minted** (Zenodo mints it when this release is published).
+**Version DOI: 10.5281/zenodo.21651899**
 Concept DOI `10.5281/zenodo.21383667` — all versions, resolves to the latest.
 
 The snapshot the journal submission of paper 3 points at. No new physics since
@@ -50,59 +50,3 @@ manuscript's "Data and code availability" section and the archive agree.
 Every quantitative claim carries a commit hash; batteries are single numpy (or
 JAX/GPU) scripts run under pre-registered kill criteria; the cycle reproduces
 bitwise. Repository: <https://github.com/aoktyabrev/ribbon-at-the-bell-bound>.
-
----
-
-## Release commands (for the operator)
-
-The tag sits on the submission commit — **`3cfeb99`**, the rebuilt PDF, whose
-source commit `ebade60` is what the PDF footer prints. `git tag` takes the commit
-explicitly, so later commits on `main` do not disturb it.
-
-One consequence to decide before tagging: this notes file was committed *after*
-`3cfeb99`, so tagging `3cfeb99` leaves `RELEASE_NOTES_v2.2.md` outside the tagged
-tree — v2.1 had its notes inside the tag, v2.0 did not. The release body is
-unaffected either way (`--notes-file` reads from disk). If you prefer the v2.1
-pattern, tag the current tip of `main` instead: every commit after `3cfeb99`
-touches only this notes file, so the `paper/` tree — the submitted PDF and its
-footer commit — is identical in both.
-
-```bash
-cd /home/artem/quantum_entanglement
-
-# 0. sanity: the tree must be clean and 3cfeb99 must carry the PDF
-git status --short                        # → empty
-git log --oneline -3                      # 3cfeb99 and ebade60 below the tip
-sha256sum paper/pdf/c3_draft_v3.pdf       # → 26ec56dc74…
-
-# 1. annotated tag, strictly on the submission commit
-#    (swap 3cfeb99 → HEAD if you want the notes file inside the tag)
-git tag -a v2.2 3cfeb99 -m "v2.2 — submission snapshot (paper 3 as submitted)"
-git push origin v2.2
-# (if ssh fails with "Permission denied (publickey)", the HTTPS route works:
-#  git -c credential.helper='!gh auth git-credential' \
-#      push https://github.com/aoktyabrev/ribbon-at-the-bell-bound.git v2.2 )
-
-# 2. GitHub Release with the five assets
-gh release create v2.2 \
-  --title "v2.2 — Submission snapshot" \
-  --notes-file RELEASE_NOTES_v2.2.md \
-  private_correspondence/c3_SCIPOST_submission_v3.pdf \
-  paper/pdf/c3_draft_v3.pdf \
-  paper/pdf/c2_synthesis_TR.pdf \
-  paper/pdf/main.pdf \
-  paper/pdf/si.pdf
-```
-
-Note on the first asset: `private_correspondence/` is gitignored, but
-`gh release` uploads files from disk, not from the tree — the path works. It is
-byte-identical to `paper/pdf/c3_draft_v3.pdf`; upload it under the submission
-name only if you want the asset list to say plainly which file went to the
-journal, otherwise drop that line.
-
-Zenodo mints the version DOI once the GitHub Release is published (the webhook
-must be enabled for this repository). After the DOI exists, the follow-up pass
-updates: this file's header, `RELEASES.md`, `README.md` ("Latest release" line),
-and the data-availability lines in `private_correspondence/scipost_form_fields.txt`
-and `cover_letter_SCIPOST.md`. The manuscript itself needs **no** edit — it
-cites the concept DOI on purpose.

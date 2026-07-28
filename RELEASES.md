@@ -83,3 +83,20 @@ Freezes the submission state: paper 3 in submission form (method frame forward,
 three theorem-status results: Born selection / class-M precedence /
 schedule-invisibility), cycle-4 synthesis, publication kit (arXiv source +
 journal cover letter + endorser targets).
+
+## v2.2 — Submission snapshot (release)
+Git tag `v2.2` (commit `e7b2273`); GitHub Release with five PDF assets, among
+them `c3_SCIPOST_submission_v3.pdf` — paper 3 exactly as submitted. Version DOI:
+`10.5281/zenodo.21651899` (concept DOI `10.5281/zenodo.21383667`, all versions).
+Freezes the state the submitted manuscript points at: paper 3 with its new
+"Data and code availability" section and a cleaned title block, the arXiv kit in
+its host-independent font variant, and the publication correspondence out of the
+public tree. No new physics since v2.1.
+
+Two rules were executed here for the first time. **DOI loop broken:** the
+manuscript names the release and the *concept* DOI (which resolves to the latest
+version) instead of a version DOI minted before the snapshot existed — so no
+future snapshot can cite a DOI older than itself, and the paper needs no edit
+when a version DOI appears. **Self-contained source archive:** the tag carries
+`RELEASE_NOTES_v2.2.md` inside it, so the Zenodo source zip documents its own
+contents without reference to anything outside the archive.
