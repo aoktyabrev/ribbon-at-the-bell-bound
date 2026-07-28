@@ -312,9 +312,9 @@ All code, pre-registrations, raw measurements, and analysis scripts underlying t
 paper are public in the program repository,
 <https://github.com/aoktyabrev/ribbon-at-the-bell-bound>; the cycle-3 material
 (pre-registrations, batteries, notes) is under `sim/cycle3/`, with raw results as
-committed JSON. The repository snapshot at submission is archived at Zenodo, version
-DOI 10.5281/zenodo.21505219 (release v2.1); the concept DOI 10.5281/zenodo.21383667
-resolves to the latest archived version. Code is released under the MIT license.
+committed JSON. The repository snapshot corresponding to this submission is frozen as
+release v2.2 and archived on Zenodo under the concept DOI 10.5281/zenodo.21383667 (all
+versions; resolves to the latest). Code is released under the MIT license.
 
 Every quantitative claim in this paper cites its raw file and commit, and every commit
 pair in Appendix A is of the form pre-registration → raw → analysis, in that order.
