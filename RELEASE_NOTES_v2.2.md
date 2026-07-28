@@ -55,18 +55,27 @@ bitwise. Repository: <https://github.com/aoktyabrev/ribbon-at-the-bell-bound>.
 
 ## Release commands (for the operator)
 
-The tag must sit on the submission commit chain — **`3cfeb99`**, the rebuilt PDF,
-whose source commit `ebade60` is what the PDF footer prints. Nothing may be
-committed on top before tagging.
+The tag sits on the submission commit — **`3cfeb99`**, the rebuilt PDF, whose
+source commit `ebade60` is what the PDF footer prints. `git tag` takes the commit
+explicitly, so later commits on `main` do not disturb it.
+
+One consequence to decide before tagging: this notes file was committed *after*
+`3cfeb99` (as `7067373`), so tagging `3cfeb99` leaves `RELEASE_NOTES_v2.2.md`
+outside the tagged tree — v2.1 had its notes inside the tag, v2.0 did not. The
+release body is unaffected either way (`--notes-file` reads from disk). If you
+prefer the v2.1 pattern, tag `7067373` instead: it contains the identical
+`paper/` tree, so the submitted PDF and its footer commit are inside it too.
 
 ```bash
 cd /home/artem/quantum_entanglement
 
-# 0. sanity: HEAD must be 3cfeb99 and the tree clean
-git log --oneline -1          # → 3cfeb99 paper3: пересборка submission-PDF …
-git status --short            # → empty
+# 0. sanity: the tree must be clean and 3cfeb99 must carry the PDF
+git status --short                        # → empty
+git log --oneline -3                      # → 7067373, 3cfeb99, ebade60
+sha256sum paper/pdf/c3_draft_v3.pdf       # → 26ec56dc74…
 
 # 1. annotated tag, strictly on the submission commit
+#    (swap 3cfeb99 → 7067373 if you want the notes file inside the tag)
 git tag -a v2.2 3cfeb99 -m "v2.2 — submission snapshot (paper 3 as submitted)"
 git push origin v2.2
 # (if ssh fails with "Permission denied (publickey)", the HTTPS route works:
