@@ -1,10 +1,6 @@
-# Born from causality, Tsirelson from steering, and the amplitude seam:
-# an internal reconstruction inside a geometric hidden-connection model
+# Born from causality, Tsirelson from steering, and the amplitude seam: an internal reconstruction inside a geometric hidden-connection model
 
-**Cycle 3 draft v1.** Author: A. Oktyabrev (aoktyabrev@gmail.com).
-Status: assembly draft (~11 pp + battery appendix). All numbers cite raw
-as `file (commit)`. Claim-discipline per program standard: theorem only with
-written proof + battery + review; conjecture otherwise.
+**Artem Oktiabrev** · Independent researcher, Ukraine · ORCID: 0009-0003-3626-2002 · aoktyabrev@gmail.com
 
 ---
 
@@ -310,6 +306,23 @@ in a separate environment.
 | Class-M theorem | — | c8e1bf3 | achievability iff shared invisible precedence |
 | C3-B-mech M0 (calibration) | C3Bmech addenda | 0a6c51e | source polarizes; χ(h) linear |
 | C3-B-mech M1/M2 | 63456cd | 2080bbe | mechanical steering, form-free (M1✓M2✓) |
+
+## Data and code availability
+All code, pre-registrations, raw measurements, and analysis scripts underlying this
+paper are public in the program repository,
+<https://github.com/aoktyabrev/ribbon-at-the-bell-bound>; the cycle-3 material
+(pre-registrations, batteries, notes) is under `sim/cycle3/`, with raw results as
+committed JSON. The repository snapshot at submission is archived at Zenodo, version
+DOI 10.5281/zenodo.21505219 (release v2.1); the concept DOI 10.5281/zenodo.21383667
+resolves to the latest archived version. Code is released under the MIT license.
+
+Every quantitative claim in this paper cites its raw file and commit, and every commit
+pair in Appendix A is of the form pre-registration → raw → analysis, in that order.
+Reproduction is bitwise: re-executed with the seeds fixed in each config, the full
+cycle-3 numpy battery suite returns byte-identical results JSON under `git diff`
+(C3-B B1–B7, hardening, L3, L1, L2, C3-S, β-coin), and C3-B and the β-coin were
+independently re-run by the author in a separate environment. No data other than the
+simulation output reported here underlie this work.
 
 ## References
 [B64] J. S. Bell, Physics 1, 195 (1964).

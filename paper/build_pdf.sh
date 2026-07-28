@@ -44,6 +44,11 @@ preprocess() {
 build() {
   local src="$1" name="$2" title="$3"
   echo "=== $name: $src"
+  # Пустой title ⇒ флаг не передаётся ⇒ pandoc не ставит \maketitle: титульный
+  # блок берётся из самого markdown-источника (так собирается C3SUBMIT — титул
+  # один, как в arxiv_submit/c3_submission.tex).
+  local TITLE_ARG=()
+  [ -n "$title" ] && TITLE_ARG=(--variable=title:"$title")
   # markdown → LaTeX. resource-path — чтобы ../sim/phase_D/fig/*.png нашлись.
   preprocess "$HERE/$src" | "$PANDOC" \
     --from=markdown-yaml_metadata_block-simple_tables-multiline_tables-grid_tables-implicit_figures+footnotes+pipe_tables+strikeout+tex_math_dollars \
@@ -59,7 +64,7 @@ build() {
     --variable=colorlinks:true \
     --variable=linkcolor:black \
     --variable=urlcolor:blue \
-    --variable=title:"$title" \
+    "${TITLE_ARG[@]}" \
     --variable=header-includes:"\\usepackage{amssymb}\\usepackage[normalem]{ulem}\\let\\st\\sout ${EXTRA_HEADER:-}" \
     --pdf-engine=xelatex \
     --output="$HERE/$name.tex"
@@ -98,8 +103,10 @@ case "$V" in
     # paper 3 submission-финал → c3_draft_v3.pdf, колонтитул SUBMISSION v3 + хэш
     HASH="$(cd "$ROOT" && git log -1 --format=%h -- paper/C3_paper_DRAFT_v1.md)"
     DATE="$(cd "$ROOT" && git log -1 --format=%cs -- paper/C3_paper_DRAFT_v1.md)"
+    # title="" — титул и авторский блок живут в самом .md (см. build()), чтобы
+    # не дублироваться с \maketitle; версия помечена только колонтитулом.
     EXTRA_HEADER="\\usepackage{fancyhdr}\\pagestyle{fancy}\\fancyhf{}\\cfoot{SUBMISSION v3 — ${DATE} — commit ${HASH}}\\rfoot{\\thepage}\\lfoot{cycle-3 paper}" \
-      build "C3_paper_DRAFT_v1.md" c3_draft_v3 "Born from causality, Tsirelson from steering, and the amplitude seam (SUBMISSION v3)"
+      build "C3_paper_DRAFT_v1.md" c3_draft_v3 ""
     echo; echo "Готово (C3 submission v3): $OUT/c3_draft_v3.pdf" ;;
   C2TR)
     # синтез цикла 2 → технический отчёт
