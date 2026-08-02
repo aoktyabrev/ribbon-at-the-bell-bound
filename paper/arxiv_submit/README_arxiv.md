@@ -77,3 +77,24 @@ PDF, and all 8 pages are pixel-identical to it at 150 dpi.
 So the footer keeps naming the commit that fixes the *content*, which is what a
 reader checking reproducibility needs, and this file's own commit history
 records the typesetting-only delta.
+
+## Sync check across the five sources
+
+There is no generator: `C3_paper_DRAFT_v1.md` and the four `.tex` sources are
+maintained by hand, so a patch applied to some of them and not the others
+leaves no trace. `paper/check_sync.py` is that trace.
+
+```bash
+python paper/check_sync.py       # L1 gates (exit 1 on mismatch)
+python paper/check_sync.py -v    # also dumps the L2 differing regions
+```
+
+L1 counts a registry of anchor phrases in every source and fails if the counts
+differ. L2 folds both formats to a token stream and diffs them against the
+markdown; it reports and never gates, because the folding is heuristic.
+
+**Known open finding (first run of the script).** `c3_submission.tex` and its
+copy under `private_upload/arxiv_paper3/` are missing the entire *Data and code
+availability* section — repository URL, Zenodo concept DOI, MIT license, and
+the bitwise-reproduction statement — which is present in the markdown and in
+both FoP kits. Not fixed here: paper-source edits are held for approval.
