@@ -860,10 +860,13 @@ N = 96; seed-audit report, commit a26f76b).
 
 ## 9.2 Use of generative AI
 
-Generative AI tools (Anthropic Claude) were used for research planning and experimental
-design, software implementation, code review, source checking, and manuscript drafting. The
-author made all scientific decisions, verified the reported results, and accepts full
-responsibility for the manuscript.
+Generative AI tools (Anthropic Claude) were used throughout this program under an explicit
+division of roles. An AI architect role proposed hypotheses and experimental designs, drafted
+pre-registrations and manuscript text, and performed internal review; an AI executor role
+(Claude Code) implemented the simulation code, executed campaigns, and verified drafted claims
+against their cited sources. The author defined the research question, owned all kill criteria,
+held veto over every proposed design and scientific position, made all scientific decisions,
+verified the reported results, and accepts full responsibility for the manuscript.
 
 The detailed working arrangement — the three-party division of roles, the pre-registration and
 raw-before-analysis order as controls over both AI roles, and the record of errors caught in

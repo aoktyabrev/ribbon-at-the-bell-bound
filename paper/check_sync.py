@@ -77,6 +77,15 @@ ANCHORS = [
     "all code, pre-registrations, raw measurements",
     "zenodo",
     "mit license",
+    # --- AI disclosure: the role terms are load-bearing (one term per party,
+    #     no bare "operator"/"architect" in article text) and the section is
+    #     hand-inserted into every source, so it is exactly the kind of patch
+    #     that drifts. Reproduction attribution is anchored for the same reason.
+    "under an explicit division of roles",
+    "an ai architect role",
+    "an ai executor role (claude code)",
+    "accepts full responsibility for the manuscript",
+    "reproduced by the author in a separate environment",
 ]
 
 

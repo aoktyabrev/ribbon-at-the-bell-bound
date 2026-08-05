@@ -121,19 +121,19 @@ kill-criteria and public commits.
 \subsection{2. Method frame}\label{method-frame}
 
 This work is preregistered. Each campaign registers predictions,
-estimators, and \textbf{kill criteria} (owned by the operator)
+estimators, and \textbf{kill criteria} (owned by the author)
 \emph{before} raw data; the pipeline is raw → commit → analysis, with
 executable prereg↔JSON assert checklists run before every battery.
 Batteries are pure numpy (N=2·10⁶ unless noted), PRNGKey from config;
 analytics sit beside numerics (a \textgreater2σ mismatch is a stop).
 Claim-discipline: \textbf{theorem} only with a written proof, a battery,
-and operator review; \textbf{conjecture} otherwise.
+and author review; \textbf{conjecture} otherwise.
 
 \textbf{Reproduction.} The full numpy battery suite of cycle 3
 reproduces bitwise: re-executed with fixed seeds, every results JSON is
 byte-identical under \texttt{git\ diff} (C3-B B1--B7, hardening, L3, L1,
 L2, C3-S, β-coin), and C3-B and the β-coin were independently reproduced
-by the operator in a separate environment.
+by the author in a separate environment.
 
 \textbf{Self-correction register (a feature, not dirty laundry).} Every
 false stop and retraction below was caught by a preregistered criterion
@@ -349,7 +349,7 @@ criterion, not by hindsight.
 independently re-executed (2026-07-21); fixed-seed raw reproduces
 bitwise (C3-B B1--B7, C3-B hardening, L3, L1, L2, C3-S, β-coin --- all
 results JSON byte-identical under \texttt{git\ diff}). C3-B and the
-β-coin were additionally reproduced by the architect in a separate
+β-coin were additionally reproduced by the author in a separate
 environment.
 
 \subsection{9. The Tsirelson section (§2.3, corrected ---
@@ -489,6 +489,25 @@ C3-B-mech M1/M2 & 63456cd & 2080bbe & mechanical steering, form-free
 (M1\(\checkmark\)M2\(\checkmark\)) \\
 \end{longtable}
 }
+
+\subsection{Use of generative AI}\label{use-of-generative-ai}
+
+Generative AI tools (Anthropic Claude) were used in this work under an
+explicit division of roles. An AI architect role proposed hypotheses,
+drafted pre-registrations and manuscript text, and performed internal
+review; an AI executor role (Claude Code) implemented batteries, executed
+runs, and adversarially checked drafted claims against their cited sources.
+The author owned all kill criteria, held veto over every scientific
+position, made all scientific decisions, independently re-executed the
+reported batteries in a separate environment, and accepts full
+responsibility for the manuscript.
+
+The pre-registration discipline described in Section 2 --- kill criteria
+fixed before raw data, raw → commit → analysis ordering, executable
+prereg↔JSON assertions --- functions as a control over both AI roles,
+binding design and execution to commitments made before the data existed.
+The registered false stops and retractions of Sections 2 and 8 were caught
+in both directions of that arrangement.
 
 \subsection{References}\label{references}
 

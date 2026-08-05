@@ -38,17 +38,17 @@ each with kill-criteria and public commits.
 
 ## 2. Method frame
 This work is preregistered. Each campaign registers predictions, estimators, and
-**kill criteria** (owned by the operator) *before* raw data; the pipeline is
+**kill criteria** (owned by the author) *before* raw data; the pipeline is
 raw → commit → analysis, with executable prereg↔JSON assert checklists run before
 every battery. Batteries are pure numpy (N=2·10⁶ unless noted), PRNGKey from
 config; analytics sit beside numerics (a >2σ mismatch is a stop). Claim-discipline:
-**theorem** only with a written proof, a battery, and operator review; **conjecture**
+**theorem** only with a written proof, a battery, and author review; **conjecture**
 otherwise.
 
 **Reproduction.** The full numpy battery suite of cycle 3 reproduces bitwise:
 re-executed with fixed seeds, every results JSON is byte-identical under `git diff`
 (C3-B B1–B7, hardening, L3, L1, L2, C3-S, β-coin), and C3-B and the β-coin were
-independently reproduced by the operator in a separate environment.
+independently reproduced by the author in a separate environment.
 
 **Self-correction register (a feature, not dirty laundry).** Every false stop and
 retraction below was caught by a preregistered criterion or a literature check,
@@ -209,7 +209,7 @@ Each was caught by a preregistered criterion, not by hindsight.
 **Reproduction.** The full numpy battery suite of cycle 3 was independently
 re-executed (2026-07-21); fixed-seed raw reproduces bitwise (C3-B B1–B7, C3-B
 hardening, L3, L1, L2, C3-S, β-coin — all results JSON byte-identical under
-`git diff`). C3-B and the β-coin were additionally reproduced by the architect
+`git diff`). C3-B and the β-coin were additionally reproduced by the author
 in a separate environment.
 
 ## 9. The Tsirelson section (§2.3, corrected — verbatim)
@@ -307,13 +307,29 @@ in a separate environment.
 | C3-B-mech M0 (calibration) | C3Bmech addenda | 0a6c51e | source polarizes; χ(h) linear |
 | C3-B-mech M1/M2 | 63456cd | 2080bbe | mechanical steering, form-free (M1✓M2✓) |
 
+## Use of generative AI
+Generative AI tools (Anthropic Claude) were used in this work under an explicit
+division of roles. An AI architect role proposed hypotheses, drafted
+pre-registrations and manuscript text, and performed internal review; an AI executor
+role (Claude Code) implemented batteries, executed runs, and adversarially checked
+drafted claims against their cited sources. The author owned all kill criteria, held
+veto over every scientific position, made all scientific decisions, independently
+re-executed the reported batteries in a separate environment, and accepts full
+responsibility for the manuscript.
+
+The pre-registration discipline described in Section 2 — kill criteria fixed before
+raw data, raw → commit → analysis ordering, executable prereg↔JSON assertions —
+functions as a control over both AI roles, binding design and execution to
+commitments made before the data existed. The registered false stops and retractions
+of Sections 2 and 8 were caught in both directions of that arrangement.
+
 ## Data and code availability
 All code, pre-registrations, raw measurements, and analysis scripts underlying this
 paper are public in the program repository,
 <https://github.com/aoktyabrev/ribbon-at-the-bell-bound>; the cycle-3 material
 (pre-registrations, batteries, notes) is under `sim/cycle3/`, with raw results as
 committed JSON. The repository snapshot corresponding to this submission is frozen as
-release v2.2 and archived on Zenodo under the concept DOI 10.5281/zenodo.21383667 (all
+release v2.3 and archived on Zenodo under the concept DOI 10.5281/zenodo.21383667 (all
 versions; resolves to the latest). Code is released under the MIT license.
 
 Every quantitative claim in this paper cites its raw file and commit, and every commit
