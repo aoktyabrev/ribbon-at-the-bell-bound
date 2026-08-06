@@ -102,8 +102,8 @@ when a version DOI appears. **Self-contained source archive:** the tag carries
 contents without reference to anything outside the archive.
 
 ## v2.3 — Disclosure, figures, and a working sync gate (release)
-Git tag `v2.3`; GitHub Release with the paper PDFs. Version DOI pending until
-Zenodo archives the tag (concept DOI `10.5281/zenodo.21383667`, all versions).
+Git tag `v2.3` (commit `266766d`); GitHub Release with four PDF assets. Version
+DOI: `10.5281/zenodo.21822343` (concept DOI `10.5281/zenodo.21383667`, all versions).
 **No new physics since v2.2** — no measured number, verdict, or claim changes.
 The three new figures plot values already published in v2.1/v2.2 and cite the
 same raw files and commits.

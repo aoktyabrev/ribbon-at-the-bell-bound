@@ -1,7 +1,6 @@
 # Release v2.3 — "Disclosure, figures, and a working sync gate"
 
-**Version DOI: pending** — minted by Zenodo when this tag is archived, then
-closed into README and RELEASES.md, as at v2.0/v2.1/v2.2.
+**Version DOI: 10.5281/zenodo.21822343**
 Concept DOI `10.5281/zenodo.21383667` — all versions, resolves to the latest.
 
 **No new physics since v2.2.** Nothing in this release changes a measured
