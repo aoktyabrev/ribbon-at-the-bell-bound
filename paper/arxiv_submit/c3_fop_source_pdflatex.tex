@@ -6,6 +6,7 @@
   11pt]{article}
 \usepackage{xcolor}
 \usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{graphicx}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 % Engine-independent font setup: no fontspec, no shipped font files.
@@ -47,7 +48,7 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\usepackage{amssymb}\usepackage[normalem]{ulem}\let\st\sout \usepackage{fancyhdr}\pagestyle{fancy}\fancyhf{}\cfoot{SUBMISSION v3 --- 2026-08-05 --- commit a7cf54b}\rfoot{\thepage}\lfoot{cycle-3 paper}
+\usepackage{amssymb}\usepackage[normalem]{ulem}\let\st\sout \usepackage{fancyhdr}\pagestyle{fancy}\fancyhf{}\cfoot{SUBMISSION v3 --- 2026-08-06 --- commit 100baf9}\rfoot{\thepage}\lfoot{cycle-3 paper}
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
@@ -252,6 +253,51 @@ form-matched estimator; raw C2ISO\_analysis.json: cells/kf4.0/rho\_cos =
 within \textasciitilde2$\sigma$. Estimators named per program rule. Anchored
 analytically and reached by two mechanisms, with ISO-DYN bracketing it $\Rightarrow$
 a structural boundary, the lower bank of the seam.
+
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{c3_chsh_landscape.png}
+
+\vspace{0.7em}
+\parbox{0.98\linewidth}{\emph{Fig. 1. The CHSH landscape. Every value is a CHSH (N=2) value under one
+operator throughout. The 1/3-cosine ceiling S=2$\sqrt{2}$2/3$\approx$0.943 is the analytic anchor
+of this section (lever rule, exact; C3L\_L2.json, 49e8c1b). The phase-D
+relaxation family is measured below it --- S=2$\rho$=0.75 at k\_f$\times$1 and 1.62 at
+k\_f$\times$4 (DS3\_analysis.json, 0fb5452) --- the ``cycle-2 wall'' seen from the other
+bank. Above: the Bell bound S=2 [B64, CHSH69], the Tsirelson bound S=2$\sqrt{2}$2 [C80],
+and the algebraic maximum S=4 attained by the PR box [PR94], the no-signaling
+polytope vertex our J5 battery rediscovered against an earlier over-claim of
+\S2.3 (2053106; \S9). The amplitude seam is the distance from the ceiling to
+Tsirelson. The algebraic 4.0 marked here is the CHSH maximum at N=2; it is not
+the Mermin--Klyshko algebraic value 4.0 at N=4 quoted in the Outlook --- the two
+coincide numerically but belong to different operators, the confusion that the
+cycle-4 climbing-ladder retraction was made of (ff28341).}}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{c3_trilemma_isodyn.png}
+
+\vspace{0.7em}
+\parbox{0.98\linewidth}{\emph{Fig. 2. The trilemma, with the protocol of each edge named. The vertices are
+the three properties of the quantum target; each edge is a mechanism that holds
+two of them and pays with the third, so no edge reaches the centre. The protocol
+is named because two of the edges isotropize and they are not the same
+operation. DS3 honest isotropization applies the Haar rotation post hoc, in
+analysis, to the frozen $\theta$=0 source, with settings drawn independently of $\lambda$ --- a
+shared-$\lambda$ local model, for which Bell's theorem forces the triangular signature:
+$\rho$=0.374/0.810, S=2$\rho$ (0fb5452). ISO-DYN instead applies a per-replica rigid Haar
+rotation to the preparation before relaxation, with (a,b) lab-fixed and entering
+the relaxation as clamps; the settings therefore act on the dynamics, a cosine
+becomes available, and it is paid for in amplitude --- $\Delta$AICc = -10.3 / -37.4 for
+cosine over triangle, $\rho$\_cos=0.133/0.311, S=2$\sqrt{2}$2$\rho$=0.357/0.854 $\leq$ 2 (a043f8f;
+prereg 77f734c, raw 3fd3e3d). Two pre-registered caveats stand and are drawn on
+the figure: the ISO-DYN isotropy is Haar-averaging of an anisotropic dynamical
+response, not a symmetry of the model (77f734c); and ISO-DYN brackets the
+1/3-cosine point rather than landing on it --- $\rho$\_cos=0.311 and
+$\rho$\_model-free=0.336 straddle 1/3 within $\sim$2$\sigma$.}}
+\end{figure}
 
 \subsection{6. SEAM --- the trilemma of horns
 (C3-S)}\label{seam-the-trilemma-of-horns-c3-s}

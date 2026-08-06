@@ -122,3 +122,18 @@ three independent axes at once: amplitude (bounded by ρ < 1), form (isotropy fo
 not a cosine), and isotropy itself (the cosine survives only along the privileged axis). No
 single knob moves the ribbon toward it; that is the quantitative content of the phase-D bet's
 outcome, and its interpretation is deferred to Section 8.
+
+![Fig. 5: the three axes of failure](../../sim/phase_D/fig/trilemma_axes.png)
+
+*Fig. 5. The three axes of failure. The quantum target — an isotropic cosine at unit
+amplitude, CHSH = 2√2 — lies outside the measured family on all three property axes at once.
+Phase D populates two of the three pairs: honest isotropization (6.4) buys amplitude and
+isotropy and pays with the form, giving the triangular law E = −ρ(1 − 2θ/π) with
+ρ = 0.374 / 0.810 and S = 2ρ; the anisotropy map (6.3) buys amplitude and the cosine form and
+pays with isotropy, A(α) falling from 0.387 to 0.005 at k_f×1 and from 0.865 to 0.008 at
+k_f×4 (both commit 0fb5452). The amplitude axis is bounded independently of either: the
+plateau A = 0.363 is flat in chain length (commit 2784edf) and in stiffness (commit f928dd4),
+and its origin is stiffness memory rather than thermal fluctuation (commit a9cef7b). The
+third corner — isotropy together with the cosine form, at suppressed amplitude — is left
+empty because no mechanism of this paper populates it. The emptiness is part of the result,
+not a gap in the layout.*

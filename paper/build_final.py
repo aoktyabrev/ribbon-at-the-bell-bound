@@ -40,6 +40,7 @@ regenerated from a named commit (Section 9.1).
 | Fig. 2   | A_plateau(k_f), stiffness memory | `s1runs_kf.png`                      | `plot_s1runs_kf.py`                  | 6.2 |
 | Fig. 3   | anisotropy map A(α)              | `ds3_aniso.png`                      | `analysis_ds3.py`                    | 6.3 |
 | Fig. 4   | triangle vs cosine (isotropized) | `ds3_iso.png`                        | `analysis_ds3.py`                    | 6.4 |
+| Fig. 5   | three axes of failure            | `trilemma_axes.png`                  | `plot_trilemma_axes.py`              | 6.5 |
 | Table 1  | CHSH revision: withdrawn vs valid | inline                              | —                                    | 7.2 |
 """
 
