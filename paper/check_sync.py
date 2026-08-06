@@ -43,6 +43,25 @@ REFERENCE = SOURCES[0]
 
 REPORT_ONLY = True          # L2 reports; only L1 sets the exit code
 
+# ---------------------------------------------------------------------------
+# L0 -- the release label, across BOTH papers
+# ---------------------------------------------------------------------------
+# Paper 1 has a generator and a single source of truth, so it needs no L1/L2.
+# It still shares one fact with paper 3: the release its availability section
+# names. That fact lives in two unrelated pipelines, and nothing textual links
+# them -- bump paper 3's five sources, forget paper 1, and both papers build
+# clean while naming different snapshots. The merge that produced v2.3 already
+# demonstrated the failure mode inside paper 3; this closes the same hole
+# across the pair.
+#
+# Bump RELEASE on every release, together with README and RELEASES.md.
+RELEASE = "release v2.3"
+
+RELEASE_FILES = SOURCES + [
+    ROOT / "paper" / "sections" / "90_availability.md",   # paper 1, source
+    ROOT / "paper" / "FINAL_v1.md",                       # paper 1, generated
+]
+
 
 # ---------------------------------------------------------------------------
 # L1 -- anchor registry
@@ -277,6 +296,21 @@ def layer2(normed: dict[pathlib.Path, str], verbose: bool) -> int:
     return total
 
 
+def layer0() -> list[pathlib.Path]:
+    """The release label, in both papers. Raw text: no normalization needed,
+    and none wanted -- the point is the literal string a reader will see."""
+    print(f"L0  release label {RELEASE!r} (both papers)")
+    width = max(len(str(p.relative_to(ROOT))) for p in RELEASE_FILES)
+    bad = []
+    for p in RELEASE_FILES:
+        n = p.read_text(encoding="utf-8").count(RELEASE) if p.exists() else -1
+        flag = "ok  " if n >= 1 else "MISS"
+        if n < 1:
+            bad.append(p)
+        print(f"  {flag} {str(p.relative_to(ROOT)):<{width}}  {n}")
+    return bad
+
+
 def main() -> int:
     verbose = "-v" in sys.argv
     missing = [p for p in SOURCES if not p.exists()]
@@ -285,16 +319,24 @@ def main() -> int:
             print(f"MISSING: {p}")
         return 1
 
+    stale = layer0()
+    print()
+
     normed = {p: normalize(p) for p in SOURCES}
     failures = layer1(normed)
     layer2(normed, verbose)
 
     print()
+    if stale:
+        print(f"FAIL: {RELEASE!r} missing from "
+              + ", ".join(str(p.relative_to(ROOT)) for p in stale))
     if failures:
         print(f"FAIL: {len(failures)} anchor(s) out of sync: "
               + ", ".join(repr(a) for a in failures))
+    if stale or failures:
         return 1
-    print("PASS: all anchors consistent across the five sources.")
+    print("PASS: all anchors consistent across the five sources, "
+          "release label consistent across both papers.")
     return 0
 
 

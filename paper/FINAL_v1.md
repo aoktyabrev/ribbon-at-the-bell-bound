@@ -843,13 +843,14 @@ All code, data, and pre-registrations are in the repository: the phase A–C too
 `sim/src/ribbon_sim/`, the phase-D model and campaigns in `sim/phase_D/`, and the frozen raw
 measurements in `sim/phase_D/results/*.json`.
 
-The repository snapshot at submission is archived at Zenodo: DOI 10.5281/zenodo.21388902
-(release paper-v1.2). The concept DOI 10.5281/zenodo.21383667 resolves to the latest archived
-version. Earlier snapshots (paper-v1, pre-camera-ready; paper-v1.1, camera-ready) are retained
-as prior versions of the same record. To cite the archive:
+The repository snapshot corresponding to this submission is frozen as release v2.3 and
+archived on Zenodo under the concept DOI 10.5281/zenodo.21383667 (all versions; resolves to
+the latest), where release v2.3 is available as a separate version of the record. Earlier
+snapshots (paper-v1, pre-camera-ready; paper-v1.1, camera-ready; paper-v1.2) are retained as
+prior versions of the same record. To cite the archive:
 
 > Oktiabrev, Artem. *The Ribbon at the Bell Bound: Mapping the Classical Boundary of a
-> Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21388902
+> Geometric Entanglement Ontology.* Zenodo, 2026. https://doi.org/10.5281/zenodo.21383667
 
 Every stage whose result required a fit, a flip, or a model comparison committed its raw
 measurements before any analysis touched them, as a `*-raw` commit preceding a `*-analysis`
@@ -867,7 +868,7 @@ Repeatability is exact: each run script fixes its PRNGKey seed protocol, so the 
 returns the same number, and every figure in this paper can be regenerated from a named commit
 by running its committed script — `analysis_ext.py` (d2ext_scaling.png), `analysis_ds2.py`
 (ds2_cross.png), `analysis_ds3.py` (ds3_aniso.png, ds3_iso.png), `plot_s1runs_kf.py`
-(s1runs_kf.png). Reproducibility — whether a result survives a change of seed — is a separate
+(s1runs_kf.png), `plot_trilemma_axes.py` (trilemma_axes.png). Reproducibility — whether a result survives a change of seed — is a separate
 property, and we measured it rather than assumed it: a pre-registered audit re-ran the N = 32
 and N = 96 cells under twelve fresh base keys, and the cross-seed scatter came out consistent
 with the quoted binomial errors (r = 0.88 over eleven repeats of the core cell, r = 1.11 at
