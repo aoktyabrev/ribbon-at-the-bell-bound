@@ -10,6 +10,10 @@
 # Инструменты ставятся БЕЗ sudo:
 #   pandoc    — uv pip install --python sim/.venv/bin/python pypandoc-binary
 #   tectonic  — статический бинарь с github releases (см. TECTONIC ниже)
+#   ИЛИ xelatex из TinyTeX — используется автоматически, если tectonic не найден.
+#     Недостающие пакеты доставляются тем же tlmgr без sudo, например:
+#       tlmgr install soul
+#     (tectonic тянет пакеты сам, xelatex — нет; это вся разница.)
 #
 # Запуск: bash paper/build_pdf.sh [версия]   (по умолчанию v3)
 
@@ -23,9 +27,40 @@ OUT="$HERE/pdf"
 PANDOC="${PANDOC:-$ROOT/sim/.venv/lib/python3.12/site-packages/pypandoc/files/pandoc}"
 TECTONIC="${TECTONIC:-tectonic}"
 
-command -v "$TECTONIC" >/dev/null 2>&1 || [ -x "$TECTONIC" ] || {
-  echo "tectonic не найден. Задай TECTONIC=/путь/к/tectonic" >&2; exit 1; }
+XELATEX="${XELATEX:-xelatex}"
+
+# Движок: tectonic, если есть; иначе xelatex. Оба дают XeTeX — расходятся только
+# тем, что tectonic доставляет недостающие пакеты сам.
+if command -v "$TECTONIC" >/dev/null 2>&1 || [ -x "$TECTONIC" ]; then
+  ENGINE=tectonic
+elif command -v "$XELATEX" >/dev/null 2>&1 || [ -x "$XELATEX" ]; then
+  ENGINE=xelatex
+else
+  echo "не найден ни tectonic, ни xelatex. Задай TECTONIC=/путь или XELATEX=/путь" >&2
+  exit 1
+fi
 [ -x "$PANDOC" ] || { echo "pandoc не найден: $PANDOC" >&2; exit 1; }
+echo "движок: $ENGINE"
+
+# Один вызов, две реализации. xelatex гоняется трижды: оглавление/ссылки.
+compile_tex() {
+  local name="$1"
+  if [ "$ENGINE" = tectonic ]; then
+    ( cd "$HERE" && "$TECTONIC" -X compile "$name.tex" --outdir "$OUT" --keep-logs )
+  else
+    # ЛОВУШКА: -output-directory кладёт $OUT в путь поиска ВХОДНЫХ файлов, и
+    # xelatex берёт $OUT/$name.tex вместо свежего $HERE/$name.tex, если тот
+    # остался от прошлых сборок. Ровно так main.pdf собирался из DRAFT_v3.md
+    # июльской давности, молча и с нулевым кодом возврата. Промежуточный .tex
+    # в $OUT не нужен никогда — сносим до прогона.
+    rm -f "$OUT/$name.tex"
+    # exit, не return: это субшелл, а не функция — return тут молча не сработает
+    ( cd "$HERE" && for _ in 1 2 3; do
+        "$XELATEX" -interaction=nonstopmode -halt-on-error \
+                   -output-directory="$OUT" "$name.tex" >/dev/null || exit 1
+      done )
+  fi
+}
 
 mkdir -p "$OUT"
 
@@ -70,7 +105,7 @@ build() {
     --output="$HERE/$name.tex"
 
   # LaTeX → PDF. tectonic тянет пакеты сам, сети хватает одного прогона.
-  ( cd "$HERE" && "$TECTONIC" -X compile "$name.tex" --outdir "$OUT" --keep-logs ) \
+  compile_tex "$name" \
     || { echo "СБОРКА $name УПАЛА — см. $OUT/$name.log" >&2; return 1; }
 
   rm -f "$HERE/$name.tex"
