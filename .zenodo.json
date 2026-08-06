@@ -1,0 +1,20 @@
+{
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Oktiabrev, Artem",
+      "orcid": "0009-0003-3626-2002",
+      "affiliation": "Independent researcher, Ukraine"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "quantum foundations",
+    "Bell inequalities",
+    "hidden-variable models",
+    "Born rule",
+    "Tsirelson bound",
+    "preregistration",
+    "reproducibility"
+  ]
+}
