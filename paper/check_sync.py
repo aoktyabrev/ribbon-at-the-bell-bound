@@ -77,6 +77,17 @@ ANCHORS = [
     "all code, pre-registrations, raw measurements",
     "zenodo",
     "mit license",
+    # --- figure captions (§5). These are the reason "figure" is not stripped:
+    #     the protocol line of each trilemma edge is what stops the DS3 and
+    #     ISO-DYN edges from reading as a contradiction, and the operator note
+    #     is what stops the CHSH 4.0 from being read as the N=4 Mermin 4.0.
+    "the chsh landscape",
+    "the protocol of each edge named",
+    "applies the haar rotation post hoc",
+    "entering the relaxation as clamps",
+    "not a symmetry of the model",
+    "brackets the 1/3-cosine point",
+    "belong to different operators",
 ]
 
 
@@ -110,7 +121,9 @@ UNICODE_FOLD = {
     "\u00a0": " ", "\u2009": " ", "\u202f": " ",
 }
 
-STRIP_ENVS = ("tabular", "longtable", "table", "figure", "thebibliography")
+# "figure" is deliberately NOT stripped: the paper-3 figure captions carry the
+# protocol of each trilemma edge, which is exactly the text that must not drift.
+STRIP_ENVS = ("tabular", "longtable", "table", "thebibliography")
 
 
 def _strip_tex(text: str) -> str:
@@ -123,6 +136,7 @@ def _strip_tex(text: str) -> str:
         text = re.sub(rf"\\begin\{{{env}\}}.*?\\end\{{{env}\}}", " ", text, flags=re.S)
 
     text = re.sub(r"\\(rule|label|hypertarget|phantomsection|maketitle|newpage"
+                  r"|includegraphics"
                   r"|clearpage|thispagestyle|pagestyle|fancyhf|cfoot|rfoot"
                   r"|lfoot|setcounter|vspace|hspace|bibliography|bibliographystyle)"
                   r"\s*(\[[^\]]*\])?(\{[^{}]*\})*", " ", text)
@@ -179,6 +193,9 @@ def _strip_md(text: str) -> str:
     text = "\n".join(out)
     text = re.sub(r"`{1,3}", " ", text)
     text = re.sub(r"\*{1,3}", " ", text)
+    # images: dropped whole, alt text included -- the tex side has no alt text,
+    # and \includegraphics is dropped there, so this keeps the two symmetric.
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", text)
     text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)     # links
     return text
 

@@ -131,6 +131,38 @@ C2ISO_analysis.json: cells/kf4.0/rho_cos = 0.3113, a043f8f), ρ_model-free=0.336
 program rule. Anchored analytically and reached by two mechanisms, with ISO-DYN
 bracketing it ⇒ a structural boundary, the lower bank of the seam.
 
+![Fig. 1: the CHSH landscape](../sim/cycle3/fig/c3_chsh_landscape.png)
+
+*Fig. 1. The CHSH landscape. Every value is a CHSH (N=2) value under one operator throughout.
+The 1/3-cosine ceiling S=2√2/3≈0.943 is the analytic anchor of this section (lever rule,
+exact; C3L_L2.json, 49e8c1b). The phase-D relaxation family is measured below it — S=2ρ=0.75
+at k_f×1 and 1.62 at k_f×4 (DS3_analysis.json, 0fb5452) — the "cycle-2 wall" seen from the
+other bank. Above: the Bell bound S=2 [B64, CHSH69], the Tsirelson bound S=2√2 [C80], and the
+algebraic maximum S=4 attained by the PR box [PR94], the no-signaling polytope vertex our J5
+battery rediscovered against an earlier over-claim of §2.3 (2053106; §9). The amplitude seam
+is the distance from the ceiling to Tsirelson. The algebraic 4.0 marked here is the CHSH
+maximum at N=2; it is not the Mermin–Klyshko algebraic value 4.0 at N=4 quoted in the Outlook
+— the two coincide numerically but belong to different operators, the confusion that the
+cycle-4 climbing-ladder retraction was made of (ff28341).*
+
+![Fig. 2: the trilemma, protocol of each edge named](../sim/cycle3/fig/c3_trilemma_isodyn.png)
+
+*Fig. 2. The trilemma, with the protocol of each edge named. The vertices are the three
+properties of the quantum target; each edge is a mechanism that holds two of them and pays
+with the third, so no edge reaches the centre. The protocol is named because two of the edges
+isotropize and they are not the same operation. DS3 honest isotropization applies the Haar
+rotation post hoc, in analysis, to the frozen θ=0 source, with settings drawn independently of
+λ — a shared-λ local model, for which Bell's theorem forces the triangular signature:
+ρ=0.374/0.810, S=2ρ (0fb5452). ISO-DYN instead applies a per-replica rigid Haar rotation to
+the preparation before relaxation, with (a,b) lab-fixed and entering the relaxation as clamps;
+the settings therefore act on the dynamics, a cosine becomes available, and it is paid for in
+amplitude — ΔAICc = −10.3 / −37.4 for cosine over triangle, ρ_cos=0.133/0.311,
+S=2√2ρ=0.357/0.854 ≤ 2 (a043f8f; prereg 77f734c, raw 3fd3e3d). Two pre-registered caveats
+stand and are drawn on the figure: the ISO-DYN isotropy is Haar-averaging of an anisotropic
+dynamical response, not a symmetry of the model (77f734c); and ISO-DYN brackets the
+1/3-cosine point rather than landing on it — ρ_cos=0.311 and ρ_model-free=0.336 straddle 1/3
+within ~2σ.*
+
 ## 6. SEAM — the trilemma of horns (C3-S)
 Can an internal model reach **D>0 and S=2√2** together? Registered attempts,
 ansätze fixed before batteries:
