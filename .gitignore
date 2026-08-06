@@ -17,6 +17,15 @@ paper/pdf/*.log
 paper/pdf/*.aux
 paper/pdf/*.tex
 private_correspondence/
-private_upload/
+
+# private_upload: локальные arXiv-комплекты, вне публичного дерева — КРОМЕ того
+# файла, который paper/check_sync.py держит за источник записи. Пока он был вне
+# git, переключение веток его не откатывало, и сверка врала: копия накапливала
+# правки одной ветки, сравниваясь с эталоном другой. Под git идут ровно файлы
+# из SOURCES; корреспонденция остаётся снаружи целиком.
+private_upload/*
+!private_upload/arxiv_paper3/
+private_upload/arxiv_paper3/*
+!private_upload/arxiv_paper3/c3_submission.tex
 paper/arxiv_submit/*.log
 paper/arxiv_submit/*.pdf
