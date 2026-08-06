@@ -100,3 +100,35 @@ future snapshot can cite a DOI older than itself, and the paper needs no edit
 when a version DOI appears. **Self-contained source archive:** the tag carries
 `RELEASE_NOTES_v2.2.md` inside it, so the Zenodo source zip documents its own
 contents without reference to anything outside the archive.
+
+## v2.3 — Disclosure, figures, and a working sync gate (release)
+Git tag `v2.3`; GitHub Release with the paper PDFs. Version DOI pending until
+Zenodo archives the tag (concept DOI `10.5281/zenodo.21383667`, all versions).
+**No new physics since v2.2** — no measured number, verdict, or claim changes.
+The three new figures plot values already published in v2.1/v2.2 and cite the
+same raw files and commits.
+
+AI disclosure harmonized across both papers: one vocabulary in article text
+(*the author* for scientific decisions, kill criteria, veto, reproduction; *AI
+architect role* for proposals and drafts; *AI executor role* for implementation
+and runs), a three-way contradiction in paper 3 over who re-executed C3-B and
+the β-coin resolved to the author, a disclosure section added to paper 3 where
+there was none, and paper 1 §9.2 rewritten because "used for research planning
+and experimental design" read as though the AI designed the study. Disclosure
+volume rose (`a7cf54b`). Three figures added, each caption naming its protocol
+and provenance (`8848956`). **DOI loop broken in paper 1** (`813d7c5`): §9.1
+now names the release and the concept DOI, the rule fixed at v2.2 and until now
+applied only to paper 3.
+
+Two gates were built here and both have been shown to fail on demand, not only
+to pass. **Captions inside the sync perimeter:** the `figure` environment is no
+longer stripped, so the protocol line of each trilemma edge — the sentence that
+stops the DS3 and ISO-DYN edges from reading as a contradiction — is compared
+across all five sources. **L0, the release label across both papers:** merging
+the disclosure and figure branches produced a conflict git resolved cleanly and
+wrongly, leaving one source on v2.2 while four said v2.3; no textual merge can
+see that, so the label is now checked across paper 3's five sources and paper 1's
+availability source and generated FINAL. `paper/check_sync.py` exits 0 for the
+first time since it was written — the three long-standing mismatches were both
+copies of `c3_submission.tex` missing the availability section, and a source of
+record that was gitignored and therefore drifted across branches (`100baf9`).

@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21383667.svg)](https://doi.org/10.5281/zenodo.21383667)
 *(concept DOI — all versions)*
 
-Latest release: [v2.2](../../releases/tag/v2.2) — version DOI 10.5281/zenodo.21651899.
+Latest release: [v2.3](../../releases/tag/v2.3) — version DOI pending (concept DOI above resolves to it).
 
 A three-cycle, preregistered research program on the boundary between classical
 mechanisms and quantum correlations. Cycle 1 mapped the walls (the
